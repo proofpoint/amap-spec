@@ -1,0 +1,13 @@
+{
+  "contract_version": "2",
+  "req_id": "00000010",
+  "outcome": "rejected",
+  "detail": "attachment index 1: sidecar sha256 mismatch (runtime-verified against the on-disk bytes; not schema-checked)",
+  "recipients": [],
+  "message_id": null,
+  "job_id": null,
+  "attachments": [
+    { "index": 0, "outcome": "accepted", "detail": null },
+    { "index": 1, "outcome": "rejected_type", "detail": "sha256 of sidecar bytes did not match descriptor" }
+  ]
+}

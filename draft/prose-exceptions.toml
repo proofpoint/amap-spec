@@ -1,0 +1,120 @@
+# prose-exceptions.toml — every normative obligation in spec/ that the
+# Internet-Draft knowingly does not carry.
+#
+# check_prose.py requires a draft sentence covering each RFC 2119 sentence in
+# spec/. A gap is either a mistake or a decision; this file is where decisions
+# are recorded, so the difference is visible in review rather than assumed.
+#
+# Two forms:
+#   [[scope]]      a whole spec file the draft does not render at all
+#   [[exception]]  one obligation, keyed by a signature hash that changes if
+#                  the spec sentence is reworded — so a reworded obligation
+#                  falls out of the allowlist and gets re-reviewed rather than
+#                  staying silently excepted.
+#
+# `python3 draft/tools/check_prose.py --emit-exceptions` prints stubs for the
+# current misses. Every entry needs a real reason; the checker refuses an
+# empty one.
+
+[[scope]]
+spec = "spec/peer-origin.md"
+reason = """
+The Internet-Draft renders the core contract only. The peer-origin profile is
+v3.1.0 DRAFT and appears in the draft as its schema (Appendix F) and a change-log
+entry, deliberately without its normative prose — publishing a profile that is
+still moving would freeze it at exactly the wrong moment. Revisit when the
+profile leaves DRAFT: at that point either the draft grows a peer-origin section
+or the profile becomes a separate document, and this scope entry is the thing
+that should force that decision rather than letting it pass unnoticed.
+"""
+
+# ---------------------------------------------------------------------------
+# Individual obligations. Each was checked against the draft by hand before
+# being listed; the reason says which of two things it is — prose about the
+# spec repo that an RFC has no business carrying, or an obligation the draft
+# does carry in a form the matcher scores low.
+# ---------------------------------------------------------------------------
+
+[[exception]]
+id = "7d56f375d4d5"
+# spec/contract.md:120 (MUST) — "Branch 1's O_EXCL refuses that case on its
+# own; branch 2 has no O_EXCL to lean on and MUST state it"
+reason = """
+Meta-commentary about why the spec's own two branches are written the way they
+are, not an obligation on an implementer. Both branches themselves are carried
+in full in the draft's write-side path discipline; only the editorial note
+explaining the asymmetry is dropped.
+"""
+
+[[exception]]
+id = "51d0082029d5"
+# spec/contract.md:304 (MAY) — draft.subject and draft.body_text MAY be empty
+reason = """
+Carried in the draft's Submit Request field semantics ("both are REQUIRED and
+MAY be the empty string"). The matcher scores it low because the spec sentence
+is short and its few content words are common ones; the obligation is present
+and normative.
+"""
+
+[[exception]]
+id = "4c77a5197bfe"
+# spec/contract.md:669 (OPTIONAL) — the v2.2.0 release-summary bullet
+reason = """
+Version-history narrative: a summary of what the v2.2.0 release did, phrased
+with keywords because it quotes the rules it introduced. Every rule it names is
+carried normatively in the draft's own sections; the draft's Change Log states
+the release in condensed form rather than reproducing the spec's bullet.
+"""
+
+[[exception]]
+id = "9668376cd154"
+# spec/contract.md:719 (MUST) — "Items 2, 4, and 5 below add runtime MUSTs..."
+reason = """
+A sentence about the structure of the spec's own version history ("items below
+add MUSTs a v2.x runtime does not meet"), not an obligation. Nothing for an
+implementer to comply with.
+"""
+
+[[exception]]
+id = "d35d764bb89b"
+# spec/contract.md:830 (MUST) — notice_id charset migration instruction
+reason = """
+Migration guidance addressed to operators of an existing deployment upgrading
+across a specific released version, with repo-internal detail (the exact prior
+pattern, the fixture that pins it). The resulting rule — notice_id must match
+the pinned character set — is carried by the draft and by the schemas. An RFC
+states the requirement, not the upgrade path between two of this repo's
+releases.
+"""
+
+[[exception]]
+id = "f1a552a3803a"
+# spec/contract.md:886 (MUST) — "implementers on RE2/Rust/POSIX MUST strip the
+# lookahead"
+reason = """
+Guidance about this repo's JSON Schema source files and the regex engines that
+cannot compile their (?!\\n) guard. It is an instruction for someone consuming
+schemas/*.json directly, not a protocol obligation. The draft carries the
+trailing-newline rule the guard exists to enforce.
+"""
+
+[[exception]]
+id = "cf383f6f3bda"
+# spec/contract.md:1035 (MUST) — Connector conformance class, consume side
+reason = """
+Carried in the draft's conformance-class section nearly verbatim; it scores low
+only because the spec sentence enumerates fixture filenames and post-check
+function names that the draft states as rules instead. The obligation — accept
+every valid fixture including unknown members and advisory-enum values, reject
+every invalid one except the version-refusal case — is present and normative.
+"""
+
+[[exception]]
+id = "ec7454d195a4"
+# spec/contract.md:1076 (OPTIONAL) — "tightening those to required is a future
+# major bump"
+reason = """
+A note about this repo's own release planning, not an obligation. The
+OPTIONAL-ness of each field is carried by the draft's required-vs-optional
+table, which is generated from the same facts.
+"""

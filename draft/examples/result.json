@@ -1,0 +1,23 @@
+{
+  "contract_version": "2",
+  "req_id": "00000001",
+  "outcome": "accepted",
+  "detail": null,
+  "reason_code": "allowlisted",
+  "ts": "2026-08-09T19:14:00Z",
+  "recipients": ["owner@example.com"],
+  "message_id": "<20260809191400.1@example.org>",
+  "job_id": null,
+  "attestation": {
+    "form": "self-stamp",
+    "token": "selfstamp.v1.abcdef",
+    "claims": {
+      "agent": "agent.research",
+      "acts_for": "owner@example.com",
+      "issued_at": "2026-08-09T19:14:00Z"
+    }
+  },
+  "attachments": [
+    { "index": 0, "outcome": "accepted", "detail": null }
+  ]
+}

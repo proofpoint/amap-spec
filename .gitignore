@@ -1,0 +1,14 @@
+.DS_Store
+__pycache__/
+*.pyc
+dist/*.pdf
+draft/build/
+dist/*.html
+.claude/
+.sandy/
+
+# sandy writes its selection record into the feature directory, which is this
+# checkout (install-sandy-feature.sh prints these if they are missing)
+/.selected/
+/selected.json
+/selected.json.tmp.*

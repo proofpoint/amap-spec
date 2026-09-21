@@ -1,0 +1,12 @@
+{
+  "contract_version": "2",
+  "req_id": "00000025",
+  "draft": {
+    "to": [
+      "a@b"
+    ],
+    "subject": "s",
+    "body_text": "b",
+    "reply_to_message_id": "<a@b>\r\nBcc: evil@example.net"
+  }
+}

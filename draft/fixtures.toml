@@ -1,0 +1,82 @@
+# fixtures.toml — which fixtures the Internet-Draft render inlines, and why.
+#
+# This is DATA, not code: draft/tools/gen_appendices.py reads it, and no fixture
+# selection is hardcoded in the compiler. Changing the inline set is a one-line
+# edit here, never a code change. See draft/README.md and PLAN.md OPEN-1 for
+# the rationale; the count and membership are not final and may change after a
+# standards review.
+#
+# `file` is relative to fixtures/ and MUST start with "valid/" or "invalid/".
+# `anchor` MUST be unique across the whole document (schemas' own anchors are
+# `schema-*`; keep fixture anchors in the `fx-` namespace so check_render.py's
+# `ex-` (illustrative, hand-written) prefix stays unambiguous).
+# `pins` is the normative sentence this fixture is the only inline expression
+# of. `why_fails` is REQUIRED when `file` is under invalid/ — a negative
+# fixture is meaningless inline without its reason, and gen_appendices.py
+# enforces this.
+# `placement` is "appendix" (default; emitted into Appendix G in TOML order)
+# or "body" (emitted as its own fragment, included where the hand source wants
+# it shown inline; the appendix then cross-references it instead of repeating
+# it).
+
+[policy]
+max_inline = 10
+min_inline = 6
+
+[[fixture]]
+file   = "valid/request-attachments.json"
+anchor = "fx-request-attachments"
+title  = "Valid Submit Request with attachments"
+pins   = "Sidecar blobs are named by array index (`req-<id>.attachments/<i>`); no content_ref may appear on a request and the schema rejects one ([](#sec-5-1))."
+
+[[fixture]]
+file   = "valid/notice-attachment-clean-ref.json"
+anchor = "fx-notice-clean-ref"
+title  = "Valid Deliver Notice with a clean attachment Descriptor"
+pins   = "content_ref's prefix equals the enclosing document's own notice_id and its trailing index equals the Descriptor's own array position ([](#sec-7-2)); a Connector that relays the Notice without ever dereferencing the reference is fully conformant."
+
+[[fixture]]
+file   = "valid/message-clean.json"
+anchor = "fx-message-clean"
+title  = "Valid Inbound Message"
+pins   = "The body spool for a delivered message is keyed on the Runtime-minted notice_id, never on the provider message.id ([](#sec-7-3))."
+
+[[fixture]]
+file   = "valid/result-attachments-held.json"
+anchor = "fx-result-attachments-held"
+title  = "Valid Result — a policy hold with per-attachment diagnostics"
+pins   = "`attachments[i].index == i` on a Result, contiguous and unique over 0..n-1; per-attachment entries are diagnostic detail under one governing top-level outcome and never license a partial send ([](#sec-6-1))."
+
+[[fixture]]
+file   = "invalid/notice-attachment-ref-index-mismatch.json"
+anchor = "fx-notice-ref-mismatch"
+title  = "Invalid Deliver Notice — a content_ref that fails the binding"
+pins   = "The drop rule of [](#sec-7-1) is two independent checks: this document is schema-valid and is caught only by the content_ref post-check ([](#sec-7-2), [](#sec-10-3))."
+why_fails = "content_ref names a different notice's Sidecar directory and a non-matching index — it is neither `<notice_id>.attachments/0` for its own array position 0, nor prefixed by this document's own notice_id. Schema validation alone reports zero errors; only the content_ref index/prefix post-check catches it."
+
+[[fixture]]
+file   = "valid/notice-unknown-member.json"
+anchor = "fx-notice-unknown-member"
+title  = "Valid Deliver Notice carrying an unrecognized member"
+pins   = "The Runtime-authored envelope is OPEN as of document version 3.0.0: a consumer MUST ignore a member it does not recognize, at every level ([](#sec-10-1))."
+
+[[fixture]]
+file   = "invalid/request-extra-field.json"
+anchor = "fx-request-extra-field"
+title  = "Invalid Submit Request carrying an unrecognized member"
+pins   = "The Agent-authored envelope stays CLOSED at every level: an unrecognized member is a designed, legible rejected refusal, never a silent drop ([](#sec-10-1))."
+why_fails = "additionalProperties: false at the top level of the submit-request schema rejects any member this document does not define."
+
+[[fixture]]
+file   = "invalid/peer-kind-deliver.json"
+anchor = "fx-peer-kind-deliver"
+title  = "Invalid peer notice — a deliver-kind document under the peer tree"
+pins   = "Origin class comes from the tree a notice arrived in, never from a self-declared field: a kind: \"deliver\" document found under peer/notices/ fails the peer-notice schema, the profile's cross-lock (spec/peer-origin.md)."
+why_fails = "kind is const \"peer\" in the peer-notice schema; a document carrying \"deliver\" fails that const check."
+
+[[fixture]]
+file = "valid/identity-basic.json"
+anchor = "fx-identity-basic"
+title = "A Binding Record"
+placement = "body"
+pins = "The Binding Record names which mailbox a Volume is bound to; it is informational and never consulted for enforcement (Section 9)."

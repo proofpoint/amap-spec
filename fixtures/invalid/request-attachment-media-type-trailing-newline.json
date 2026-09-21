@@ -1,0 +1,19 @@
+{
+  "contract_version": "2",
+  "req_id": "00000028",
+  "draft": {
+    "to": [
+      "a@b"
+    ],
+    "subject": "s",
+    "body_text": "b",
+    "attachments": [
+      {
+        "filename": "report.pdf",
+        "media_type": "application/pdf\n",
+        "size_bytes": 10,
+        "sha256": "69e2875d29b10c4cfc8b4b8e42460970a3a8aab0ab6932122aa7acba1b00d014"
+      }
+    ]
+  }
+}

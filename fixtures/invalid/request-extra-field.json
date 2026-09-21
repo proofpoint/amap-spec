@@ -1,0 +1,2 @@
+{ "contract_version": "2", "req_id": "00000021", "x_injected": "surprise",
+  "draft": { "to": ["a@b"], "subject": "s", "body_text": "b" } }

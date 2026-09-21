@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://amap-spec/schemas/binding-record.schema.json",
+  "title": "binding-record",
+  "description": "runtime/provisioner -> volume root: identity.json, the mailbox<->volume binding record. amap-spec v3.0.0 (spec/contract.md §9). INFORMATIONAL, NOT AUTHORITATIVE: the volume is agent-writable, so a consumer MUST treat contents as untrusted data and MUST tolerate the file's absence. Unchanged on the additionalProperties axis at v3.0.0 (§7): this schema stays closed — its closure is an anti-secret-leak lint, not a compatibility surface.",
+  "type": "object",
+  "required": ["agent_id", "address", "provisioned_ts"],
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": { "const": "2" },
+    "agent_id": { "type": "string", "minLength": 1 },
+    "address": { "type": "string", "minLength": 1 },
+    "provisioned_ts": { "type": "string", "minLength": 1 },
+    "label": { "type": "string" }
+  }
+}

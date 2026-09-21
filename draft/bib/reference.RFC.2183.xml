@@ -1,0 +1,14 @@
+<reference anchor="RFC2183" target="https://www.rfc-editor.org/info/rfc2183">
+  <front>
+    <title>Communicating Presentation Information in Internet Messages: The Content-Disposition Header Field</title>
+    <author fullname="R. Troost" initials="R." surname="Troost"/>
+    <author fullname="S. Dorner" initials="S." surname="Dorner"/>
+    <author fullname="K. Moore" initials="K." role="editor" surname="Moore"/>
+    <date month="August" year="1997"/>
+    <abstract>
+      <t>This memo provides a mechanism whereby messages conforming to the MIME specifications [RFC 2045, RFC 2046, RFC 2047, RFC 2048, RFC 2049] can convey presentational information. It specifies the "Content- Disposition" header field, which is optional and valid for any MIME entity ("message" or "body part"). [STANDARDS-TRACK]</t>
+    </abstract>
+  </front>
+  <seriesInfo name="RFC" value="2183"/>
+  <seriesInfo name="DOI" value="10.17487/RFC2183"/>
+</reference>

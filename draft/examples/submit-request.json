@@ -1,0 +1,22 @@
+{
+  "contract_version": "2",
+  "req_id": "00000001",
+  "agent_id": "agent.research",
+  "ts": "2026-07-20T04:10:56Z",
+  "in_reply_to": "1721457600000000000-4242",
+  "draft": {
+    "to": ["owner@example.com"],
+    "cc": [],
+    "subject": "Run report",
+    "body_text": "The run finished; details below.",
+    "reply_to_message_id": null,
+    "attachments": [
+      {
+        "filename": "report.pdf",
+        "media_type": "application/pdf",
+        "size_bytes": 48213,
+        "sha256": "970e441b6c4ecd37abf2541e1276c680bdec8481cef9368ff1d010fd6b784b07"
+      }
+    ]
+  }
+}

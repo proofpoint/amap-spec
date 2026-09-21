@@ -1,0 +1,13 @@
+{
+  "contract_version": "2",
+  "req_id": "00000010",
+  "outcome": "accepted",
+  "detail": null,
+  "recipients": ["owner@example.com"],
+  "message_id": "<00000010@relay.example.com>",
+  "job_id": "1a2b3c4d",
+  "attachments": [
+    { "index": 0, "outcome": "accepted", "detail": null },
+    { "index": 1, "outcome": "accepted", "detail": null }
+  ]
+}

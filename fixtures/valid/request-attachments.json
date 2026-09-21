@@ -1,0 +1,19 @@
+{
+  "contract_version": "2",
+  "req_id": "00000010",
+  "agent_id": "agent.research",
+  "ts": "2026-07-21T04:10:00Z",
+  "draft": {
+    "to": ["owner@example.com"],
+    "subject": "Report attached",
+    "body_text": "See the attached report and notes.",
+    "attachments": [
+      { "filename": "report.pdf", "media_type": "application/pdf",
+        "size_bytes": 48213,
+        "sha256": "970e441b6c4ecd37abf2541e1276c680bdec8481cef9368ff1d010fd6b784b07" },
+      { "filename": "notes.txt", "media_type": "text/plain",
+        "size_bytes": 128,
+        "sha256": "087d07499f2c097ac5396af7a0f1ef5e7a977fa91c631ebd15eb61bb23ef20aa" }
+    ]
+  }
+}

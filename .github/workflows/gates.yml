@@ -1,0 +1,59 @@
+# Runs the three gates on every pull request and every push to main.
+#
+# Why this exists: the gates are what stop the draft drifting from the spec,
+# and until now they ran only when someone remembered to type `make -C draft`.
+# That is a convention, not a guarantee — and the failure it guards against
+# (an obligation silently missing from the draft) is invisible in a diff.
+#
+# The toolchain here is the same PINNED requirement draft/README.md states;
+# this job is simply another host meeting it. Note what is absent: weasyprint
+# and its font stack. PDF is not part of the default target precisely so that
+# a job whose purpose is verification does not have to install a PDF renderer.
+name: gates
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  gates:
+    name: gates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'   # >= 3.11 for tomllib
+
+      - name: Install the pinned toolchain
+        run: |
+          gem install --no-document kramdown-rfc -v 1.7.43
+          pip install --disable-pip-version-check xml2rfc==3.34.1
+
+      - name: Conformance gate
+        run: python3 fixtures/validate.py
+
+      - name: Build the draft and run every gate
+        run: make -C draft
+
+      - name: Committed dist/ matches what the build produces
+        run: |
+          if ! git diff --exit-code -- dist/; then
+            echo "::error::dist/ does not match the build output."
+            echo "The committed .xml/.txt disagree with draft/draft-amap.mkd."
+            echo "Run 'make -C draft' and commit the result in the same change"
+            echo "as the source edit (WORKFLOWS.md, 'Mechanics')."
+            exit 1
+          fi
+
+      - name: Build is reproducible
+        run: make -C draft reproducible

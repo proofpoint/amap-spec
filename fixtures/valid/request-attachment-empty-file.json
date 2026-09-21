@@ -1,0 +1,14 @@
+{
+  "contract_version": "2",
+  "req_id": "00000012",
+  "draft": {
+    "to": ["owner@example.com"],
+    "subject": "Empty file attached",
+    "body_text": "A legitimate zero-byte attachment (size-0 is a valid size_bytes value).",
+    "attachments": [
+      { "filename": "empty.txt", "media_type": "text/plain",
+        "size_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" }
+    ]
+  }
+}

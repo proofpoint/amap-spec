@@ -1,0 +1,10 @@
+{
+  "contract_version": "2",
+  "req_id": "00000001",
+  "outcome": "accepted",
+  "x_injected": "surprise",
+  "attestation": {
+    "form": "self-stamp",
+    "x_attestation_injected": "also surprise"
+  }
+}

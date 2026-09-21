@@ -1,0 +1,9 @@
+{
+  "contract_version": "2",
+  "req_id": "00000017",
+  "outcome": "queued_for_human",
+  "attachments": [
+    { "index": 0, "outcome": "dlp_held" },
+    { "index": 0, "outcome": "dlp_held" }
+  ]
+}

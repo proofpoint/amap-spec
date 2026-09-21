@@ -1,0 +1,10 @@
+{
+  "contract_version": "2",
+  "req_id": "00000013",
+  "draft": {
+    "to": ["a@b"], "subject": "s", "body_text": "b",
+    "attachments": [
+      { "filename": "x.pdf", "media_type": "application/pdf", "size_bytes": 10 }
+    ]
+  }
+}

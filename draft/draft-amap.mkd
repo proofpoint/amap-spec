@@ -1,0 +1,2533 @@
+---
+title: The Agent Mailbox Access Protocol (AMAP)
+abbrev: AMAP
+docname: draft-amap-00
+category: info
+# SETTLED 2026-09-21. Proposed by the standards contact in a chat with counsel
+# and agreed without disagreement: the full BCP 78 grant, the least restrictive
+# of the four trust200902 variants. The restrictive ones — noModification,
+# noDerivatives, pre5378 — were considered and rejected for a concrete reason:
+# the derivative-works grant is what allows a working group to ADOPT AND EDIT
+# the draft, so withholding it would make the document unadoptable and defeat
+# the purpose of taking it to the IETF at all.
+ipr: trust200902
+# PLACEHOLDER — still open, and it follows from the line above rather than
+# standing beside it. `independent` routes to the Independent Submissions
+# Editor; `IETF` routes to a working group, with different change control. The
+# grant above is what makes the second possible, so choosing it is the decision
+# this value should follow.
+# See draft/README.md, "Counsel gates before this draft may be submitted".
+submissiontype: independent
+stand_alone: yes
+date: 2026-09-16
+pi: [toc, sortrefs, symrefs]
+kramdown_options:
+  auto_id_prefix: sec-
+author:
+  -
+    ins: D. Rapp
+    name: Daniel Rapp
+    organization: Proofpoint, Inc.
+    email: drapp@proofpoint.com
+  -
+    ins: T. Adams
+    name: Trent Adams
+    organization: Proofpoint, Inc.
+    # PLACEHOLDER — email withheld pending the author's own statement of it.
+    # An RFC author block publishes a working address permanently and is the
+    # contact of record for IPR correspondence under BCP 78/79; it is not a
+    # field to infer from a colleague's address pattern. Supply it before
+    # submission, or drop the line if this author prefers none.
+    # email: <ask T. Adams>
+normative:
+  RFC2119:
+  RFC8174:
+  RFC8259:
+  RFC3629:
+  RFC5322:
+  RFC2045:
+  RFC2046:
+  RFC2047:
+  RFC2183:
+  RFC2231:
+  JSON-SCHEMA-2020-12:
+    title: "JSON Schema: A Media Type for Describing JSON Documents"
+    target: https://json-schema.org/draft/2020-12/schema
+    date: 2020-12
+    author:
+      - org: JSON Schema
+informative:
+  MCP:
+    title: "Model Context Protocol specification, revision 2025-11-25"
+    target: "https://modelcontextprotocol.io/specification/2025-11-25"
+    date: 2025-11
+    author:
+      - org: Anthropic
+  A2A:
+    title: "Agent2Agent Protocol, v1.0.1"
+    target: "https://a2a-protocol.org"
+    date: 2026-05
+    author:
+      - org: Linux Foundation
+  ACP-MERGER:
+    title: "Agent Communication Protocol merges into the Agent2Agent project"
+    date: 2025-08
+    author:
+      - org: "LF AI & Data"
+  ACP-CLIENT:
+    title: "Agent Client Protocol"
+    target: "https://agentclientprotocol.com"
+    author:
+      - org: Zed Industries
+--- abstract
+
+The Agent Mailbox Access Protocol (AMAP) is a wire contract, carried over a
+filesystem namespace, between an untrusted per-agent connector and a trusted,
+credentialed mail runtime. It gives a sandboxed AI agent the ability to send
+and receive email through a runtime that does not trust it: every outbound
+message begins as an inert request file that the runtime copies into private
+staging, validates independently, and applies policy to before anything is
+transmitted, and every inbound message is authenticated and screened by the
+runtime before a notice describing it appears in the agent's namespace. This
+document specifies the directory layout and its filesystem obligations —
+ownership, write and delete rights, and the path, symlink, and concurrency
+discipline a runtime observes; the JSON message shapes for submit requests,
+results, deliver notices, spooled message bodies, and an optional binding
+record; the correlation and versioning rules, including a direction-aware
+unknown-member tolerance rule; and two conformance classes. AMAP is
+deliberately not a mail protocol: it neither defines nor replaces SMTP, IMAP,
+or provider-side infrastructure, and composes with them rather than
+displacing them. Its single design center is that no security property
+depends on the agent — or on the connector speaking for it — behaving
+correctly.
+
+**Naming.** This protocol was called AMP ("Agent Mailbox Protocol") until
+2026-09-15. It was renamed because AMP collides with the IETF DTN working
+group's adopted `draft-ietf-dtn-amp`. The filename of this draft is unchanged
+at this document version; the schema identifiers moved with the name (Change
+Log, 3.1.0).
+
+<!-- NOT `note_Status_of_This_Memo`. That heading is RESERVED: with a real `ipr`
+     value xml2rfc generates the true "Status of This Memo" itself, and a note
+     of the same name renders BESIDE it. The two then contradict each other on
+     precisely the question the IPR value exists to answer — the generated text
+     says the draft "is submitted in full conformance with the provisions of
+     BCP 78 and BCP 79", ours says it is not a standard and nothing has been
+     submitted. Under `ipr: none` no boilerplate was generated and the collision
+     could not appear, so this was invisible until the IPR value was settled. -->
+--- note_About_This_Draft
+
+This document is an initial draft, distributed for review and comment. It is
+**not** a standard, and no assurance is given that it will become one. It may
+be updated, replaced, or rendered obsolete by later documents at any time, and
+it is inappropriate to cite this draft as a stable reference.
+
+This draft describes Agent Mailbox Access Protocol wire major version `2`,
+document version 3.1.0 (DRAFT). As of document version 3.0.0 these two numbers
+deliberately track different things, and are allowed to diverge: the wire
+major tracks whole-document acceptance compatibility, while the document
+version tracks the fuller set of obligations placed on implementations.
+[](#sec-10-1) states the rule and the reasoning. Document version 3.1.0 is
+marked DRAFT: it is an additive minor revision of 3.0.0 ([](#sec-10-1), Change
+Log). The peer-origin profile it introduces is present in this document as its
+schema and conformance fixtures ([](#app-f), [](#app-h)); the profile's prose
+is a companion document (`spec/peer-origin.md`, v3.1.0 DRAFT), and nothing in
+this document's body specifies the `peer/` tree beyond what that schema and
+those fixtures pin.
+
+**Change control.** A capability change to this protocol — a new field, a new
+message kind, or a change to an existing obligation — is a change to *this
+document and to its conformance fixture suite* ([](#app-g), [](#app-h)), made
+**before** any implementation adopts it. No implementation introduces a
+wire-visible change unilaterally: a change that is not reflected here and in
+the fixtures is not part of the protocol.
+
+This document and the accompanying schemas and conformance fixtures are
+published under the Apache License 2.0.
+
+--- middle
+
+# Introduction — Motivation and Problem Statement {#sec-1}
+
+AI agents increasingly need email. They are tasked over it, they return
+results over it, and they correspond over it with people and with systems
+that speak no other protocol. An agent is nonetheless an untrusted process: it
+can be prompt-injected by the very content it is asked to read, it can be
+defective, and it can be compromised outright. Granting such a process email
+capability directly is dangerous along three concrete axes.
+
+**Inbound.** Delivered mail is untrusted content routed directly into the
+agent's reasoning. A message body, a subject line, a sender display name, or
+an attachment filename can carry instructions the agent was never meant to
+follow. The delivery path is therefore an injection vector by construction,
+and no amount of care inside the agent removes that property.
+
+**Outbound.** An agent that can send mail can exfiltrate anything it has
+read, to any address it chooses, and can do so under an identity that
+recipients associate with its operator. Outbound mail is simultaneously a
+data-loss channel and an impersonation channel.
+
+**Credentials and identity.** Any mailbox credential, API token, or send
+endpoint held inside the agent's sandbox can be read, copied, or abused by
+whatever compromises the agent. Worse, an agent holding a credential has no
+identity of its own that a recipient — or its own operator — can verify
+independently of that credential.
+
+## Why the existing options are insufficient
+
+Handing the agent mailbox credentials, or a mail-send API, makes the agent a
+*trusted* participant in the mail system. That is precisely the wrong posture
+for a component whose defining risk is that it may be compromised: the trust
+must be withdrawn exactly when it is least possible to detect that it should
+be. Wrapping the credential in a helper process that the agent calls does not
+change the analysis by itself, because a callable send capability is still a
+capability the agent holds; what matters is whether the capability crosses
+the boundary at all.
+
+The common alternative is per-deployment glue: a bespoke script or service
+wired between one agent harness and one mail system. Such glue may even be
+correct, but it produces no reviewable contract, no interoperability, and no
+shared conformance bar. Nothing tells a second implementer what the first one
+guarantees, and nothing tells either of them what a third-party reviewer
+should check.
+
+Adjacent agent protocols do not fill the gap, because they are solving a
+different problem: integration and interoperation *among credentialed
+participants*, rather than isolation of an *untrusted* one. [](#sec-3-4)
+positions AMAP against that landscape in detail.
+
+## The approach
+
+AMAP interposes a **trusted runtime** between the agent and the mail system.
+The runtime holds every credential, owns the agent's sending identity, and
+makes every policy decision. The agent interacts with the runtime only
+through a channel that carries **no capability**: it writes an inert request
+file into a directory, and the runtime — independently, on its own schedule,
+over its own private copy of those bytes — decides what, if anything, happens
+next. In the other direction the runtime authenticates and screens mail
+before writing a notice describing it into the agent's namespace, and
+withholds the bytes of anything it will not vouch for.
+
+The payoff, which the rest of this document formalizes, is the load-bearing
+invariant:
+
+> No security property depends on the agent — or on the connector speaking
+> for it — behaving correctly. Enforcement is entirely runtime-side. A
+> compromised agent or connector can at most write a well-formed request that
+> the runtime then refuses.
+
+AMAP is the wire contract at exactly that trust boundary, and is deliberately
+owned by neither side of it. That ownership choice is what allows a runtime
+and a connector built by different parties, on different schedules, to
+interoperate and to co-evolve against a versioned contract with an offline
+conformance suite.
+
+## Why a filesystem namespace rather than an API, RPC, or queue
+
+The medium *is* the boundary. An API, an RPC endpoint, or a message queue is
+a live capability: something the agent invokes, whose invocation is itself
+the grant. Its security therefore rests on authenticating and authorizing
+each call, on the client library behaving, and on the transport being what it
+claims to be. A file written into a directory grants nothing at all. It has
+no callee, no session, and no side effect until a separate, trusted process
+chooses to read it — at a time of that process's choosing, into memory of its
+own, under validation of its own. The runtime is free to ignore the file, to
+refuse it, to hold it for human review, or to consume it and answer with a
+verdict. [](#sec-3-3) develops this point, along with the obligations it puts
+on the runtime in exchange.
+
+## Design goals
+
+- **Capability-free isolation.** The channel available to an untrusted agent
+  grants no send capability, no credential, and no reach outside its own
+  namespace.
+- **Vendor-neutral interoperability.** A runtime and a connector built
+  independently interoperate because both are built against this contract
+  rather than against each other.
+- **Versioned co-evolution with offline conformance.** Either side proves
+  conformance against a fixture suite with no counterpart present, and
+  version changes are deliberate, legible, and fail closed rather than
+  silent.
+- **Composition with real email.** Interactions remain federated, of-record,
+  and human-inclusive, rather than confined to a closed agent-only channel.
+- **Portability across agent runtimes.** Nothing in the contract presumes a
+  particular agent harness, language, or tool interface.
+
+## Non-goals
+
+- **AMAP is not a mail transport.** It neither defines nor replaces SMTP,
+  IMAP, or any provider-side mail infrastructure. It describes what a runtime
+  and a connector exchange *locally*; whatever the runtime does with a mail
+  provider is out of scope.
+- **AMAP is not an agent-to-agent networked RPC.** The contract is local to
+  one deployment's filesystem, between two components on either side of a
+  single trust boundary. It defines no network protocol, no discovery
+  mechanism, and no remote peer.
+- **AMAP is not a policy language.** What a runtime's policy decides — which
+  recipients are permitted, which content is held for review, how a sender's
+  standing is computed — is deliberately out of scope. The wire defines only
+  the shapes of requests and verdicts, never the computation that produces
+  them.
+
+Every obligation in this document is grounded in what the contract actually
+provides. Where a capability is sketched but not in force, it is marked as
+such ([](#app-i)), and where a property is a runtime obligation rather than a
+wire-verifiable fact, this document says so plainly ([](#sec-11-14)).
+
+# Conventions and Terminology {#sec-2}
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
+"SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this
+document are to be interpreted as described in BCP 14 {{RFC2119}} {{RFC8174}}
+when, and only when, they appear in all capitals, as shown here.
+
+Every message defined by this document is a JSON text as defined by
+{{RFC8259}}, encoded in UTF-8 {{RFC3629}}. The schemas in [](#app-a) through
+[](#app-e) are written in the JSON Schema 2020-12 dialect
+{{JSON-SCHEMA-2020-12}}.
+
+Sections and subsections explicitly marked *(informative)* or
+*(non-normative)* carry no requirements; [](#sec-3-4), [](#app-i), and the
+Change Log are the only such parts of this document.
+
+**Terminology.**
+
+- **Agent** — the untrusted process whose email capability this protocol
+  mediates. It holds no credential, has no send path of its own, and reaches
+  the protocol only through its Connector. Nothing in this document places a
+  requirement on the Agent, because no security property may depend on it.
+- **Connector** — the per-Agent component that speaks the Agent-side half of
+  this contract: it writes Submit Requests, reads Results and Notices, and
+  surfaces them to its Agent in whatever form its harness uses. It is
+  semi-trusted at best; for the purpose of every security property in this
+  document it is treated as untrusted, and the requirements placed on it are
+  well-formedness and non-crashing obligations, never obligations another
+  party's safety rests on.
+- **Runtime** — the trusted, credentialed, Agent-agnostic component that
+  speaks the other half: it holds mail credentials, owns each Agent's
+  identity, makes every policy decision, and is the only party that
+  transmits or receives mail.
+- **Volume** — the runtime-owned filesystem tree carrying this protocol,
+  containing one Namespace per Agent plus an optional Binding Record at its
+  root. Its mount path is a deployment choice; this document writes
+  `<volume-root>/` for it and nothing in the protocol derives from its name.
+  No implementation may depend on that name or any other.
+- **Namespace** — the per-Agent subtree `<volume-root>/<agent-id>/`, mounted
+  into that Agent's sandbox. It is the unit of isolation and the sole
+  authority for attributing an artifact to an Agent.
+- **Submit Request** — the Connector-authored artifact requesting that a
+  message be sent ([](#sec-5)). It is inert: it carries no capability and
+  effects nothing by existing.
+- **Result** — the Runtime-authored verdict for one consumed Submit Request
+  ([](#sec-6)).
+- **Notice** (Deliver Notice) — the Runtime-authored artifact announcing that
+  a message was delivered to the Agent's mailbox ([](#sec-7)). It is a
+  pointer and summary, not the message.
+- **Inbound Message** — the Runtime-authored artifact carrying a delivered
+  message's body text and headers, spooled under a Notice's identifier and
+  fetched on demand ([](#sec-7-3)).
+- **Binding Record** — the optional, informational artifact at the Volume
+  root naming which mailbox the Volume is bound to ([](#sec-9)).
+- **Sidecar** — attachment bytes stored beside a Submit Request or a Notice,
+  in a directory named after that artifact, with each blob named by a
+  0-based ordinal.
+- **Ordinal** — the integer naming a Sidecar blob. It equals the index of the
+  corresponding Descriptor in its array, and is the sole binding authority
+  between a Descriptor and its bytes.
+- **Descriptor** — one entry in an `attachments[]` array, describing an
+  attachment (its display filename, media type, size, and — depending on
+  direction — digest, Disposition, or content reference). A Descriptor is
+  metadata; it is never a path.
+- **Disposition** — the Runtime's assertion about an inbound attachment's
+  handling: `clean`, `stripped`, `quarantined`, or `unscanned` ([](#sec-7-2)).
+- **Staging** — Runtime-private storage outside the Volume, unreachable from
+  any Agent's mount, into which the Runtime copies Agent-authored bytes
+  before acting on them ([](#sec-4-1)).
+
+Where this document says an artifact is *dropped*, it means the consumer does
+not surface it to its Agent and does not act on it; where it says a consumer
+*fails closed*, it means the consumer refuses to process the artifact rather
+than proceeding on a partial or guessed interpretation.
+
+# Architecture and Trust Model {#sec-3}
+
+## Actors {#sec-3-1}
+
+| Actor | Trust | Holds | Reaches |
+|---|---|---|---|
+| **Runtime** (container) | trusted | mail-send credentials, Agent identity, policy, the record of what was sent | the mail provider, the Volume |
+| **Connector** (per Agent) | semi-trusted, Agent-side | nothing credentialed | its own Namespace on the Volume; its Agent's input and output |
+| **Agent** | **untrusted** | only what the Connector surfaces | the Connector; its sandbox |
+
+The Runtime is trusted by construction: it is the party holding the
+credentials, and a compromise of it is a compromise of the mail capability
+itself. The Connector is the interesting case. It runs Agent-side, is
+reachable by whatever compromises the Agent, and is therefore treated as
+untrusted for every property that protects the Runtime, other Agents, or the
+outside world. Requirements this document places on a Connector fall into
+two distinct classes, and the difference matters when reading them:
+
+- **Well-formedness and liveness obligations** — emit valid documents,
+  tolerate a missing artifact, do not crash on hostile input. A Connector
+  that violates one harms itself and its own Agent, not any other party.
+- **Obligations that protect an Agent from its own inbox** — the
+  untrusted-content posture of [](#sec-7). These are necessarily
+  Connector-implemented, because the Connector is the only component on the
+  Agent's side of the boundary, and they are stated as such rather than as
+  properties the Runtime relies on.
+
+No requirement in this document places a Runtime-side, other-Agent-side, or
+outside-world safety property in a Connector's hands. Where an earlier
+reading of this contract appeared to do so — the Connector's obligation not
+to rewrite a published Submit Request — [](#sec-4-1)'s ingest-by-copy rule
+removes the dependency, leaving that obligation as pure well-formedness.
+
+## The load-bearing invariant {#sec-3-2}
+
+> **Invariant.** No security property may depend on the Agent or the
+> Connector behaving. Enforcement is entirely Runtime-side. A compromised
+> Agent or Connector can at most write a well-formed request that the
+> Runtime then refuses.
+
+Everything else in this document is downstream of that sentence. It is why
+the Agent's declared identity is a cross-check rather than an attribution
+source ([](#sec-4-1)); why the Runtime re-derives every path from data it
+controls rather than from a file's contents ([](#sec-4-1)); why recipient
+policy is evaluated Runtime-side over the exact recipient set that will be
+transmitted to ([](#sec-5-1)); why the digest an Agent supplies for its own
+attachment bytes is an integrity aid and not a trust boundary
+([](#sec-5-1)); and why the absence of bytes, rather than a flag inside a
+document, is the access gate on inbound attachments ([](#sec-7-2)).
+
+The invariant also bounds what this document can promise. A wire contract
+cannot make a Runtime honest, and a fixture suite cannot observe a
+filesystem. [](#sec-11-14) states plainly which properties are
+wire-verifiable and which are Runtime obligations that a green conformance
+run does not prove.
+
+## Why a filesystem namespace {#sec-3-3}
+
+The Runtime mounts each Agent's Namespace into that Agent's sandbox, and the
+Agent's entire protocol surface is that directory. This is a deliberate
+choice of medium, with three consequences.
+
+**A file drop carries no capability.** Writing a file invokes nothing. There
+is no callee to authenticate, no session to hijack, no method whose mere
+reachability is a grant. The request exists as bytes until a trusted process
+elects to look at them. Compare an API or queue, where the act of enqueuing
+is itself the privileged act and every security property depends on the
+authorization check in front of it being correct and unbypassable.
+
+**Isolation is structural rather than enforced by policy.** A Connector
+scoped to `<volume-root>/<agent-id>/` cannot name another Agent's Namespace
+at all. Attribution follows from *where a file appeared*, not from what the
+file says about itself, so spoofing attribution requires defeating the mount
+rather than lying in a JSON member.
+
+**The medium's costs are real and are paid explicitly.** A shared filesystem
+between a trusted and an untrusted party is itself an attack surface:
+symlinks, directory swaps, special files, hard links, and unbounded sizes are
+all available to the untrusted side, and every path-based check the trusted
+side performs is racy against a concurrent rename. This document therefore
+does not treat "it is just a directory" as a simplification. [](#sec-4-1)
+states the path, open, copy, and concurrency discipline a Runtime observes
+in exchange for the medium's advantages, and [](#sec-11) revisits each as a
+threat.
+
+## Relationship to Other Agent Protocols (Informative) {#sec-3-4}
+
+*This subsection is informative. It contains no requirements and creates no
+dependency on any external protocol. Nothing here claims that AMAP replaces,
+subsumes, or competes with any protocol named below.*
+
+AMAP occupies a narrow position: it is the local seam at a single trust
+boundary, where one side holds every credential and the other holds none.
+The adjacent protocols in the agent ecosystem sit at different layers, and
+the common question of "why not use one of them here" has a specific answer
+in each case.
+
+**Model Context Protocol (MCP)** {{MCP}} connects an agent host to tools and
+context through JSON-RPC servers. It is an integration interface: live
+capabilities are exposed across it and exercised by the agent through it.
+That makes MCP complementary to AMAP rather than an alternative. A Connector
+often surfaces AMAP's operations to its Agent through MCP, or through
+whatever tool interface its harness uses natively; AMAP is the
+capability-free seam sitting behind that surface. The contrast worth stating
+is exactly the one that motivates the two coexisting: an MCP-style interface
+grants live capability across the boundary it spans, while AMAP's channel
+deliberately grants none — the Agent-side surface can be as rich as the
+harness likes, because what crosses the trust boundary underneath it is an
+inert file. The current stable MCP specification revision is 2025-11-25; the
+protocol originated at Anthropic.
+
+**Agent2Agent (A2A)** {{A2A}} is networked agent-to-agent RPC between
+mutually authenticated services, with agent cards, tasks, and HTTP/SSE/JSON-RPC
+transport. It presumes both endpoints are credentialed participants that can
+authenticate to each other. AMAP's design center is the opposite: an
+untrusted agent that holds no credentials at all, with enforcement placed
+entirely on the trusted side of a local boundary. The two are orthogonal, and
+compose without friction — an agent that speaks A2A to its peers can use
+AMAP for its mail capability, and neither protocol needs to know about the
+other. A2A is at v1.0 (v1.0.1, May 2026); it originated at Google and has
+been hosted as a Linux Foundation project since June 2025.
+
+**The two protocols abbreviated "ACP" are not the same protocol**, and the
+collision is worth disambiguating in a document a reviewer may arrive at
+with one of them in mind.
+
+- The **Agent Communication Protocol** (IBM/BeeAI) is of historical interest
+  here: it merged into A2A under the Linux Foundation, announced in August
+  2025, with its repository archived {{ACP-MERGER}}.
+- The **Agent Client Protocol** {{ACP-CLIENT}} is a distinct and currently
+  active protocol at a different layer — an interface between a host or
+  editor and an agent — originated by Zed Industries. It is unrelated to the
+  merged Agent Communication Protocol and unrelated to AMAP.
+
+The citation facts in this subsection were verified in July 2026. A reviewer
+preparing this document for publication at a later date is advised to
+re-verify them rather than relying on this text.
+
+# Volume Layout {#sec-4}
+
+The Runtime owns the Volume and mounts each Agent's Namespace into that
+Agent's sandbox. A Connector has access **only** within its own
+`<agent-id>/`, and only to the paths below. Within that Namespace, write
+access may be narrower still: the `inbound/` subtree is Runtime-owned and MAY
+be mounted read-only.
+
+The Volume root's own name is a **deployment choice and is not part of this
+protocol** — nothing derives from it, and no implementation may depend on
+it. `<volume-root>/` below stands for whatever a deployment calls it.
+
+~~~ text
+<volume-root>/
+  identity.json           # runtime/provisioner: Binding Record (S9)
+  <agent-id>/
+    outbound/
+      req-<id>.json          # agent -> runtime: Submit Request
+      req-<id>.attachments/  # agent -> runtime: Sidecar bytes,
+                             #   ordinals 0 1 2 ...
+      results/<id>.json      # runtime -> agent: verdict for req <id>
+      processed/req-<id>.json  # runtime: consumed requests
+      ext/<name>/            # connector-owned side channel a
+                             #   runtime MAY read by out-of-band
+                             #   agreement; <name> is a STABLE,
+                             #   opaque connector id (v3.1.0, S4.1)
+    inbound/
+      notices/notice-<id>.json  # runtime -> agent: delivered event
+      notices/<notice-id>.attachments/  # bytes asserted clean,
+                                        #   ordinals 0 1 2 ... (S7.2)
+      notices/processed/     # OPTIONAL - connector archive,
+                             #   writable-inbound deployments only
+      messages/notice-<id>.json  # runtime -> agent: full message
+      cursor.json            # runtime: inbound poll cursor
+    audit/
+      log.jsonl              # runtime: append-only action log
+~~~
+{: #ex-volume-layout title="Volume layout (illustrative — not a fixture)"}
+
+There is exactly one inbound Sidecar directory —
+`inbound/notices/<notice-id>.attachments/` — and both a Deliver Notice's and
+an Inbound Message's `content_ref` resolve there. No second, message-specific
+Sidecar directory exists.
+
+## Obligations {#sec-4-1}
+
+**Attribution by Namespace.** `<agent-id>` is Runtime-assigned and never
+self-declared. Attribution is *the Namespace a file arrived in*, never an
+`agent_id` member inside the file; that member is a cross-check only, never
+the source of truth. A Runtime MUST reject a Submit Request whose
+`agent_id`, when present, does not match the Namespace it was found in, and
+MUST NOT use that member to attribute the request.
+
+**Isolation is structural.** A Connector scoped to `<agent-id>/` cannot read
+another Agent's drafts or Notices.
+
+**All writes are atomic.** Every artifact in the tree above is published by
+writing a `.tmp` sibling and then renaming it into place (`os.replace` or the
+equivalent). Readers MUST ignore `*.tmp` entries.
+
+**Single writer, single drainer.** At any moment a Namespace has exactly one
+Connector instance writing `outbound/` and exactly one Runtime instance
+draining it. Every concurrency-sensitive rule in this document — the atomic
+`.tmp`-then-rename discipline above, the commit sentinel below, and the
+derivation of `req_id` from `max(pending, processed, results) + 1`
+([](#sec-5-1)) — is sound only under that assumption and provides no mutual
+exclusion of its own. Each side MUST ensure single-instance operation over a
+Namespace by a mechanism outside this protocol, such as an OS-level lock
+held for the process lifetime. A Runtime MUST NOT run two concurrent drains
+of one Namespace, and a Connector MUST NOT run two concurrent writers into
+one. Behavior under violation is unspecified: duplicated delivery, clobbered
+published requests, and false verdicts are all reachable.
+
+**Filename identifiers are the authority for paths.** An identifier taken
+from a file's *contents* — a `req_id` member in a request body, for
+instance — MUST NOT determine a write path. The Runtime derives identifiers
+from the validated filename, on a restricted character set. *(This
+obligation follows from a confirmed exploit in an early implementation:
+trusting a file's own contents, rather than its validated filename, to name
+a write path.)*
+
+**Write-side path discipline.** Every write, rename, directory creation, or
+archive move into or within a Namespace MUST satisfy all three of the
+following **conjunctively**. Each closes a distinct gap the other two leave
+open, and none is sufficient alone.
+
+- **(a) Full parent-chain pinning.** The write resolves its full parent
+  chain through pinned directory descriptors from the Namespace root —
+  `openat`, `mkdirat`, `renameat` off a descriptor the Runtime opened once
+  per Namespace — never by re-resolving a path string for the act itself. A
+  path-based containment check followed by a path-based act is a race, not a
+  check: the parent directory the check inspected and the parent directory
+  the act touches are not guaranteed to be the same object, because the
+  Agent can swap a parent directory for a symlink in between. Applying a
+  no-follow flag to the *final* path component alone does not close this gap
+  — it constrains only the last component, not a swapped parent — and
+  rename and directory-creation calls have no no-follow equivalent at all,
+  so a bare "writes do not follow symlinks" requirement is not sufficient on
+  its own.
+- **(b) No-follow while building the chain.** Each directory component that
+  goes into that parent chain MUST itself have been opened with
+  `O_NOFOLLOW|O_DIRECTORY` at the moment it was added to the pinned chain. A
+  descriptor counts as pinned only if the open that produced it refused to
+  follow a symlink at that step. Requirement (a) without this is equally
+  insufficient, and the gap is the symmetric one: nothing otherwise stops
+  the Runtime from *acquiring* a "pinned" descriptor by following an
+  Agent-planted symlink in the first place — the Agent replaces a Namespace
+  subdirectory with a symlink before the Runtime's once-per-Namespace open,
+  or before a later re-open after a restart — and a descriptor obtained that
+  way is pinned to the wrong object, so every write built off it inherits
+  the redirection no matter how faithfully (a) is followed from there.
+- **(c) Non-following final component.** The final path component MUST NOT
+  be followed if a symlink exists at that name: the open MUST carry
+  `O_NOFOLLOW` and MUST fail closed on `ELOOP` rather than writing through
+  whatever the name currently resolves to. Two cases differ in what else
+  they require, and both are covered:
+  - **A newly created file** — the `.tmp` sibling the atomicity rule above
+    already requires, and any Sidecar blob — MUST additionally be created
+    with `O_EXCL` (`O_WRONLY|O_CREAT|O_EXCL`, never `O_TRUNC` in place of
+    `O_EXCL`), failing closed on `EEXIST`.
+  - **An append-mode or directory-creating write that has no `.tmp`
+    sibling** — `audit/log.jsonl` is the case this document names — cannot
+    use `O_EXCL`, because the target legitimately already exists. It MUST
+    instead open with `O_NOFOLLOW|O_APPEND|O_NONBLOCK` (or use `mkdirat`
+    with the parent pinned per (b)), MUST NOT block on a special file, and
+    MUST verify through the resulting descriptor (`fstat`, never a pre-open
+    `stat`) that the object is a regular file it may append to; it SHOULD
+    refuse a target whose link count exceeds 1. The non-blocking open is
+    load-bearing and is not a performance concern: `O_NOFOLLOW` does not
+    apply to a FIFO — a FIFO is not a symlink — and opening one for writing
+    blocks until a reader appears, so without `O_NONBLOCK` the `fstat` is
+    never reached and an Agent that plants a FIFO at this name stalls the
+    drain indefinitely. The first branch's `O_EXCL` refuses that case on its
+    own; the second branch has no `O_EXCL` to lean on and states it
+    explicitly. Requiring `O_EXCL` in the second branch would forbid
+    appending to an existing log at all; requiring nothing there would leave
+    the one write this document names that has no `.tmp` sibling
+    unprotected.
+
+  Requirement (c) is needed in both of its branches because an Agent can
+  pre-plant a symlink at a filename the Runtime is about to write. `req_id`
+  is Agent-chosen, and every Runtime-written filename in the layout tree
+  above — `results/<id>.json`, the `.tmp` sibling of `processed/req-<id>.json`,
+  `inbound/notices/notice-<id>.json`, `inbound/messages/notice-<id>.json`,
+  `audit/log.jsonl` — is reachable to an Agent that can predict or observe
+  it. Absent (c), such a name gets its bytes written through the planted
+  symlink with the Runtime's own privileges, even though the parent chain
+  that reached the containing directory was itself correctly pinned under
+  (a) and (b).
+
+  This discipline governs every Runtime-side write named in the layout tree,
+  not only the initial consumption of an Agent-authored artifact.
+
+**Read-side discipline.** The same rule applied to reads. When the Runtime
+opens any path the Agent can influence — every `req-<id>.json`, every
+Sidecar ordinal, and, in a deployment that leaves `inbound/` writable,
+anything it later reads back from there — it MUST open without following
+symbolic links at any component (per-component `O_NOFOLLOW`, or an
+equivalently pinned directory-descriptor walk from the Namespace root,
+matching the write-side rule above), MUST NOT block on a special file (a
+non-blocking open), MUST verify that the opened object is a regular file
+through the open descriptor (`fstat` and an `S_ISREG` test — never a
+pre-open `stat`, which is a race), SHOULD refuse a file whose link count
+exceeds 1, and MUST enforce a deployment-configured per-file size cap (a
+bounded read) and a per-request Sidecar count cap. The `too_large` value in
+the Result vocabulary ([](#sec-6-1)) presumes that cap: enforcing one is an
+obligation, not an option.
+
+A Connector's one Agent-influenceable read path — resolving a `notice_id` to
+`inbound/messages/notice-<id>.json` — MUST be built only from a
+pattern-validated `notice_id` (the schemas pin the pattern) and MUST confine
+resolution to the Connector's own `inbound/` tree ([](#sec-7-3)).
+
+**Sidecar ordinal binding.** Sidecar blobs are named by Runtime-assigned
+0-based ordinals equal to the Descriptor's array index, which is the sole
+binding authority. Nothing else names a blob; a Descriptor's `filename` is
+display-only and is never a path.
+
+**Commit sentinel.** All Sidecar bytes are written — `.tmp` sibling, then
+rename — **before** `req-<id>.json`; the JSON file's presence is the only
+publish signal. The Runtime MUST verify that every referenced ordinal exists
+and MUST re-verify size and digest before acting on the request, against the
+snapshot it took at ingest (below), never against the live path.
+
+**Inbound Sidecar directories are keyed on the Runtime-minted notice
+identifier**, never the provider `message.id`. The provider identifier is
+external and is not character-set-safe; using one as a path component was a
+confirmed exploit path in an early implementation. The same rule extends to
+the body artifact: `inbound/messages/notice-<id>.json` is keyed on the
+notice identifier, never on `message.id`. Inbound bytes are published only
+at `inbound/notices/<notice-id>.attachments/<index>`, the single Sidecar
+directory named in the layout tree.
+
+**Runtime-private Staging lives outside the mounted Volume** — at a path the
+Agent's mount cannot reach at all.
+
+**Ingest by copy.** Before validating, evaluating policy on, or composing
+from any Agent-authored artifact — `req-<id>.json` and every Sidecar
+ordinal — the Runtime MUST copy the bytes into Runtime-private Staging and
+MUST act only on that private copy. All checks — schema validation,
+recipient policy, size and `sha256` verification — and all message
+composition MUST run over that snapshot, and the Runtime MUST NOT re-read
+any Agent-writable path after a decision that depends on its content.
+Verify-then-use against a live Agent-writable path is a race, not a check.
+
+This obligation is what makes the Connector's "MUST NOT delete or rewrite a
+published request" ([](#sec-4-2)) a pure well-formedness rule: a Runtime MAY
+treat an observed post-publish change as malformed, but no safety property
+depends on the Connector honoring immutability — which is what the
+invariant of [](#sec-3-2) requires. (This governs the properties that
+protect the Runtime, other Agents, and the outside world. Obligations that
+protect an Agent from its own inbox are necessarily Connector-implemented
+and are stated as such, not as properties the Runtime relies on a Connector
+for.)
+
+**Byte-absence is the gate.** The Runtime MUST NOT place non-clean bytes in
+an Agent's Namespace. `content_ref` is the Runtime's access grant, present
+only for bytes it has published as clean ([](#sec-7-2)).
+
+**Tree rules.** Every Runtime-owned inbound-class tree is an **origin
+class**: a consumer derives the class of a document from the tree it was
+read from, and never from any member of the document. `notice_id` uniqueness
+is per tree, and where a tree has more than one writer each MUST mint so
+that cross-writer collision is negligible — at least 128 bits of entropy
+under the identifier character set, or a writer-specific prefix — and a
+consumer keying state across trees MUST include the tree in that key.
+`content_ref` resolves only within the `notices/` directory of the tree the
+enclosing document was read from. Write authority per tree is distinct and
+MUST be structurally enforced, never by configuration the writer itself
+reads. `inbound/` is the one tree this document defines; a profile MAY
+define others.
+
+**Inbound is Runtime-owned, and read-only is a valid posture.** The
+`inbound/` tree is Runtime-owned end to end. A Runtime MAY expose it to the
+sandbox read-only — for instance as a read-only mount, which is the
+mechanism that actually makes a delivered Notice unforgeable, since file
+permission bits do not bind a same-uid Agent, which can change a mode it
+owns. A Connector MUST NOT require write access anywhere under `inbound/`:
+it MUST start, relay Notices, and resolve bodies when every write, rename,
+and directory creation under `inbound/` fails. `inbound/notices/processed/`
+is OPTIONAL — a conventional archive location a Connector MAY use only
+where a deployment leaves inbound writable; nothing on either side may
+depend on its existence or its contents.
+
+**Consumption tracking is Connector-private.** How a Connector records which
+Notices it has already relayed to its Agent is Connector-private state,
+outside this protocol. Such state lives in the Connector's own storage
+outside the Volume, or in Connector-owned paths under `outbound/` not
+enumerated in the layout tree — which MUST NOT use the `req-` prefix,
+reserved for Submit Requests and their Sidecars, so that a Runtime's scan of
+the drop-box never encounters Connector-private state. Either way, the
+Runtime neither reads nor relies on it. A seam-visible consumption signal is
+deliberately not specified at this document version; [](#app-i) records the
+reasoning.
+
+**Outbound extension space (v3.1.0 DRAFT).** `outbound/ext/<name>/` is a
+Connector-owned side channel, one directory per `<name>`, that a Runtime MAY
+read by out-of-band agreement. **`<name>` is a stable Connector id: the
+Connector chooses it once, and it MUST NOT change when the Connector's
+repository, package, or deployment is renamed or moved. A Runtime that reads
+the directory MUST treat `<name>` as opaque — it is an identifier, never a
+name to be parsed, resolved, or matched against a repository or path.** This
+document specifies no shape for anything under it; it lies outside the
+`req-` prefix the Runtime scans, and nothing security-relevant may be built
+on it. Its first use is a Connector's per-Notice **outcome** file, written
+by the receiving Agent's own uid and therefore forgeable by construction. An
+outcome is a statement by the receiving side about what it did with a
+Notice; a party MUST NOT treat an outcome as proof of delivery or of
+non-delivery, and the Runtime's own delivery record is authoritative over it
+([](#sec-11-15)). There is deliberately no inbound extension space: an
+inbound tree is a Runtime assertion about origin, and a Connector cannot
+know what a vendor-named assertion means.
+
+## Deletion rights {#sec-4-2}
+
+This table names who may delete each artifact. It is **permissive**: a
+party exercising a right it already effectively had — a Runtime deleting
+from its own Runtime-owned tree, for instance — changes nothing about what
+conformant behavior looks like.
+
+| Artifact | Written by | May be deleted by | Basis |
+|---|---|---|---|
+| `outbound/req-<id>.json` (pending) and `req-<id>.attachments/` | Connector | Runtime | Consumption — the move to `processed/`, or deletion once the Result is written. The Connector MUST NOT delete or rewrite a published request; the JSON file's presence is the commit signal, and un-publishing is unspecified. |
+| `outbound/processed/req-<id>.json` | Runtime | Runtime at will; Connector after reading the matching Result | The Runtime's own archive. **Caveat:** [](#sec-5-1) derives `req_id` from `max(pending, processed, results) + 1`, so a Connector that deletes here (or in `results/`) MUST preserve `req_id` monotonicity by other durable means, such as its own counter. Correspondingly, a Runtime MUST NOT rely on `processed/` contents as durable state (for deduplication, say) — the Connector may delete there, and the Runtime's own record lives outside this protocol. |
+| `outbound/results/<id>.json` | Runtime | Connector, once read; Runtime by retention | No signal in this protocol tells the Runtime that a Connector has read a verdict, so Runtime-side deletion SHOULD be age-based and generous: a Result deleted before it is read is a lost verdict. |
+| `inbound/notices/notice-<id>.json`, `inbound/messages/notice-<id>.json`, and their `.attachments/` Sidecar directories | Runtime | Runtime only. Where a deployment leaves inbound writable, the Connector MAY move or delete per the optional `processed/` convention, but MUST NOT depend on the ability. | Runtime retention policy. Absent a seam-visible consumption signal ([](#app-i)), retention MUST be conservative and age-based. A Connector already tolerates the disappearance of these artifacts: a read against a missing one returns "not resolved" ([](#sec-7-3)). |
+| `inbound/cursor.json` | Runtime | Runtime | Internal state. |
+| `audit/log.jsonl` | Runtime | Runtime (rotation) | Never the Connector. |
+| `identity.json` | Runtime or provisioner | Runtime or provisioner | Consumers already tolerate its absence ([](#sec-9)). |
+
+# Outbound: Submit Request {#sec-5}
+
+An Agent's only outbound action is dropping an inert request file into its
+Namespace. The file carries no send capability; the Runtime enforces policy
+before anything leaves.
+
+A Submit Request is written to `<volume-root>/<agent-id>/outbound/req-<id>.json`
+as a JSON text {{RFC8259}}. Its Sidecar bytes, if any, are written first,
+into `req-<id>.attachments/`, one blob per Descriptor, named by that
+Descriptor's 0-based array index ([](#sec-4-1), commit sentinel).
+
+~~~ json
+{::include-fold69hardleft4dry draft/examples/submit-request.json}
+~~~
+{: #ex-submit-request title="draft/examples/submit-request.json (illustrative — not a fixture)" sourcecode-name="submit-request.json"}
+
+The normative shape is [](#app-a). The Submit Request envelope is
+**closed**: `additionalProperties` is `false` at every level, and a Runtime
+MUST reject a request carrying any unrecognized member. [](#sec-10-1)
+explains why this direction is closed while the Runtime-authored artifacts
+are open.
+
+## Field semantics and obligations {#sec-5-1}
+
+- **`contract_version`** (REQUIRED) is the wire major version, the string
+  `"2"` at this document version. A Runtime MUST check it before schema
+  validation and MUST fail closed on an absent, lower, or higher major
+  ([](#sec-10-1)).
+- **`req_id`** (REQUIRED) is **monotonic per Namespace** and MUST NOT be
+  reused across the drop-box's life; derive it from
+  `max(pending, processed, results) + 1`. Reuse collides message identifiers
+  and triggers provider-side idempotency deduplication. `req_id` is pinned
+  to a filename-safe character set by the schema, but it is not the path
+  authority: the Runtime derives the path identifier from the validated
+  filename ([](#sec-4-1)).
+- **`agent_id`** (OPTIONAL), if present, MUST match the Namespace the
+  request was found in, and a Runtime MUST reject a mismatch. It is never
+  the attribution source ([](#sec-4-1)).
+- **`ts`** (OPTIONAL) is the Connector's timestamp for the request. It is
+  Agent-authored and therefore advisory.
+- **`in_reply_to`** (OPTIONAL) correlates this request with prior inbound
+  work. It carries either a Runtime-minted `notice_id` or a mail message
+  identifier {{RFC5322}}. It is a **hint from an untrusted party** and MUST
+  NOT by itself widen what the request is permitted to do — the same
+  posture [](#sec-8) fixes for `task_id`.
+- The Runtime derives the message identity and the `From`/`Reply-To` of the
+  composed message itself; identity is Runtime-owned, and the Agent does
+  **not** choose its sending identity.
+- **`draft.subject`** and **`draft.body_text`** are REQUIRED and MAY be
+  empty strings. `body_text` is **plain text**; this document defines no
+  alternative body representation at this version.
+- **`draft.reply_to_message_id`** (OPTIONAL, nullable) names the message
+  this draft replies to, as an {{RFC5322}} message identifier. It is
+  composed directly into an `In-Reply-To:` header, which is why it carries a
+  control-character pattern in the schema (below).
+- **Recipient policy is a Runtime decision.** The Agent's chosen `draft.to`
+  and `draft.cc` are **not** inherently trusted. Allowlisting,
+  task-counterpart binding, and any other recipient rule are evaluated
+  Runtime-side. A populated allowlist plus a fresh recipient is an
+  exfiltration surface that the Runtime, not the Connector, must close.
+- **Recipient syntax and header-injection discipline.** Each `draft.to` and
+  `draft.cc` element is exactly one bare addr-spec: no display name,
+  address list, quoted local part, comment, IP literal, or folding
+  whitespace. The schema pins the pattern. This profile is deliberately
+  narrower than {{RFC5322}}, because those excluded forms are exactly what
+  makes allowlist evaluation non-mechanical; internationalized (EAI/SMTPUTF8)
+  addresses are out of scope at this version and may be added later. A
+  Runtime MUST reject — with a top-level `rejected` Result — a request whose
+  recipient entries do not parse under this profile, MUST evaluate recipient
+  policy over exactly the recipient set it will transmit to, and MUST NOT
+  transmit to any address not present in `draft.to` or `draft.cc`.
+
+  Separately, a Runtime MUST NOT allow any Agent-authored string —
+  `subject`, a recipient entry, an attachment `filename`, an attachment
+  `media_type`, `draft.reply_to_message_id`, `in_reply_to`, `agent_id`,
+  `ts`, or `body_text` where it abuts headers — to introduce a header
+  boundary in the composed message. CR, LF, and NUL MUST be rejected or
+  stripped before composition **even where schema validation was bypassed
+  upstream**: the schema-level control-character patterns on `subject`,
+  `filename`, `media_type`, `reply_to_message_id`, `in_reply_to`,
+  `agent_id`, and `ts` are the first line of defense, not the only one. Two
+  of those fields matter for a reason worth stating explicitly, because
+  narrower schema coverage in an earlier revision of this protocol missed
+  exactly them: `reply_to_message_id` and `media_type` are composed
+  *directly into headers* — `In-Reply-To:` and a MIME part's `Content-Type:`
+  {{RFC2045}} respectively — rather than into a body or a display field.
+- **`draft.attachments[]`** (OPTIONAL) is an array of Descriptors, each
+  carrying `filename`, `media_type`, `size_bytes`, and `sha256`.
+  **`size_bytes` and `sha256` are REQUIRED on every Descriptor**, computed
+  by the Connector over the **decoded** bytes it wrote, with `sha256` in
+  lowercase hexadecimal.
+
+  There is **no outbound `content_ref`**. The Runtime re-derives each
+  Sidecar's path from `req-<id>` plus the Descriptor's array index, which is
+  the sole binding authority; an Agent-supplied path string would be pure
+  disagreement and attack surface, so it is absent from the schema entirely
+  and `additionalProperties: false` rejects it. `attachments: []` is valid
+  and is equivalent to the member being absent; the Sidecar directory MUST
+  then be absent.
+
+  `sha256` here is an integrity and deduplication aid, **not an outbound
+  trust boundary**: the Agent controls both the bytes and the hash, so a
+  mismatch catches corruption, never a hostile Agent. Its value to the
+  Runtime is that it detects an inconsistent request, not that it
+  authenticates one.
+
+# Outbound: Result {#sec-6}
+
+A Result is the Runtime's verdict for one consumed Submit Request, written
+to `<volume-root>/<agent-id>/outbound/results/<id>.json`.
+
+~~~ json
+{::include-fold69hardleft4dry draft/examples/result.json}
+~~~
+{: #ex-result title="draft/examples/result.json (illustrative — not a fixture)" sourcecode-name="result.json"}
+
+The normative shape is [](#app-b). The Result envelope is **open**: a
+consumer MUST tolerate members it does not recognize, at every level
+([](#sec-10-1)).
+
+## Field semantics and obligations {#sec-6-1}
+
+- **The Runtime writes exactly one Result per Submit Request it consumes.**
+  A request the Runtime never consumes gets no Result, and no signal in this
+  protocol distinguishes "not yet" from "never."
+- **`outcome`** (REQUIRED) is one of `accepted`, `queued_for_human`, or
+  `rejected`. This is a **closed vocabulary**: it gates which processing
+  path a document takes, so a consumer cannot safely treat an unrecognized
+  value as opaque, and introducing a new value is a major change
+  ([](#sec-10-1)).
+- **Any policy miss — allowlist, rate limit, DLP hold, halt — MUST produce
+  `queued_for_human`.** Never a silent send; never a silent drop.
+- **`accepted`** means the provider accepted the message for relay.
+  Downstream delivery or quarantine is out of the Runtime's hands and is
+  surfaced later via an inbound delivery-status notification, if any.
+- **`detail`** (OPTIONAL, nullable) is human-readable text. It carries no
+  machine semantics.
+- **`reason_code`** (OPTIONAL) records *which policy path* authorized or
+  refused the request; human text stays in `detail`. A Runtime **SHOULD**
+  set a reason on every Result, successes included. The suggested
+  vocabulary — `recipient_bound`, `allowlisted`, `no_verified_counterparty`,
+  `recipient_not_allowlisted`, `dlp_hold`, `no_screener`, `halted`,
+  `rate_limited`, `unsupported_contract_version` — is **extensible and not
+  enum-locked in the schema**. Two consumer obligations follow: a consumer
+  MUST tolerate a `reason_code` it does not recognize, treating it as opaque
+  and never as an error, and a consumer MUST NOT infer the `outcome` from
+  it. `outcome` is the sole authoritative verdict; `reason_code` only
+  explains which path produced it, and a Runtime may add codes at any time
+  without a protocol change. `unsupported_contract_version` is the code a
+  Runtime sets on the `rejected` Result it writes for a version-refused
+  Submit Request ([](#sec-10-1)).
+- **`ts`** (OPTIONAL) is the Runtime-set, of-record time of the verdict, in
+  ISO-8601 form.
+- **`recipients`** (OPTIONAL) records the recipient set the Runtime
+  actually transmitted to.
+- **`message_id`** (OPTIONAL, nullable) is the {{RFC5322}} message
+  identifier the Runtime assigned to the composed message.
+- **`job_id`** (OPTIONAL, nullable) is a provider-side job identifier,
+  opaque to this protocol.
+- **`attestation`** (OPTIONAL) is the identity stamp the Runtime applied to
+  the outbound message. Its `form` is `self-stamp` or `verifiable`,
+  distinguishing a stamp a stranger cannot verify from one that can be
+  verified independently. A Connector *surfaces* an attestation; it never
+  verifies one, which is a Runtime concern.
+- **`attachments[]`** (OPTIONAL) carries one diagnostic entry per submitted
+  attachment: `index`, an `outcome` of `accepted`, `dlp_held`,
+  `rejected_type`, or `too_large`, and an optional `detail`. **`index` MUST
+  equal the entry's own position in the array** — contiguous, unique, and
+  covering `0` through `n-1` exactly once. Array position is the binding
+  authority for attachments in both directions ([](#sec-4-1)). This
+  constraint is not expressible in JSON Schema and is enforced by the
+  conformance gate as a named post-check rather than by the schema
+  ([](#app-h)).
+
+  **Two paths, never conflated.** A *malformed* attachment — a size or
+  digest mismatch, a missing or extra Sidecar, a duplicate index — is not a
+  policy decision: it fails the whole request with a top-level `rejected`.
+  A *policy hold* — DLP, a disallowed type, a size cap, including a
+  fail-closed hold when no screener is available — is `queued_for_human`.
+  Per-attachment outcomes are diagnostic detail under **one** governing
+  top-level outcome; they never license a partial send.
+
+# Inbound: Deliver Notice and Inbound Message {#sec-7}
+
+The Runtime writes one Deliver Notice per **delivered** message. Quarantined
+or unverified mail produces **no Notice**: it is logged Runtime-side and is
+never seen by the Agent. The Notice is a *pointer and summary*; the body is
+fetched on demand from a separate spooled artifact ([](#sec-7-3)) and is
+**untrusted content**.
+
+~~~ json
+{::include-fold69hardleft4dry draft/examples/deliver-notice.json}
+~~~
+{: #ex-deliver-notice title="draft/examples/deliver-notice.json (illustrative — not a fixture)" sourcecode-name="deliver-notice.json"}
+
+The normative shape is [](#app-c). The Deliver Notice envelope is **open**:
+a consumer MUST tolerate members it does not recognize, at every level
+([](#sec-10-1)).
+
+## Field semantics and obligations {#sec-7-1}
+
+**The drop rule.** A Connector relays only `deliver` Notices. It MUST drop —
+not surface — a Notice that fails **either** of two independent checks,
+treating a failure of either one alone as sufficient grounds to drop:
+
+1. **Schema failure.** The Notice fails validation against the
+   deliver-notice schema ([](#app-c)) for **any reason other than an
+   unrecognized member**. That single formulation covers a `kind` other than
+   `deliver`, a missing required member, an enum violation on a closed
+   vocabulary, a pattern violation (including a traversal or character-set
+   violation in `notice_id`, or a shape violation in `content_ref`'s own
+   pattern), a conditional (`allOf` / `if`-`then`) violation, and a type
+   violation alike, with no need to enumerate schema-failure categories
+   separately. **An unrecognized member is never grounds for a drop**
+   ([](#sec-10-1)); that is the one carve-out from "fails schema
+   validation."
+2. **The `content_ref` index and prefix binding.** A Notice can pass check 1
+   — every member individually well-shaped — and still carry an attachment
+   Descriptor whose `content_ref` does not equal
+   `<notice_id>.attachments/<i>` for its own 0-based array position `i`
+   ([](#sec-7-2)): a mismatched trailing index, or a leading `notice_id`
+   prefix pointing into a *different* Notice's Sidecar directory. A
+   Connector MUST run this check independently of schema validation and MUST
+   drop the Notice on failure exactly as it would a schema failure.
+
+**This is not a closure over schema validation.** Check 2 binds two members
+of the same document — a Descriptor's `content_ref` against the enclosing
+document's own `notice_id` and against the Descriptor's own array position —
+against each other, which is not expressible in the JSON Schema vocabulary
+these schemas use {{JSON-SCHEMA-2020-12}}. It therefore cannot be folded
+into "fails schema validation" no matter how the schema is phrased: it is a
+second, independent condition, not a special case of the first. The
+conformance suite enforces it as a named post-check and pins it with a
+fixture that is schema-valid on its own and fails only this check
+([](#app-h)).
+
+A **version refusal** — an absent or non-matching `contract_version` major —
+is explicitly **not** part of this drop path. It is handled first and
+separately ([](#sec-10-1)) as a distinct, logged outcome: a Connector checks
+the version before it ever reaches schema validation, so a version-refused
+Notice never falls into the drop rule at all.
+
+A document with `kind: "peer"` found under `inbound/notices/` fails check 1
+against this schema, and is dropped the same way ([](#app-f), the
+peer-origin profile's cross-lock).
+
+**Field obligations.**
+
+- **`contract_version`**, **`notice_id`**, **`ts`**, **`kind`**, and
+  **`message`** are REQUIRED. `notice_id` is Runtime-minted and is pinned by
+  the schema to a character set that is safe as a path component and as a
+  `content_ref` prefix.
+- Required members of `message` are `id`, `from`, `subject`, `preview`, and
+  `mailbox`. The rest is enrichment ([](#sec-10-2)).
+- **`message.id`** is the provider's message identifier. It is **external
+  and not character-set-safe**, and MUST NOT be used as a path component
+  anywhere ([](#sec-4-1)).
+- **`message.from` is attacker-controlled display data.** Its display-name
+  half is chosen freely by the sender — `"security@yourbank.example
+  <attacker@evil.example>"` is a legal value — and it MUST NOT be used for
+  any trust decision, nor rendered to a human or to an Agent as verified
+  identity. Verified sender identity is only ever what the Runtime
+  summarizes into `sender_standing` and `verdict`; it is never the `from`
+  string itself.
+- **Presentation obligations.** A Connector that presents a message body to
+  its Agent MUST convey two things, whatever words it uses: quoted or
+  forwarded material inside the body carries no authority of its own — a
+  message's authority extends to what its author wrote, never to what they
+  relayed — and that an attachment's `disposition` is the Runtime's assertion
+  about handling and not a scanner verdict, so a Connector MUST NOT imply that
+  bytes have been screened and MUST NOT contradict the per-attachment status
+  the Runtime published. A Connector MUST also convey that an attachment's
+  `filename` and `media_type` are sender-chosen display strings on the mail
+  tree; on a tree whose sender the Runtime authenticated it SHOULD, and MUST
+  where the attachment was relayed rather than authored by that sender. On the mail
+  tree a Connector MUST additionally convey that the sender is not
+  authenticated beyond whatever standing the Runtime has already summarized
+  — carried in `sender_standing` and `verdict`, named here as the locus and
+  not as vocabulary to repeat to a reader — and that `message.from` is
+  sender-chosen text. These are
+  obligations about substance, not vocabulary: a Connector satisfies them
+  with any wording its reader can act on without consulting this document,
+  and they MUST be satisfiable by a literal string the Connector carries,
+  requiring no lookup or computation when a body is presented.
+- **The untrusted-content posture covers every sender-originated string** in
+  the Notice and in the spooled Inbound Message: `message.from`, `subject`,
+  `preview`, `body_text`, `references`, attachment `filename` and
+  `media_type`, and the Inbound Message's `from`, `to`, `cc`, and `subject`.
+  This is not limited to the members called out individually here.
+- **`message.sender_standing`** (OPTIONAL) is an **open, advisory
+  vocabulary** — `known`, `agent-tier`, `first-contact`, `read-only`, and
+  others. How the values are computed is Runtime policy and out of scope;
+  the wire fixes only today's known vocabulary, so that a Connector can tell
+  its Agent "stranger," "agent," or "needs sign-off." A Connector MUST
+  tolerate a value outside this list, treating it as opaque — never as
+  grounds to drop the Notice — and a Runtime MAY add a value as a minor
+  change ([](#sec-10-1)).
+- **`message.provenance`** (OPTIONAL) classifies the message source —
+  `external`, `internal`, and others — so that a Runtime can route
+  provenance-labelled screening. It is advisory metadata, like `verdict`,
+  and never a license for an Agent to obey body content. It is likewise an
+  **open, advisory vocabulary**: a Connector MUST tolerate a value outside
+  this list, treating it as opaque, and MUST NOT drop the Notice on its
+  account; a Runtime MAY add a value as a minor change.
+- **`message.verdict`** (OPTIONAL) carries the upstream authentication,
+  screening, and entitlement results the Runtime consumed. A Connector
+  treats it as advisory metadata, never as license for an Agent to obey body
+  content. The object is open: unrecognized members inside it are tolerated,
+  as they are everywhere else in this artifact.
+- **`message.thread_id`**, **`message.in_reply_to`**, and
+  **`message.references`** (all OPTIONAL) carry provider and {{RFC5322}}
+  threading identity. They grant correlation, never trust ([](#sec-8)).
+- **`message.task_id`** (OPTIONAL) is Runtime-minted; [](#sec-8) states the
+  obligations on it.
+
+**Direction and openness.** This artifact is Runtime-authored, and its
+envelope is open at every level: a Connector MUST tolerate a member it does
+not recognize, in `message` or at the top level, and MUST NOT drop the
+Notice on that account. Emitting an unrecognized member remains Runtime
+non-conformance ([](#sec-10-1)).
+
+## Inbound attachment Descriptors {#sec-7-2}
+
+**`message.attachments[]`** (OPTIONAL) is an array of Descriptors carrying
+`filename`, `media_type`, and `size_bytes` — all REQUIRED — plus a REQUIRED
+`disposition`, and OPTIONAL `sha256` and `content_ref` members gated on it.
+
+**`disposition` is the Runtime's assertion, not a scanner verdict.** Its
+values are `clean`, `stripped`, `quarantined`, and `unscanned`, and the
+vocabulary is **closed**: it gates byte publication, so a new value would be
+a behavioral fork a consumer cannot treat as opaque, and introducing one is
+a major change ([](#sec-10-1)). On what basis a Runtime asserts `clean` is
+deliberately unspecified — a screening pipeline's pass in one deployment, a
+closed operator-supervised topology in another. That is Runtime policy and
+out of scope for the wire, the same posture `sender_standing` takes: the
+wire fixes the vocabulary, never the computation. The Runtime is trusted by
+construction ([](#sec-3-1)); the load-bearing invariant is that the *Agent*
+is not.
+
+The counterpart obligation is equally plain: **a Runtime that cannot make
+the determination MUST NOT assert `clean`.** It emits `unscanned` — or
+`stripped` or `quarantined` where it made that decision — and publishes no
+bytes.
+
+**Byte publication and the access grant.** A Runtime MAY publish an
+attachment's bytes at `inbound/notices/<notice-id>.attachments/<index>`
+**only** for a Descriptor it asserts `disposition == "clean"`, and only then
+MAY it emit `content_ref` (a path of the form
+`<notice-id>.attachments/<index>`) and `sha256`. Byte-absence remains the
+gate ([](#sec-4-1)) for anything not asserted clean. Exposing `sha256` on a
+withheld item would be a confirmation oracle for no integrity value, which
+is why it is clean-gated too. Both conditionals are expressed in the schema.
+
+**The `content_ref` binding.** `content_ref`'s leading `notice_id` prefix
+MUST equal the enclosing document's own `notice_id`, and its trailing
+`<index>` MUST equal the Descriptor's own 0-based array index. The array
+index remains the sole binding authority ([](#sec-4-1)), and a consumer that
+resolves bytes MUST derive the path from the enclosing `notice_id` and the
+index — never trusting the `content_ref` string's own text as the path,
+since a Descriptor could otherwise point into another Notice's Sidecar
+directory. This is a wire-shaped, document-level obligation, enforced by the
+conformance gate as a named post-check ([](#app-h)) in the same way the
+Result-side `attachments[i].index == i` binding is.
+
+**A grant, never a directive.** A consumer MUST tolerate a Descriptor whose
+bytes it does not resolve — relaying the Notice as usual — and MUST NOT
+treat the presence of `content_ref` as a requirement to fetch. A Connector
+that never dereferences `content_ref` remains fully conformant. A Connector
+MUST resolve published bytes only within its own Namespace's
+`inbound/notices/` tree and MUST reject any `content_ref` that does not
+match the pinned pattern — the same confinement [](#sec-4-1)'s read-side
+discipline requires generally.
+
+**`filename` and `media_type` here are attacker-controlled, untrusted
+display strings.** The untrusted-content posture extends to attachment
+Descriptors: a quarantined file named to look like an instruction is still
+an injection payload even with its bytes withheld. A `clean` assertion
+covers the bytes' screening disposition, never the truthfulness of these
+strings.
+
+**Inbound `size_bytes` is provider-declared and therefore advisory and
+untrusted** — it comes from the provider's structure report, and is not
+Runtime-verified the way outbound `size_bytes` is.
+
+**MIME edges.** `filename` is the {{RFC2047}} / {{RFC2231}}-**decoded**,
+Runtime-sanitized display string. An "attachment" is any part carrying
+`Content-Disposition: attachment` {{RFC2183}}, or any named or non-inline
+text part — inline images and `multipart/related` parts count, which is the
+conservative reading of {{RFC2045}} and {{RFC2046}}. The declared
+`media_type` is display-only: the Runtime sniffs the bytes, and the sniffed
+type governs policy on the outbound gate.
+
+## The Inbound Message (body spool) {#sec-7-3}
+
+The Runtime spools the delivered body at
+`<volume-root>/<agent-id>/inbound/messages/notice-<id>.json`, keyed on the
+Runtime-minted notice identifier — never on the provider `message.id`, for
+the same confirmed-exploit reason given in [](#sec-4-1).
+
+~~~ json
+{::include-fold69hardleft4dry draft/examples/inbound-message.json}
+~~~
+{: #ex-inbound-message title="draft/examples/inbound-message.json (illustrative — not a fixture)" sourcecode-name="inbound-message.json"}
+
+The normative shape is [](#app-d). Required members are `contract_version`,
+`notice_id`, and `body_text`; the rest — `id`, `date`, `from`, `to`, `cc`,
+`subject`, and `attachments[]` — is enrichment ([](#sec-10-2)). Descriptors
+here follow exactly the rules of [](#sec-7-2), including the `content_ref`
+binding and the clean gating. This artifact's envelope is **open**, like the
+other Runtime-authored artifacts.
+
+**Resolution.** A Connector's read surface resolves a notice identifier to a
+body from this artifact only, never from a provider fetch. The body is
+**untrusted content**, the same posture as the rest of `message`.
+
+**Enforcement by absence.** A body the Runtime withholds — because of
+screening or quarantine, or because the message was never delivered — is
+simply not spooled, and a read against a missing artifact returns "not
+resolved." There is no other signal and no fallback fetch. The same "not
+resolved" response also covers an artifact the Runtime later removes under
+its own retention policy ([](#sec-4-2)): from the Connector's side, retired
+and never-spooled are indistinguishable, and both are already-specified
+behavior.
+
+# Task Correlation {#sec-8}
+
+The Runtime mints and owns `task_id`; a Connector only reads it, to
+correlate a Notice with prior work. The minting and thread-resolution
+*algorithm* is Runtime policy and out of scope. This protocol fixes three
+security obligations on it.
+
+- **`task_id` MUST be unguessable and Runtime-minted** — an HMAC over the
+  thread root, for instance. It MUST NOT be a sequential or otherwise
+  guessable value, and it MUST NOT be a capability an inbound sender can
+  assert. *(A guessable, sequential `task_id` was a confirmed exploit path
+  in an early implementation.)*
+- **Matching a `task_id`, by itself, MUST NOT grant a message entry into
+  that task.** Authoritative correlation is header threading **plus**
+  per-message verified sender identity. A subaddress or header token
+  supplied by an inbound sender is a *hint* only, never authoritative: it is
+  attacker-controllable, and it is stripped by many gateways.
+- **Threading grants correlation, not trust.** A message that threads onto
+  a known task is still identity-verified per message; it does not inherit
+  the task's standing.
+
+# Binding Record {#sec-9}
+
+The Binding Record is written by the Runtime or provisioner at the
+**Volume root** — `<volume-root>/identity.json`, a sibling of
+`<agent-id>/`, not inside it — and names which mailbox this Volume is bound
+to. Its normative shape is [](#app-e).
+
+{::include-nested draft/build/fixture-fx-identity-basic.mkd}
+
+## Field semantics and obligations {#sec-9-1}
+
+- **Informational, not authoritative.** The Volume is an Agent-writable
+  filesystem, so a compromised Agent can edit or delete this file at will.
+  Attribution and policy stay keyed on Runtime-side configuration
+  ([](#sec-4-1)). This record grants nothing and is never consulted for
+  enforcement.
+- **Consumers MUST tolerate its absence**, and **MUST treat its contents as
+  untrusted data**: a malformed, oversized, or hostile file MUST never crash
+  a reader or otherwise affect protocol behavior.
+- Its jobs are narrow by design: operator sanity — a human confirming which
+  mailbox a Volume is bound to — a pre-start conflict check for whatever
+  wrote it, catching for instance one Agent's credentials pointed at another
+  Agent's Volume, and letting a Connector surface the Agent's own address
+  back to its Agent.
+- **The file is OPTIONAL** ([](#sec-10-2)): nothing in this protocol
+  requires a Runtime to write it or a Connector to read it, and both sides
+  MUST work correctly with it absent.
+- Required members, if the file is present, are `agent_id`, `address`, and
+  `provisioned_ts`. `label` is OPTIONAL. `contract_version` is OPTIONAL
+  here — the one artifact where it is — because the file is not a protocol
+  artifact a consumer must parse to function; if present it is pinned to
+  `"2"`.
+- This artifact's envelope is **closed** (`additionalProperties: false`),
+  for a different reason than the Submit Request's is: closure here is an
+  anti-secret-leak lint, catching a provisioner that writes credential
+  material into a file living on an Agent-readable Volume. It is not a
+  compatibility surface.
+
+# The Peer Directory {#sec-directory}
+
+A Runtime MAY publish, at the Agent's Namespace root
+(`<agent-id>/directory.json`, beside the lanes rather than inside one), a
+per-instance projection of the authorisation graph naming which peers that
+Agent may address.
+
+~~~ json
+{::include-fold69hardleft4dry draft/examples/directory.json}
+~~~
+{: #ex-directory title="draft/examples/directory.json (illustrative — not a fixture)" sourcecode-name="directory.json"}
+
+- **Advisory, never authoritative.** The directory is the Runtime's most recent
+  word about the graph, and grants nothing. A Connector MUST NOT treat an
+  address's presence as a prediction that a submission to it will be accepted,
+  nor its absence as a prediction of refusal: authorisation is evaluated by the
+  Runtime at submission time, and the Result ([](#sec-6)) is the only thing that
+  reports what happened. A consumer that reads the directory as a prediction is
+  wrong even when the file is current.
+- **A Runtime MUST NOT read `directory.json` back, for any purpose.** It is
+  write-only from the Runtime's side: the graph is derived from policy, the
+  file is a projection of the graph, and nothing derives the graph from the
+  file. Enforcement remains the Runtime's own check against its graph, on every
+  message. The prohibition is on the direction rather than the purpose, because
+  the ways this decays — as an optimisation, a cache, a recovery source, or a
+  cross-check — all have innocent intent, and the last two turn a projection
+  into a source. A projection that can be read back becomes a cache; a cache
+  becomes a record; a record that disagrees with policy wins by accident.
+- **Per-instance projection.** Each Agent's directory carries only the edges
+  that Agent is party to. It MUST NOT carry the set of peers who may address
+  that Agent, which is an allowlist in all but name, and MUST NOT carry the
+  Agent's own address — attribution is the Namespace a file arrived in
+  ([](#sec-4)), so an address an Agent reads is a claim rather than an identity.
+- `router` is the publishing Runtime's own address and MUST NOT appear in
+  either list. Every address is one bare addr-spec ([](#sec-5)).
+- **Both lists are always present**, and empty when that lane is closed for this
+  Agent; `mail_to` is empty in a delegation-only deployment. Absent and empty
+  MUST NOT be conflated.
+- **Written whole and atomically.** A Runtime MUST NOT publish a newly adopted
+  instance's address to others before it has adopted that instance itself.
+- **A Runtime that publishes the directory MUST ensure the Agent can read it**,
+  and SHOULD expose it read-only. Publishing to a path the Agent's Namespace
+  does not expose is not conformant: the write succeeds, the file is correct,
+  and no Agent can read it — a failure that reports nothing on either side.
+  Publishing is optional, so a Runtime that cannot make the file readable MUST
+  NOT publish it; an unreadable directory is indistinguishable from an absent
+  one to a consumer, and worse than an absent one to an operator, who has a
+  file on disk that looks like it is working. The trap follows from the
+  location: the file deliberately belongs to no lane, which is what keeps a
+  delegation-only deployment from materialising a mail tree, and is exactly
+  what places it outside an exposure built lane by lane.
+- **`written_at`** is the only staleness signal a consumer gets: an honest
+  marker, not a freshness guarantee.
+- **Where the consumer is an Agent rather than a parser, these become
+  obligations to convey.** A Connector that surfaces the directory to its Agent
+  instead of interpreting it satisfies the obligations above by stating them,
+  under the presentation rule in [](#sec-7): the Agent is the party forming a
+  belief, so the Connector MUST convey that an address's presence is not a
+  prediction of acceptance, that the file may be absent, that an empty list and
+  an absent list differ, and that `written_at` is the only staleness signal
+  there is. A Connector with no directory parser does not thereby satisfy them
+  vacuously.
+- **The file MAY be absent** — before first adoption, on a Runtime that does
+  not implement this section, or after a failed write — and a consumer MUST
+  tolerate absence exactly as it tolerates a missing Binding Record
+  ([](#sec-9)).
+- **A Runtime that cannot write it keeps routing.** The directory is advisory,
+  so a failed write loses a convenience, not the ability to enforce; failing
+  closed would convert an advisory artifact into a dependency. The Runtime MUST
+  log the failure. The Agent's only signal remains `written_at` going stale.
+
+# Versioning and Conformance {#sec-10}
+
+## Versioning {#sec-10-1}
+
+**The fail-closed rule.** `contract_version` is a major-version string. A
+consumer that reads a **higher major** than it speaks MUST **fail closed**
+— refuse to process the artifact — and MUST NOT silently mis-parse it.
+
+**Version-check ordering.** A consumer MUST implement the version check by
+reading `contract_version` **before** any schema validation, comparing
+majors as non-negative decimal integers. An absent major, a lower major, or
+a higher major is a **version refusal**: fail closed, as a distinct, logged
+outcome, never folded into the malformed-document drop path of
+[](#sec-7-1).
+
+Checking the version first is what makes fail-closed implementable at all.
+A validator that runs schema checks first cannot distinguish "wrong
+version" from "malformed," and a strict schema would reject a future-major
+document for the wrong reason entirely.
+
+This ordering rule is about *inbound* artifacts a Connector consumes, which
+have no mechanism in this protocol to carry a distinct outcome back to the
+Runtime. It does not reach the *outbound* direction: a Runtime
+version-refusing a Submit Request MAY carry that refusal on the ordinary
+request-rejection path — a top-level `rejected` Result with
+`reason_code: "unsupported_contract_version"` ([](#sec-6-1)) — and, per the
+conformance classes below, MUST do so for the version-absent request
+fixture. That is still a distinct, legible outcome rather than a fold into
+the malformed-request case: `reason_code` is exactly this protocol's
+mechanism for saying *why* a `rejected` fired, and a consumer MUST already
+tolerate a `reason_code` it does not otherwise interpret. A Runtime has no
+equivalent document to write for a version-refused *Notice* it never emits
+— hence the asymmetry: logged-only inbound, `rejected` outbound.
+
+**Why a version signal, rather than unknown-member rejection, is the
+boundary.** At the transition from wire major `"1"` to `"2"`, when
+attachment support was added, every top-level schema and every nested
+object except `verdict` and `attestation.claims` was
+`additionalProperties: false`. Under that regime, adding a member is not a
+safe additive change the way it would be under a permissive envelope: a
+strict major-1 validator rejects the **whole document**, not just the new
+member. Inbound, that is **silent total message loss** — an
+attachment-bearing email vanishes instead of degrading. Outbound, it is an
+accidental schema error rather than a designed refusal. And there is no
+signal to gate on while `contract_version` stays `"1"`, because the new
+member is invisible to anything that would need to react to it. That is why
+attachments required a **major** bump: a major-1 consumer receiving a `"2"`
+document hits fail-closed *by version*, a legible and designed refusal, and
+both sides upgrade deliberately.
+
+Explicitly deleted from this protocol's reasoning: any framing in which
+`additionalProperties: false` rejection **is** the version boundary. That
+conflates two different axes — schema strictness and protocol version —
+and produces catastrophic behavior (whole-document loss) exactly where a
+version check should produce a legible refusal.
+
+**Unknown-member tolerance is direction-aware.** This is the rule that
+repairs the versioning model, and it is stated per direction because the
+two directions have opposite threat models.
+
+- **Runtime-authored artifacts — Deliver Notice, Inbound Message, Result —
+  are open.** A consumer MUST ignore members it does not recognize, at
+  every level of the document, and MUST NOT reject, drop, or fail the
+  artifact on their account. Strictness on this direction defended nothing:
+  the producer is trusted by construction, and in the one posture where an
+  attacker can author a Notice — a writable inbound tree — that attacker can
+  author a fully schema-valid one, so strictness was never the defense
+  there. Its failure mode was silent mail loss. Emitting an unknown member
+  remains a **producer** non-conformance: a Runtime MUST NOT emit members
+  undefined at the version it claims. In the schemas, `additionalProperties:
+  false` is absent from the deliver-notice, inbound-message, and result
+  schemas at every level — top level, `message`, Descriptor items, and
+  `attestation` — while the clean-gating conditionals are orthogonal and
+  remain.
+- **The Submit Request envelope stays closed**, `additionalProperties:
+  false` at every level. Closure is doing real security work there: it is
+  what bars an outbound `content_ref` and any other smuggled member; the
+  validator is the trusted Runtime; and a refusal is a *legible,
+  per-request* `rejected` Result, never a silent loss. A Runtime MUST reject
+  a request carrying unrecognized members.
+- **Consequently:** adding an optional member to a Runtime-authored
+  artifact is genuinely additive and is a minor change; adding any member
+  to the Submit Request is a major change.
+- The Binding Record is unchanged on this axis and stays closed for the
+  separate reason given in [](#sec-9-1).
+
+**Tolerance extends to values, not only members.** An optional, explicitly
+advisory enum on a Runtime-authored artifact — `message.sender_standing` and
+`message.provenance` ([](#sec-7-1)) — is scoped the same way. A consumer
+MUST tolerate a value it does not recognize, treating it as opaque or as the
+member being absent, and MUST NOT reject, drop, or fail the artifact on
+that account; a Runtime MAY add a value to either vocabulary as a minor
+change. This closes the same failure mode one indirection over: without it,
+a Runtime adding a fifth `sender_standing` or a third `provenance` value
+would silently lose every Notice carrying it, against every Connector still
+validating the old enum — identical to the member case, just at the value
+level. In the schemas, the `enum` constraint is absent from these two
+members.
+
+This is **not** a universal loosening of every enum. `kind`, `outcome` —
+both the top-level Result outcome and the per-attachment outcome — and the
+inbound Descriptor's `disposition` remain **closed, enum-locked
+vocabularies**. `kind` and `outcome` gate which processing path a document
+takes at all, and `disposition` gates byte publication ([](#sec-7-2)), so a
+new value in any of them is a behavioral fork a consumer cannot safely treat
+as opaque. Introducing one is a major change.
+
+**Two version axes, allowed to diverge.** The **wire major** tracks
+whole-document acceptance compatibility. The **document version** tracks
+the fuller set of obligations, including narrower, disclosed producer-side
+tightenings that do not rise to that level. Document version 3.0.0 is a
+major document bump — it moves fixtures between the valid and invalid sets,
+and it adds Runtime obligations a strictly-compliant earlier implementation
+does not meet — while the wire major stays `"2"`.
+
+Document version 3.1.0 (DRAFT) is an additive **minor** bump over 3.0.0;
+the wire major stays `"2"`. It introduces the outbound extension space and
+its one normative clarification ([](#sec-4-1), [](#sec-11-15)), and the
+peer-origin profile's schema and conformance fixtures ([](#app-f),
+[](#app-h)). No existing schema rule or fixture changed. The profile's
+prose is a companion document not yet drafted; until it is, the schema and
+the `peer-*` fixtures are normative for the shape of a peer notice, and this
+document specifies nothing about the `peer/` tree beyond that shape.
+
+The reasoning for holding the wire major is worth stating, because the
+alternative is tempting and wrong. The wire major exists to force a legible
+fail-closed refusal when a *whole document* that a counterpart already
+accepts would otherwise be silently misread or silently dropped — the
+catastrophic, undetectable failure mode a version bump exists to convert
+into a designed refusal. Document version 3.0.0 does **not** claim that
+producer bytes are unchanged; they are not, on both sides (see the change
+log). But neither narrowing is that failure mode: each travels a designed,
+legible, per-artifact refusal path this protocol has always sanctioned,
+rather than a whole-document rejection triggered by an unrelated member.
+The Submit Request tightening yields a per-request `rejected` Result; the
+`notice_id` character-set tightening yields a per-Notice Connector-side
+drop under check 1 of [](#sec-7-1) — a real cost, disclosed in the change
+log, but a narrow and legible one, not silent total loss. Bumping the wire
+major to `"3"` would instead force every major-2 counterpart on **both**
+sides to refuse **all** traffic outright, including all the traffic the
+tolerance rule newly protects — inflicting exactly the catastrophic,
+undisclosed mail loss this version exists to repair, in order to fix
+incompatibilities that already have narrower, disclosed failure paths.
+
+**Corrections.** Two claims that shipped in earlier revisions of this
+protocol's normative text were false, and are named here rather than
+quietly replaced, because an implementer who read them may have built
+against them.
+
+1. **The write-rule "strengthening" that was a regression.** An earlier
+   revision described the exclusive-create and no-symlink-follow
+   requirement on the final path component as having been "strengthened
+   to" the pinned directory-descriptor walk — that is, replaced by it — and
+   deleted the earlier clause outright. That was a **weakening**, not a
+   strengthening: a parent chain pinned by descriptor is silent about the
+   final `.tmp` filename itself, so dropping exclusive-create there let an
+   Agent that pre-plants a symlink at a predictable `.tmp` name have the
+   Runtime write through it. [](#sec-4-1) now states the rule
+   conjunctively, with all three legs required together.
+2. **The drop rule described as a closure over schema validation.** An
+   earlier revision described the inbound drop rule as a pure closure over
+   schema validation, and claimed that formulation was exact against the
+   fixture set. Both statements were false: the `content_ref` index and
+   prefix binding is not expressible in the schema dialect used here, and a
+   fixture exists that is schema-valid on its own and must nonetheless be
+   dropped. [](#sec-7-1) now states two independent checks, and so does the
+   Connector conformance class below.
+
+A third correction concerns this protocol's own change history rather than
+an obligation, and is recorded in the change log: the document version that
+introduced `message.provenance` was labelled an additive minor change,
+which was unsound against the strictly-validating consumers of the time.
+The change log states what actually happened rather than relabelling the
+history.
+
+**Change control.** A capability change starts with a change to this
+document, its schemas, and its fixtures, *before* either side implements
+it. Neither a Runtime nor a Connector may invent a wire member locally.
+Additive and backward-compatible changes are minor bumps; any change that
+breaks an existing fixture is a major bump, taken deliberately by both
+sides.
+
+## Required versus optional {#sec-10-2}
+
+`contract_version` is REQUIRED on every protocol artifact — Submit Request,
+Deliver Notice, and Result — with the Binding Record as the single
+exception ([](#sec-9-1)). The rest of this table reflects what
+implementations emit today; specified-but-unbuilt enrichment stays
+optional, and tightening any of it to required would be a future major
+bump.
+
+| Artifact | Required | Optional (specified; may be absent) |
+|---|---|---|
+| **deliver-notice** | `contract_version, notice_id, ts, kind, message{id, from, subject, preview, mailbox}` | `message.{task_id, thread_id, in_reply_to, references, sender_standing, verdict, provenance}`, `message.attachments[]` (items require `filename, media_type, size_bytes, disposition`; `sha256` and `content_ref` optional, gated to `disposition == "clean"`) |
+| **submit-request** | `contract_version, req_id, draft{to, subject, body_text}` | `agent_id, ts, in_reply_to, draft.{cc, reply_to_message_id}`, `draft.attachments[]` (items require `filename, media_type, size_bytes, sha256`) |
+| **result** | `contract_version, req_id, outcome` | `detail, reason_code, ts, recipients, message_id, job_id, attestation` (requires `form`; `token` and `claims` optional), `attachments[]` (items require `index, outcome`) |
+| **inbound-message** | *(the artifact itself is OPTIONAL — [](#sec-7-3))*; if present: `contract_version, notice_id, body_text` | `id, date, from, to, cc, subject`, `attachments[]` (same Descriptor rules as deliver-notice) |
+| **binding-record** | *(the file itself is OPTIONAL — [](#sec-9))*; if present: `agent_id, address, provisioned_ts` | `label`; `contract_version` (optional — if present, pinned to `"2"`) |
+
+`inbound/notices/processed/` is an OPTIONAL **directory convention**
+([](#sec-4-1)), not a protocol artifact: it carries no schema, and no
+fixture exists or is needed for it.
+
+Emission of `contract_version` on the three protocol artifacts is
+mandatory. An implementation not yet emitting it has an implementation
+conformance gap, not a license from this document.
+
+## Conformance {#sec-10-3}
+
+**The fixtures are the other side.** `fixtures/` holds golden artifacts,
+and a producer or consumer proves conformance by passing them with **no
+counterpart present** ([](#app-h)). That is what makes independent
+implementation practical: neither side needs the other to exist in order to
+demonstrate conformance.
+
+Not every obligation in this document is wire-shaped. A *behavioral*
+obligation — one about how an implementation acts against a filesystem,
+rather than about the shape of a document — lies outside the fixture gate
+by construction and is checked operationally instead. [](#app-h) lists
+every obligation of this kind that a green run does not prove.
+
+This document defines two conformance classes. An implementation MAY claim
+both. Claiming either without the corresponding fixture run, and without
+the prescribed operational check for that class's behavioral obligations,
+is not conformance.
+
+**Runtime conformance class.** An implementation claiming Runtime
+conformance:
+
+- MUST produce Deliver Notice documents valid against the deliver-notice
+  schema ([](#app-c)) and Result documents valid against the result schema
+  ([](#app-b)); MAY produce Inbound Message documents, which when produced
+  MUST be valid against the inbound-message schema ([](#app-d)); and MAY
+  produce a Binding Record valid against the binding-record schema
+  ([](#app-e)).
+- MUST consume Submit Request documents: it MUST accept every valid
+  `request-*` fixture and MUST reject every invalid `request-*` fixture.
+- MUST demonstrate its producing side by confirming that its own emitted
+  Notices, Results, and Inbound Messages satisfy the same schemas the
+  suite's valid `notice-*`, `result-*`, and `message-*` fixtures satisfy —
+  **including the three fixtures carrying unrecognized members**. A Runtime
+  MUST NOT itself emit unrecognized members, but its *parser*, exercised by
+  those fixtures, is what a Connector conformance run depends on it never
+  having to special-case. It MUST also confirm that any Binding Record it
+  writes satisfies the valid `identity-*` shape.
+- MUST uphold the filesystem and policy obligations of Sections {{<sec-4}}
+  through {{<sec-8}} that no document validator can observe. [](#app-h)
+  lists them explicitly as what a green fixture run does **not** prove, and
+  they are obligations of the class regardless — write-side path discipline
+  (the conjunctive parent-chain-pinning, no-follow-while-building, and
+  non-following-final-component rule), ingest by copy, read-side open
+  discipline, and single-writer/single-drainer chief among them.
+
+**Connector conformance class.** An implementation claiming Connector
+conformance:
+
+- MUST produce Submit Request documents valid against the submit-request
+  schema ([](#app-a)), and MUST NOT emit an outbound `content_ref`
+  ([](#sec-5-1)).
+- MUST consume Deliver Notice, Inbound Message, and Result documents: it
+  MUST accept every valid `notice-*`, `message-*`, and `result-*` fixture —
+  **including those carrying unrecognized members or unrecognized
+  advisory-enum values** — and MUST reject, meaning drop rather than
+  surface, every invalid `notice-*` fixture **except the version-refusal
+  one**, which it MUST instead refuse via the distinct version-refusal path
+  ([](#sec-10-1)): never folded into the drop path, and never surfaced to
+  the Agent either.
+
+  [](#sec-7-1)'s drop rule is **two independent conditions, not a closure
+  over schema validation**. "Fails schema validation for any reason other
+  than an unrecognized member" (check 1) covers ten of the eleven other
+  invalid `notice-*` fixtures — missing-required-member, wrong-`kind`,
+  enum, pattern, and conditional violations alike. The eleventh is
+  schema-valid on its own, producing zero errors from the gate's schema
+  validator, and is caught only by the `content_ref` index and prefix
+  binding (check 2, [](#sec-7-2)), a named post-check the schema cannot
+  express. A Connector conformance claim requires running **both** checks;
+  schema validation alone does not close this set.
+
+  Accepting the clean-Descriptor fixture — a Descriptor asserted `clean`
+  and carrying `content_ref` and `sha256` — is part of this obligation, and
+  acceptance means relaying the Notice, not fetching the bytes: a Connector
+  that never dereferences `content_ref` satisfies it ([](#sec-7-2)).
+- MUST return "not resolved" for a body whose Inbound Message is absent,
+  and MUST NOT attempt any fallback fetch ([](#sec-7-3)).
+- MUST tolerate a Binding Record that is absent, and MUST NOT crash or
+  otherwise misbehave on one that is hostile or malformed ([](#sec-9-1)).
+- MUST NOT require write access anywhere under `inbound/`, demonstrated by
+  the operational check below rather than by a fixture ([](#sec-4-1)).
+- MUST demonstrate its producing side by confirming that its own emitted
+  requests satisfy the same schema the suite's valid `request-*` fixtures
+  satisfy, and MUST uphold the write-ordering, atomicity, and
+  read-discipline obligations of [](#sec-4-1), which the fixtures cannot
+  check.
+
+**Read-only inbound tolerance — the prescribed operational check.** Run
+the Connector against an inbound tree it cannot write — a genuinely
+read-only mount, not merely cleared permission bits, since a same-uid Agent
+can change a mode it owns — and confirm that it starts, relays every
+pending Notice, resolves bodies, and submits outbound requests, without
+requiring any write under `inbound/` to succeed.
+
+# Security Considerations {#sec-11}
+
+This section gathers the threats this protocol's obligations exist to
+address. It introduces no new mechanism: every requirement referenced here
+is stated normatively in Sections {{<sec-4}} through {{<sec-10}}. The
+organizing principle throughout is the invariant of [](#sec-3-2) —
+enforcement is Runtime-side, and no property depends on the Agent or its
+Connector behaving.
+
+The threat actor assumed throughout is a **fully compromised Agent** with
+write access to its own Namespace, running as a uid that owns the files it
+creates, able to act concurrently with the Runtime, and able to observe or
+predict the filenames the Runtime is about to use.
+
+## Path authority and traversal {#sec-11-1}
+
+An identifier drawn from a file's *contents* MUST NOT name a write path
+([](#sec-4-1)). An early implementation trusted a `req_id` member inside a
+request body to name the path its Result would be written to, which is a
+confirmed exploit: the Agent controls that member and could therefore
+direct a Runtime-privileged write anywhere the Runtime could reach. The
+obligation is that the Runtime derives identifiers from the *validated
+filename*, over a restricted character set, and re-derives every path from
+data it controls.
+
+The same reasoning is why inbound Sidecar directories and the body spool
+are keyed on the Runtime-minted notice identifier rather than the provider
+`message.id`: the provider identifier is external, arbitrary, and not
+character-set-safe, and using one as a path component was itself a
+confirmed exploit path. The schemas pin `notice_id` and `req_id` to
+character sets that are safe as path components; `message.id` is
+deliberately unconstrained, because it is never used as one.
+
+## Symlinks, descriptors, and open discipline {#sec-11-2}
+
+A shared filesystem between a trusted and an untrusted party makes every
+path-based check racy. The Agent can replace any component of a path it
+owns with a symlink, at any moment, including between a Runtime's check and
+the Runtime's subsequent act.
+
+[](#sec-4-1) states the write-side discipline as three conjunctive
+requirements, and the conjunction is the point: each leg closes a gap the
+other two leave open.
+
+- Pinning only the final component leaves the *parent* swappable, and
+  rename and directory-creation calls have no no-follow flag at all — so a
+  bare "do not follow symlinks on writes" rule is not sufficient.
+- Pinning the parent chain without refusing symlinks *while acquiring* it
+  means the pinned descriptor may point at whatever the Agent planted
+  before the Runtime opened it — including across a Runtime restart, when
+  the chain is re-opened.
+- Pinning the whole chain correctly still says nothing about the final
+  filename. Every Runtime-written filename in the layout tree is
+  predictable or observable to the Agent, so a pre-planted symlink at that
+  name receives the Runtime's write with the Runtime's privileges unless
+  the final open refuses to follow it and, where the file is newly created,
+  refuses to reuse an existing name at all (`O_EXCL`).
+
+The append-only audit log is the one write with no `.tmp` sibling to lean
+on, and it is called out separately for two reasons. `O_EXCL` cannot apply
+to a file that legitimately already exists, so the final-component
+protection there is a no-follow, append-mode, **non-blocking** open plus an
+`fstat` through the resulting descriptor. The non-blocking part is
+load-bearing rather than a performance nicety: a no-follow flag does not
+apply to a FIFO, because a FIFO is not a symlink, and opening a FIFO for
+writing blocks until a reader appears. An Agent that plants a FIFO at that
+filename therefore stalls the Runtime's drain indefinitely — a denial of
+service that the exclusive-create branch happens to refuse for free, and
+that this branch must refuse explicitly.
+
+The read side mirrors all of it ([](#sec-4-1)): per-component no-follow
+opens or an equivalently pinned walk, a non-blocking open, an `fstat`
+through the open descriptor rather than a pre-open `stat` (which is itself
+a race), refusal of a multiply-linked file, and enforced size and count
+caps. The caps are not optional hardening: the `too_large` Result value
+presumes one, and without them an Agent can present an unbounded Sidecar or
+an unbounded request and exhaust the Runtime.
+
+## Time-of-check to time-of-use, and ingest by copy {#sec-11-3}
+
+Even with every open performed correctly, validating a file *in place* and
+then using it is a race: the Agent can rewrite the bytes between the check
+and the use, so the document that passed policy is not necessarily the
+document that gets composed and sent. The obligation that closes this is
+ingest by copy ([](#sec-4-1)) — the Runtime copies the request and every
+Sidecar into Runtime-private Staging outside the Volume, and validates,
+evaluates policy on, and composes exclusively from that private copy, never
+re-reading an Agent-writable path after a decision that depends on its
+content.
+
+This is also what keeps the trust model honest. Without it, the property
+"the request the Runtime approved is the request the Runtime sent" would
+rest on the Connector not rewriting a published file — an Agent-side
+obligation carrying a Runtime-side safety property, which the invariant of
+[](#sec-3-2) forbids. With it, that Connector obligation is pure
+well-formedness: a Runtime MAY treat an observed post-publish change as
+malformed, but nothing depends on the Connector honoring it.
+
+## Concurrency {#sec-11-4}
+
+Every atomicity guarantee in this protocol — the `.tmp`-then-rename
+discipline, the commit sentinel, the derivation of `req_id` from the
+maximum of the pending, processed, and result sets — assumes a single
+writer and a single drainer per Namespace, and none of them provides
+mutual exclusion ([](#sec-4-1)). Two concurrent drains can deliver the same
+request twice; two concurrent writers can collide on a `req_id` and clobber
+a published request, producing a verdict that names a request that no
+longer exists as written. The exclusion mechanism lives outside this
+protocol, and an implementation that does not provide one is not
+conformant, because behavior under violation is unspecified rather than
+merely degraded.
+
+## Attribution spoofing {#sec-11-5}
+
+Attribution is the Namespace a file arrived in, never an identifier inside
+the file ([](#sec-4-1)). A compromised Agent can write any `agent_id` it
+likes into a request; the member exists only as a cross-check, and a
+Runtime MUST reject a mismatch rather than believe it. Structural isolation
+is what actually enforces this: a Connector scoped to its own Namespace
+cannot name another Agent's.
+
+The Binding Record deserves the same skepticism from the other direction
+([](#sec-9-1)). It sits on an Agent-writable Volume, so its contents are
+untrusted data, it grants nothing, and it is never consulted for
+enforcement.
+
+## Untrusted content {#sec-11-6}
+
+Inbound mail is an injection vector aimed at the Agent's reasoning, and
+this protocol's posture is that *every sender-originated string* is
+untrusted content: bodies, subjects, previews, threading references, sender
+display names, and attachment Descriptors alike ([](#sec-7-1)).
+
+Two cases are worth restating because they are the ones most often assumed
+safe.
+
+**`message.from` is attacker-controlled display data.** Its display-name
+half is chosen freely by the sender, so a value such as
+`"security@yourbank.example <attacker@evil.example>"` is entirely legal and
+renders convincingly. It MUST NOT be used for a trust decision or shown to
+a human or an Agent as verified identity. Verified sender identity is only
+ever what the Runtime summarizes into `sender_standing` and `verdict`.
+
+**An attachment `filename` is an injection payload.** A Descriptor is
+metadata about a file the Agent may never receive the bytes of, and a
+`clean` Disposition asserts something about *bytes*, never about the
+truthfulness of the strings describing them. A quarantined file named to
+look like an instruction reaches the Agent's context intact even though its
+bytes were withheld. `media_type` is likewise a declaration, which is why
+policy is governed by the Runtime's own sniffing of the bytes rather than
+by the declared type.
+
+`verdict`, `sender_standing`, and `provenance` are advisory metadata for
+routing and presentation. None of them is a license for an Agent to obey
+body content, and this document deliberately does not define what an Agent
+should do with a message — that is Connector and deployment policy.
+
+## Recipient policy and header injection {#sec-11-7}
+
+Recipient policy is the exfiltration boundary, and it is a Runtime decision
+([](#sec-5-1)). The Agent's `draft.to` and `draft.cc` are requests, not
+instructions. Two obligations make the boundary mechanical rather than
+best-effort: the Runtime MUST evaluate policy over exactly the recipient
+set it will transmit to, and it MUST NOT transmit to any address not
+present in those members. Without the first, policy can be evaluated over a
+parse of the recipients that differs from the one used for transmission;
+without the second, a Runtime-side addition (a bcc, an archive address)
+escapes the evaluated set.
+
+The narrow addr-spec profile exists to make the evaluation mechanical.
+Display names, address lists inside a single element, quoted local parts,
+comments, IP literals, and folding whitespace are precisely the forms that
+make "does this address match the allowlist" a parsing problem with
+divergent answers — the classic confusion in which one parser sees the
+allowlisted address and the transmitting parser sees the attacker's. The
+profile is deliberately narrower than {{RFC5322}} for that reason, and the
+cost is disclosed: some legitimate {{RFC5322}} addresses cannot be
+expressed at this version.
+
+Header injection is the second half. Any Agent-authored string that reaches
+the composed message can attempt to introduce a header boundary with CR,
+LF, or NUL. The schema patterns are the first line of defense, but a
+Runtime MUST also reject or strip those characters at composition time,
+because a document can reach composition by a path where schema validation
+was bypassed upstream. The two fields most easily overlooked are the ones
+composed *directly into headers* rather than into a body or display
+context: `reply_to_message_id`, which becomes an `In-Reply-To:` header, and
+an attachment's `media_type`, which becomes a MIME part's `Content-Type:`
+{{RFC2045}}. An earlier revision's schema coverage stopped at `subject` and
+`filename` and missed exactly these.
+
+## The outbound digest is not a trust boundary {#sec-11-8}
+
+`sha256` on an outbound attachment Descriptor is computed by the Connector
+over bytes the Connector wrote ([](#sec-5-1)). The Agent controls both, so
+a matching digest proves only that the request is internally consistent.
+It catches corruption and interrupted writes; it authenticates nothing. A
+Runtime MUST NOT treat a digest match as evidence about the content's
+safety, and MUST apply its own policy — sniffing the bytes, applying type
+and size rules — to the staged copy regardless.
+
+The inbound direction is weaker still and is labelled as such: inbound
+`size_bytes` is provider-declared and advisory, not Runtime-verified
+([](#sec-7-2)).
+
+## Confirmation-oracle avoidance {#sec-11-9}
+
+Inbound metadata is gated so that withholding bytes does not become an
+information channel. `sha256` on an inbound Descriptor is emitted only
+where the Runtime asserts `clean` ([](#sec-7-2)). Publishing a digest for a
+withheld attachment would let an Agent confirm whether a *guessed* file was
+the one quarantined — a confirmation oracle — while providing no integrity
+value at all, since the Agent has no bytes to check it against.
+
+The same principle governs quarantined mail generally: it produces no
+Notice at all, rather than a Notice announcing that something was
+withheld.
+
+## Byte-absence and artifact-absence as the access gate {#sec-11-10}
+
+The access gate in this protocol is the absence of bytes, not a flag
+inside a document ([](#sec-4-1)). A Runtime MUST NOT place non-clean bytes
+in an Agent's Namespace; `content_ref` is the grant, and it exists only
+where bytes were published. An Agent that ignores every Disposition it is
+shown still cannot read what was never written.
+
+The same shape appears for bodies: a withheld or never-delivered message is
+simply not spooled, and a read against a missing artifact returns "not
+resolved," with no fallback fetch available to the Connector
+([](#sec-7-3)). Because retention may also remove an artifact
+([](#sec-4-2)), "retired" and "never spooled" are indistinguishable from
+the Connector's side — which is a deliberate property, not an ambiguity to
+be resolved by a new signal.
+
+The `content_ref` binding rules ([](#sec-7-2)) close the corresponding
+path-confusion risk: a consumer derives the byte path from the enclosing
+`notice_id` and the array index rather than from the `content_ref` string,
+and refuses any reference that does not match the pinned pattern or points
+outside its own inbound tree. Otherwise a Descriptor could name another
+Notice's Sidecar directory — including one belonging to a different
+delivery whose bytes the Agent was never granted.
+
+## Fail-closed version handling, and the cost of tolerance {#sec-11-11}
+
+A consumer reading a higher major than it speaks fails closed, and the
+version check runs *before* schema validation so that "wrong version" and
+"malformed" remain distinguishable ([](#sec-10-1)). Folding the two
+together is how a protocol acquires silent, undiagnosable mail loss.
+
+The unknown-member tolerance rule is direction-aware precisely because
+tolerance has a security cost in one direction and a safety benefit in the
+other. On Runtime-authored artifacts, strictness defended nothing — the
+producer is trusted, and an attacker able to author a Notice at all (a
+writable inbound tree) can author a schema-valid one — while its failure
+mode was silent mail loss. On the Agent-authored Submit Request, closure is
+doing real work: it is what makes an outbound `content_ref`, or any other
+smuggled member, a hard rejection rather than a member the Runtime might
+one day interpret. A Runtime therefore MUST keep rejecting unrecognized
+members inbound from an Agent, and its rejection is legible — a `rejected`
+Result — rather than silent.
+
+The value-level tolerance is scoped to the two explicitly advisory
+vocabularies for the same reason: `kind`, `outcome`, and `disposition` gate
+processing paths and byte publication, and treating an unrecognized value
+in any of them as opaque would let a producer's new value silently select a
+consumer's default path.
+
+## Inbound integrity and the writability of the inbound tree {#sec-11-12}
+
+A read-only inbound mount is the mechanism that makes a delivered Notice
+unforgeable ([](#sec-4-1)). Permission bits alone do not achieve it: a
+same-uid Agent can change a mode it owns, so an inbound tree protected only
+by bits is writable by the attacker in practice. Deployments that leave
+inbound writable should understand what they are accepting — an Agent can
+then author a schema-valid Notice for mail that never arrived, or alter one
+that did.
+
+This is also why the tolerance rule does not weaken the inbound direction:
+in the writable-inbound posture, the attacker's forgery is schema-valid
+anyway, so schema strictness was never the control. The control is the
+mount.
+
+Correspondingly, a Connector MUST NOT require write access under
+`inbound/`, and consumption tracking is Connector-private state kept
+elsewhere ([](#sec-4-1)). A Connector that crashes on a read-only inbound
+tree is broken against any Runtime enforcing inbound integrity.
+
+## Retention, deletion, and lost verdicts {#sec-11-13}
+
+Deletion rights are named per artifact class ([](#sec-4-2)) because an
+unnamed right becomes either unbounded growth or an accidental data-loss
+path. Two hazards are worth restating.
+
+**A Result deleted before it is read is a lost verdict.** No signal in
+this protocol tells a Runtime that a Connector has read one, so
+Runtime-side retention SHOULD be age-based and generous.
+
+**Deletion interacts with `req_id` monotonicity.** A Connector exercising
+its deletion rights in `processed/` or `results/` removes exactly the
+state from which the next `req_id` is derived, and MUST preserve
+monotonicity by other durable means. Symmetrically, a Runtime MUST NOT
+treat `processed/` as durable state — for deduplication, for instance —
+because the Connector may delete there. The Runtime's own record of what
+it sent belongs outside this protocol entirely.
+
+## What is wire-verifiable, and what is a Runtime obligation {#sec-11-14}
+
+A green conformance run proves that documents have the right shape. It
+proves nothing about a filesystem. The following are Runtime or Connector
+obligations that no document validator can observe, and a reviewer
+assessing an implementation must check them another way ([](#app-h) lists
+them as the gate's own honesty statement):
+
+- Sidecar file existence, and the binding between an ordinal and a
+  directory entry on disk.
+- Whether `size_bytes` and `sha256` match the bytes actually on disk.
+- Display sanitization of `filename`, and its never-a-path invariant.
+- The keying of inbound Sidecar directories on the Runtime-minted notice
+  identifier.
+- The location of Runtime-private Staging, outside the mounted Volume.
+- Write ordering and commit-sentinel atomicity.
+- Caps, allowlists, and quotas.
+- The absence of a spooled body for a quarantined or blocked message.
+- A Connector's tolerance of a read-only inbound tree.
+- Ingest by copy.
+- Write-side path discipline, in all three of its conjunctive legs.
+- Read-side open discipline.
+- Single writer and single drainer per Namespace.
+- Compose-time rejection or stripping of CR, LF, and NUL.
+
+Two of these deserve emphasis as trust-model statements rather than as
+testing notes. First, `disposition == "clean"` is the *Runtime's
+assertion*, and this document deliberately does not specify the basis for
+it; a consumer that treats `clean` as a proof rather than as an assertion
+has misread the trust model. Second, this protocol cannot make a Runtime
+trustworthy — it can only ensure that everything the Agent contributes is
+inert until a Runtime acts on it, and that whatever the Runtime asserts is
+legible and attributable to the Runtime.
+
+## The extension space, and outcomes as claims {#sec-11-15}
+
+`outbound/ext/<name>/` ([](#sec-4-1)) is Connector-owned and Agent-writable,
+and this document specifies no shape for anything under it. Its `<name>`
+is a stable, opaque Connector id ([](#sec-4-1)), so a Runtime's
+out-of-band agreement with a Connector survives that Connector's
+repository being renamed. Nothing security-relevant may be built on it.
+Its first use, a per-Notice outcome file, is written by the receiving
+Agent's own uid and is therefore forgeable by construction: a receiving
+Agent can claim a delivery that did not happen, deny one that did, or
+suppress a refusal. An outcome is a statement by the receiving side about
+what it did with a Notice; a party MUST NOT treat an outcome as proof of
+delivery or of non-delivery, and the Runtime's own delivery record is
+authoritative over it. A Runtime that reads outcomes may let them change
+what a sender is told or what an operator sees; it MUST NOT let them
+change what its own record says happened. There is deliberately no inbound
+extension space, because an inbound tree is a Runtime assertion about
+origin ([](#sec-7-1)) and a Connector cannot know what a vendor-named
+assertion means.
+
+# IANA Considerations {#sec-12}
+
+This document has no IANA actions.
+
+--- back
+
+# Submit-Request Schema {#app-a}
+
+*(Normative.)* The schema below is written in the JSON Schema 2020-12
+dialect {{JSON-SCHEMA-2020-12}} and governs the artifact defined in
+[](#sec-5). This is the Agent-authored artifact, and its envelope is closed
+at every level: an unrecognized member is a hard rejection, surfaced as a
+`rejected` Result rather than as a silent drop ([](#sec-10-1)).
+
+~~~ json
+{::include-fold69hardleft4dry schemas/submit-request.schema.json}
+~~~
+{: #schema-submit-request title="schemas/submit-request.schema.json" sourcecode-name="submit-request.schema.json"}
+
+# Result Schema {#app-b}
+
+*(Normative.)* JSON Schema 2020-12 {{JSON-SCHEMA-2020-12}}; governs the
+artifact defined in [](#sec-6). Runtime-authored, and therefore open at
+every level: a consumer tolerates unrecognized members ([](#sec-10-1)). The
+`attachments[i].index == i` binding stated in [](#sec-6-1) is not
+expressible here and is enforced as a named post-check by the conformance
+gate ([](#app-h)).
+
+~~~ json
+{::include-fold69hardleft4dry schemas/result.schema.json}
+~~~
+{: #schema-result title="schemas/result.schema.json" sourcecode-name="result.schema.json"}
+
+# Deliver-Notice Schema {#app-c}
+
+*(Normative.)* JSON Schema 2020-12 {{JSON-SCHEMA-2020-12}}; governs the
+artifact defined in [](#sec-7). Runtime-authored and open at every level.
+The two `allOf` conditionals implement the clean-gating of `content_ref`
+and `sha256` ([](#sec-7-2)); the `content_ref` index and prefix binding, by
+contrast, is not expressible here and is enforced as a named post-check
+([](#app-h)).
+
+~~~ json
+{::include-fold69hardleft4dry schemas/deliver-notice.schema.json}
+~~~
+{: #schema-deliver-notice title="schemas/deliver-notice.schema.json" sourcecode-name="deliver-notice.schema.json"}
+
+# Inbound-Message Schema {#app-d}
+
+*(Normative.)* JSON Schema 2020-12 {{JSON-SCHEMA-2020-12}}; governs the
+artifact defined in [](#sec-7-3). Runtime-authored and open at every level.
+Its Descriptor rules, including the clean-gating conditionals, match the
+deliver-notice schema's.
+
+~~~ json
+{::include-fold69hardleft4dry schemas/inbound-message.schema.json}
+~~~
+{: #schema-inbound-message title="schemas/inbound-message.schema.json" sourcecode-name="inbound-message.schema.json"}
+
+# Binding-Record Schema {#app-e}
+
+*(Normative.)* JSON Schema 2020-12 {{JSON-SCHEMA-2020-12}}; governs the
+artifact defined in [](#sec-9). This envelope is closed, for the reason
+given in [](#sec-9-1) — an anti-secret-leak lint rather than a
+compatibility surface.
+
+~~~ json
+{::include-fold69hardleft4dry schemas/binding-record.schema.json}
+~~~
+{: #schema-binding-record title="schemas/binding-record.schema.json" sourcecode-name="binding-record.schema.json"}
+
+# Peer-Notice Schema (v3.1.0 DRAFT) {#app-f}
+
+*(Normative for the shape it pins; the profile it belongs to is DRAFT.)*
+JSON Schema 2020-12 {{JSON-SCHEMA-2020-12}}; governs a peer notice, the
+artifact the peer-origin profile places under `<agent-id>/peer/notices/`.
+The profile's prose is a companion document (`spec/peer-origin.md`, v3.1.0
+DRAFT); at this document version the schema and the `peer-*` fixtures
+([](#app-h)) are the whole of what this document specifies about it. The
+envelope is Runtime-authored and therefore open ([](#sec-10-1)). A document
+with `kind: "peer"` found under `inbound/notices/` fails the deliver-notice
+schema ([](#app-c)), and a document with `kind: "deliver"` found under
+`peer/notices/` fails this one; both are dropped under the rule of
+[](#sec-7-1).
+
+~~~ json
+{::include-fold69hardleft4dry schemas/peer-notice.schema.json}
+~~~
+{: #schema-peer-notice title="schemas/peer-notice.schema.json" sourcecode-name="peer-notice.schema.json"}
+
+# Golden Examples {#app-g}
+
+*(Normative.)* The documents below are reproduced byte-verbatim from the
+conformance suite ([](#app-h)). They are a small selection covering each
+artifact type and three rejections; the suite itself is the authority. The
+selection is configured in `draft/fixtures.toml`, not hardcoded in this
+document's build tooling, and one further example — a Binding Record — is
+shown inline at [](#sec-9) instead of being repeated here.
+
+{::include-nested draft/build/appendix-fixtures.mkd}
+
+# Conformance Suite {#app-h}
+
+*(Normative for the classes of [](#sec-10-3); the honesty statement below
+is part of the specification.)*
+
+The suite consists of golden artifacts under `fixtures/valid/` and
+`fixtures/invalid/`, plus a validator, `fixtures/validate.py`.
+
+{::include-nested draft/build/appendix-h-roster.mkd}
+
+**Running it.** The validator is stdlib-only and takes no arguments:
+
+~~~ text
+python3 fixtures/validate.py
+~~~
+
+It exits 0 if and only if every fixture under `valid/` passes and every
+fixture under `invalid/` fails. It requires no counterpart, no network, and
+no dependency: **the fixtures are the other side.**
+
+**How a fixture is mapped to a schema.** By filename prefix — `request-` to
+the submit-request schema, `notice-` to deliver-notice, `result-` to
+result, `message-` to inbound-message, `identity-` to binding-record, and
+`peer-` to peer-notice ([](#app-f)).
+
+**What the validator checks.** Schema validation in the JSON Schema
+2020-12 dialect {{JSON-SCHEMA-2020-12}}, over the subset of keywords these
+schemas use (`type`, `const`, `enum`, `minLength`, `pattern`, `minItems`,
+`minimum`, `items`, `required`, `properties`, `additionalProperties`,
+`allOf`, and a single `if`/`then` pair) — plus two **named post-checks**,
+neither expressible in standard JSON Schema:
+
+- the Result-side binding `attachments[i].index == i`, contiguous and
+  unique over `0` through `n-1` ([](#sec-6-1));
+- the `content_ref` index and prefix binding on Notice, Inbound Message,
+  and peer-notice documents: every Descriptor carrying `content_ref` must
+  equal `<notice_id>.attachments/<i>` for its own array position `i`,
+  binding both the trailing index and the leading prefix ([](#sec-7-2)).
+
+A Connector conformance claim requires running **both** the schema
+validation and the second post-check, because exactly one invalid
+`notice-*` fixture — and its `peer-*` counterpart — is schema-valid on its
+own and is caught only by that post-check ([](#app-g), [](#sec-10-3)).
+
+**A note on pattern anchoring, and a portability cost.** Every schema
+pattern in this suite that ends in `$` is written as `(?!\n)$`. The reason
+is that a bare `$` matches before a single trailing newline in several
+widely used regex engines — Python's `re`, Java, and .NET among them —
+unlike the ECMA-262 dialect JSON Schema specifies. Since every one of these
+patterns exists to forbid exactly the control characters a permissive `$`
+would let through at the end of a string, the lookahead closes that gap in
+the schemas themselves rather than in any one validator. Seven fixtures pin
+the trailing-newline case specifically, distinct from the CRLF fixtures,
+which embed `\r\n` and were already rejected even under a permissive
+engine.
+
+The cost is disclosed rather than discovered: **lookahead-less engines
+cannot compile these patterns at all.** RE2 (Go's `regexp`), Rust's
+`regex` crate, and POSIX ERE reject `(?!` outright, so the three schemas
+carrying the guard fail to load rather than validating loosely. Those
+engines already treat `$` as strict end-of-string and never had the gap,
+so an implementer on one of them should strip the lookahead — not add a
+check outside the pattern, which would be both unnecessary and not what
+breaks. The failure is loud (a compile error, never silent acceptance).
+
+**What a green run proves.** That every document shape this protocol
+defines is accepted or rejected as specified, by an implementation's own
+parser, with no counterpart present.
+
+**What a green run does NOT prove.** The following are filesystem and
+policy invariants that no document validator can observe. They are
+obligations of the conformance classes regardless ([](#sec-10-3)), and are
+checked operationally:
+
+- Sidecar file existence — an extra file, a missing file, or a directory
+  present when the Descriptor array is empty or absent.
+- `size_bytes` and `sha256` actually matching the bytes on disk.
+- `filename` display-sanitization, and the "never a path" invariant.
+- The binding between an ordinal and a directory entry on disk. The schema
+  checks only the *Descriptor* array's own index member, not that
+  directory entry `N` exists.
+- Inbound Sidecar directories keyed on the Runtime-minted notice
+  identifier rather than the provider `message.id`.
+- The location of Runtime-private Staging, outside the mounted Volume.
+- Write ordering and commit-sentinel atomicity — Sidecars before
+  `req-<id>.json`; `.tmp` plus rename.
+- Caps and allowlists — type allowlists, size caps, Volume quotas.
+- The absence of a spooled body for a quarantined or blocked message
+  (enforcement by absence, [](#sec-7-3)).
+- A Connector's tolerance of a read-only `inbound/` tree. The prescribed
+  check is operational, not a fixture: run the Connector against an
+  inbound tree it cannot write and confirm that it starts, relays every
+  pending Notice, resolves bodies, and submits outbound requests, without
+  requiring any inbound write to succeed ([](#sec-10-3)).
+- Ingest by copy — validation, policy evaluation, and composition running
+  over a Runtime-private snapshot taken before any of those steps, rather
+  than re-reading an Agent-writable path ([](#sec-4-1)).
+- Write-side path discipline, all three conjunctive legs: full
+  parent-chain resolution through pinned directory descriptors from the
+  Namespace root; each directory component opened `O_NOFOLLOW|O_DIRECTORY`
+  at the moment it is added to that chain; and the final component created
+  `O_EXCL` and never followed, failing closed on `EEXIST` and `ELOOP`. Any
+  one leg alone is a known-insufficient partial mitigation ([](#sec-4-1)).
+- Read-side open discipline — per-component no-symlink-follow opens,
+  non-blocking opens, `fstat`-based regular-file verification through the
+  open descriptor, and bounded reads and caps on every Agent-influenced
+  path ([](#sec-4-1)).
+- Single writer and single drainer per Namespace — an operational and
+  deployment invariant, such as an OS-level lock held for the process
+  lifetime ([](#sec-4-1)).
+- Compose-time header-boundary stripping: even where the schemas'
+  control-character patterns are bypassed upstream, the Runtime rejects or
+  strips CR, LF, and NUL before composing the outbound message
+  ([](#sec-5-1)).
+- The peer-origin profile's operational obligations (v3.1.0 DRAFT), none
+  of them visible to a document validator: the write-authority partition —
+  no component that admits messages from a transport not restricted to
+  authorised peer senders holds write authority over `peer/`, and the
+  prescribed check is a write attempt from inside the admitting component
+  that must fail; intake isolation for shared-transport peer candidates, in
+  a location that is neither `inbound/` nor `peer/` and unreachable from
+  any Agent Namespace; verification placement in a component holding peer
+  write authority that hashes body and attachment bytes itself;
+  `sender_exposure` never sender-settable; a peer notice carrying
+  `in_reply_to` only when the placing Runtime resolved it from its own
+  record, an unresolvable key being refused rather than stripped; and
+  at-most-once action by the Connector, with an ambiguous target held
+  rather than fanned out.
+
+Beyond these, the behavioral obligations of Sections {{<sec-7}} and
+{{<sec-8}} — the untrusted-content posture, the treatment of `task_id` as
+correlation rather than authorization, and the requirement that verified
+sender identity never be taken from `message.from` — sit outside the
+fixture gate entirely. They constrain what an implementation *does* with a
+valid document, which no document-level gate can see.
+
+# A Deferred Seam-Visible "Handled" Signal (Non-Normative) {#app-i}
+
+**This appendix is non-normative and is not in force at this document
+version.** It records the reasoning behind a gap deliberately left open,
+not an addition to the protocol. Nothing below is a directory, a member, or
+an artifact that a conforming implementation can rely on, and no
+requirement keyword appears anywhere in it.
+
+**The gap.** Making inbound consumption-tracking Connector-private
+([](#sec-4-1)) closes the writability conflict but leaves a knowledge and
+capability split unbridged: only the Connector knows that a Notice has
+been relayed to its Agent, while on a read-only inbound tree only the
+Runtime can delete anything. Neither side alone can turn "consumed" into
+"reclaimed."
+
+**A sketch, not a specification.** One shape that would bridge it is a
+Connector-written, zero-byte marker per acknowledged Notice, written into
+`outbound/`, where the Connector already has write access in every
+posture:
+
+~~~ text
+outbound/acks/notice-<id>   # sketch only - not part of the protocol
+~~~
+{: #ex-ack-sketch title="Sketch only — not part of this protocol"}
+
+A Runtime could then delete the acknowledged Notice and its spooled
+message, and finally the marker itself. This is presented purely as a
+sketch: no directory and no wire member is introduced by this appendix.
+
+**Why a Connector-forgeable signal would be acceptable here.** A
+garbage-collection signal is a resource decision rather than a security
+decision. An Agent that falsely claims consumption loses only its own
+unread mail; one that never claims consumption only bloats its own inbox.
+Neither crosses a trust boundary that matters, and neither touches any
+record of the exchange the Runtime keeps on its own side. That is what
+distinguishes this case from every other "the Agent writes it, so it
+cannot be trusted" case in this document — but it is a distinction a
+future version would need to state explicitly rather than assume.
+
+**Why a high-water mark cannot substitute.** [](#sec-8) requires `task_id`
+to be unguessable and never sequential, and nothing in this document
+orders notice identifiers, so no single "processed through N" cursor is
+expressible. Any consumption signal has to be a *set* of identifiers, or
+time-ordered — and time-ordering would require the consumer to process
+strictly in delivery order, which nothing today requires.
+
+**The lifecycle this would enable, and its boundaries.** A reliable "is
+this one done?" answer is the watermark a real retention lifecycle
+promotes against: cycling a working set, rolling handled traffic into
+period-compacted archives, then expiring or tiering to cold storage. Three
+boundaries would need to hold if this is ever specified.
+
+- **The seam is not the record.** A Runtime that needs an exchange of
+  record already keeps one outside this protocol, tamper-evident.
+  Retention here is about an Agent's access to its own history, not about
+  the durability of evidence; conflating the two produces an archive that
+  satisfies neither.
+- **An Agent-writable archive is never evidence.** A compacted archive
+  living under `outbound/`, which is Agent-writable in every posture, can
+  be rewritten by the Agent it belongs to. Anything meant to be relied on
+  has to be Runtime-written or kept outside this protocol entirely.
+- **It must not grow the read surface.** The read available today is a
+  point lookup from a notice identifier to a body. "Search my archive" is
+  a materially larger capability — decompression, indexing, query — for a
+  deliberately dumb, credential-free relay to take on. If archives are
+  ever exposed to an Agent, that likely belongs behind a Runtime-served
+  surface rather than the file-drop seam.
+
+**Why this is deferred rather than specified now.** A capability starts
+with a change to this document once a second implementation independently
+wants it, with members and fixtures proposed together. Today exactly one
+reference Connector carries a private workaround for the underlying
+problem — a writability-probing fallback with three modes: move, ledger,
+and in-memory. There is no second data point yet to generalize from, and
+specifying now would freeze one side's convention as the protocol's
+answer.
+
+**One honesty note for a future implementer.** The sketch's own
+garbage-collection step is not atomic: if a Runtime crashes between
+deleting the Notice artifacts and deleting the acknowledgment marker, the
+marker is orphaned, pointing at a Notice that no longer exists. Any real
+design needs idempotent collection, in which a missing target is not an
+error — recorded here so that it is not rediscovered from scratch.
+
+# Change Log
+{: numbered="false"}
+
+*(Informative. One entry per document version, newest first, derived from
+the versioning record of the protocol contract this document renders.)*
+
+## 3.1.0 (DRAFT) — the protocol is AMAP; the outbound extension space; the peer-origin profile's schema
+{: numbered="false"}
+
+An additive **minor** bump; the wire major stays `"2"`.
+
+- **The protocol is AMAP; the schema `$id` authority is `amap-spec`**
+  (2026-09-15). The protocol formerly called AMP ("Agent Mailbox Protocol")
+  is renamed AMAP ("Agent Mailbox Access Protocol") because AMP collides
+  with the IETF DTN working group's adopted `draft-ietf-dtn-amp`; the
+  specification repository moves from `agent-mailbox-protocol` to
+  `amap-spec` with it. The six schema `$id` values move from
+  `https://agent-mailbox-protocol/schemas/…` to `https://amap-spec/schemas/…`.
+  Nothing on the wire changes shape: no document carries the protocol's name
+  as a field, and `$id` is an identifier the gate never dereferences.
+  Implementations that mirror the Runtime's address spell its local part
+  `amap.router` from this version. This draft's filename is a separate
+  decision and is unchanged here. This version is marked DRAFT: its profile
+  prose is a companion document (`spec/peer-origin.md`, itself DRAFT), and
+  its schema and fixtures may still change before it is settled.
+- **Outbound extension space.** `outbound/ext/<name>/` is defined as a
+  Connector-owned side channel a Runtime MAY read by out-of-band agreement,
+  with no shape specified and nothing security-relevant permitted to depend
+  on it ([](#sec-4-1)). `<name>` is pinned as a stable Connector id —
+  chosen once, unchanged by any rename of the Connector's repository,
+  package, or deployment, and opaque to the Runtime that reads it; the
+  wording it replaced ("a Connector or deployment name") permitted a
+  repository name to leak into a wire-visible path. The first id is
+  `claude-code`. One normative clarification sits beside it: an outcome
+  written there is a claim by the receiving side, never proof of delivery
+  or of non-delivery, and the Runtime's own delivery record is
+  authoritative over it ([](#sec-11-15)). There is deliberately no inbound
+  extension space.
+- **Peer-notice schema.** The peer-origin profile's artifact is pinned by
+  `peer-notice.schema.json` ([](#app-f)): the deliver-notice layout with
+  `kind` and `mailbox` fixed to `peer`, `message.from` a bare addr-spec,
+  message identifiers in the notice-identifier character set, and the
+  optional Runtime-asserted `sender_exposure` stamp with its required
+  members. The profile's prose is the companion document
+  `spec/peer-origin.md` (v3.1.0 DRAFT).
+- **Fixtures: 75 total (27 valid, 48 invalid), up from 58.** 16 `peer-*`
+  fixtures were added (6 valid, 10 invalid), covering a minimal notice, a
+  reply, the exposure stamp asserted both ways, a clean attachment
+  reference, an unknown-member case, and rejections for a `deliver` kind
+  under the peer tree, a `peer` kind under the inbound tree, a display-name
+  or CRLF `from`, encoded message identifiers, a missing `asserted_by`, a
+  missing last-delivery timestamp when exposure is asserted true, an inbox
+  `mailbox`, a `content_ref` index mismatch, and a trailing-newline
+  identifier. The validator maps the `peer-` prefix to the new schema and
+  applies the `content_ref` post-check to it. Three existing fixtures had
+  example strings normalised to `example.*` identities (one free-text body,
+  two addresses in injection examples); each stays valid or invalid for the
+  same reason as before, and no schema changed.
+
+## 3.0.0 — direction-aware tolerance, and six closed safety holes
+{: numbered="false"}
+
+A **major document bump**; the wire major stays `"2"`. [](#sec-10-1) states
+why the two numbers diverge here, and why bumping the wire would have
+caused the exact harm this version exists to repair.
+
+- **Unknown-member tolerance, direction-aware.** The three Runtime-authored
+  artifacts — deliver-notice, inbound-message, and result — became **open**
+  at every level: `additionalProperties: false` was removed from the top
+  level, from `message`, from Descriptor items, and from `attestation`, and
+  a consumer must tolerate an unrecognized member. Emitting one remains
+  producer non-conformance. The Agent-authored submit-request envelope
+  stays **closed** at every level. Consequence: adding an optional member
+  to a Runtime-authored artifact is now genuinely additive; adding any
+  member to the submit-request is a major change.
+- **...and for values.** The `enum` constraint was removed from
+  `message.sender_standing` and `message.provenance`, the two explicitly
+  advisory vocabularies, and a consumer must tolerate an unrecognized value
+  in either. `kind`, `outcome` (both levels), and `disposition` remain
+  closed, enum-locked vocabularies.
+- **Ingest by copy.** A Runtime must copy an Agent-authored request and its
+  Sidecars into private staging before validating, must act only on that
+  copy, and must not re-read an Agent-writable path after a decision
+  depending on its content ([](#sec-4-1)).
+- **Address syntax and header-injection discipline.** A new obligation in
+  [](#sec-5-1) plus schema patterns on `draft.to`/`cc`, `draft.subject`,
+  attachment `filename` and `media_type`, `draft.reply_to_message_id`,
+  `in_reply_to`, `agent_id`, and `ts` — including the two members composed
+  directly into headers, which earlier schema coverage missed.
+- **Path discipline, write- and read-side both.** The write-side rule
+  became **conjunctive** ([](#sec-4-1)), and a new read-side rule applies
+  the equivalent discipline to every Agent-influenceable read. A
+  `notice_id` character-set pattern was added to the deliver-notice and
+  inbound-message schemas so that every legal `notice_id` is also a legal
+  `content_ref` prefix. **Disclosed cost:** `notice_id` was previously
+  unconstrained, so a Runtime minting identifiers outside the new character
+  set — an ISO-8601 timestamp, standard base64, a URN, or anything else
+  carrying punctuation outside it — now emits Notices and Inbound Messages
+  that fail schema validation on a *pattern violation on a required
+  member*, and a conforming Connector drops them. **Migration:** such a
+  Runtime must re-mint identifiers under the new character set (unpadded
+  base64url or lowercase hex, for instance) before any Connector it talks
+  to upgrades, because the failure is otherwise silent on both sides.
+- **Single writer, single drainer.** [](#sec-4-1) now names the
+  concurrency assumption that every atomicity, commit-sentinel, and
+  `req_id` rule already depended on.
+- **`message.from` named untrusted.** The untrusted-content sentence now
+  covers explicitly the member most likely to be rendered to a human or
+  used for a trust judgement ([](#sec-7-1)).
+- **Document authority.** The contract, its schemas, and its fixtures are
+  normative; this rendering is generated from them and is
+  non-authoritative where they disagree. The conformance-class text was
+  moved into the contract itself so that the demotion deletes nothing, and
+  a stray claim of a second, message-specific Sidecar directory was
+  corrected to match the layout tree.
+- **Corrections shipped with this version**, rather than a tidied history:
+  (i) the write rule described in an earlier revision as "strengthened"
+  had in fact been weakened — the exclusive-create requirement on the
+  final component had been deleted rather than supplemented
+  ([](#sec-10-1)); (ii) the inbound drop rule described as a pure closure
+  over schema validation was refuted by this version's own
+  `content_ref`-binding fixture, and is now stated as two independent
+  checks ([](#sec-7-1), [](#sec-10-3)); (iii) the claim that this version's
+  producer bytes are unchanged is explicitly *not* made — two producer-side
+  narrowings are disclosed above, each travelling a legible per-artifact
+  refusal path; and (iv) the 2.1.0 entry below is corrected in place.
+- **Fixtures: 58 total (21 valid, 37 invalid), up from 44.** The
+  unknown-member notice fixture moved from the invalid set to the valid set
+  and was extended with an unrecognized member inside `message`; valid
+  unknown-member fixtures were added for result and inbound-message; the
+  withheld-body invalid fixture was deleted, having become schema-valid
+  under the relaxed envelope (its name always over-claimed what
+  `additionalProperties` alone tested); the bad-provenance fixture moved to
+  the valid set as an unrecognized-value case; an invalid extra-member
+  submit-request fixture was added to pin the closed side of the asymmetry,
+  previously untested at the top level; four invalid fixtures were added
+  for the address-syntax and control-character rules; a traversal
+  `notice_id` fixture was added; the `content_ref` index-mismatch fixture
+  was added, and is the one invalid `notice-*` case that is schema-valid on
+  its own; and six fixtures pin the trailing-newline anchoring case.
+
+## 2.3.0 — inbound byte access in force
+{: numbered="false"}
+
+A **minor bump**, prose only: no schema rule and no fixture changed, and
+the wire major stayed `"2"`. It resolved an inconsistency carried since
+2.0.0. A fixture showing a `clean` Descriptor with `content_ref` and
+`sha256` sat in the valid set as a deliberately forward-valid shape, while
+the prose forbade any Runtime from producing it — the gate blessed what
+the prose forbade. This version sided with the fixtures: the
+release-scoped byte embargo was dropped, and the standing rule became the
+one stated in [](#sec-7-2) — a Runtime may publish bytes and emit
+`content_ref`/`sha256` only for a Descriptor it asserts `clean`, and a
+Runtime that cannot make that determination must not assert `clean`. The
+substantive clarification is that `disposition` is the Runtime's
+*assertion*, its basis deliberately unspecified; the older prose presumed
+a scanner, which is what made byte access read as a deferred capability
+rather than as a policy decision whose wire shape major 2 already carried.
+Nothing was tightened, and there is still no outbound `content_ref`.
+
+## 2.2.0 — deletion rights, read-only inbound
+{: numbered="false"}
+
+A **permissive minor bump**: no wire member, no schema change, no fixture
+changed or added. It (a) declared a read-only inbound tree a valid Runtime
+posture and made the inbound `processed/` archive directory optional, (b)
+obliged a Connector not to require inbound write access, making
+consumption-recording Connector-private, and (c) named deletion rights per
+artifact class, along with the two constraints attached to them: a
+Connector must not delete or rewrite a published request, and a Connector
+exercising its new deletion rights must preserve `req_id` monotonicity by
+other durable means. It also pinned three previously implicit
+`reason_code` rules: setting one on every Result became a keyworded
+SHOULD, and a consumer must tolerate an unrecognized code and must not
+infer `outcome` from it.
+
+## 2.1.0 — the body spool, and three optional Result members
+{: numbered="false"}
+
+Recorded at the time as an **additive minor bump**: one new optional
+spooled artifact (the Inbound Message) and its schema, one new optional
+Notice member (`provenance`), and three new optional Result members
+(`reason_code`, `attestation`, `ts`). No existing schema gained a required
+member, no existing fixture changed shape, and the wire major stayed `"2"`.
+
+**Correction (recorded at 3.0.0).** That "additive minor" label was
+unsound as written. Against a strictly validating 2.0.0 consumer — every
+schema at that version was closed at every level — a Notice carrying the
+new `provenance` member failed schema validation as a **whole document**
+and was silently dropped: precisely the failure mode cited as the reason
+attachments had required a major bump, reintroduced as a minor. Version
+3.0.0 repairs the versioning model rather than relabelling this history,
+which is why this entry still records what shipped rather than what would
+have been correct.
+
+## 2.0.0 — attachments, and `contract_version` required
+{: numbered="false"}
+
+A **major bump**, moving the wire major from `"1"` to `"2"`. It added
+attachment support in both directions — outbound Descriptors with required
+`size_bytes` and `sha256` and their Sidecar bytes, inbound Descriptors with
+a `disposition` — and made `contract_version` REQUIRED on the
+submit-request, deliver-notice, and result artifacts, with no
+compatibility mode. The reason the bump had to be major rather than minor
+is the reasoning in [](#sec-10-1): under the then-universal closed
+envelopes, a new member caused a major-1 consumer to reject the *whole
+document*, which inbound is silent total message loss. A version signal,
+rather than an unknown-member rejection, is what makes that refusal
+legible.
+
+## Fixture identifier normalization
+{: numbered="false"}
+
+Across these versions the fixture suite's identities were normalized to
+`example.com` and `example.org` placeholders, and deployment-specific
+identifiers were removed from fixture content. This changed no shape and
+no expectation: every affected fixture validates exactly as before, and no
+identifier removed in that pass is reintroduced by this document.

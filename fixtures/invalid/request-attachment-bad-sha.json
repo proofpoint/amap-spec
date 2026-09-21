@@ -1,0 +1,11 @@
+{
+  "contract_version": "2",
+  "req_id": "00000015",
+  "draft": {
+    "to": ["a@b"], "subject": "s", "body_text": "b",
+    "attachments": [
+      { "filename": "x.pdf", "media_type": "application/pdf", "size_bytes": 10,
+        "sha256": "NOT-A-VALID-SHA256-VALUE" }
+    ]
+  }
+}

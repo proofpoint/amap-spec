@@ -1,0 +1,13 @@
+{
+  "contract_version": "2",
+  "req_id": "00000010",
+  "outcome": "queued_for_human",
+  "detail": "no outbound screener wired; attachments fail-closed to human review",
+  "recipients": ["owner@example.com"],
+  "message_id": null,
+  "job_id": null,
+  "attachments": [
+    { "index": 0, "outcome": "dlp_held", "detail": "no verdict source" },
+    { "index": 1, "outcome": "dlp_held", "detail": "no verdict source" }
+  ]
+}

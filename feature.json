@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+
+  "feature": {
+    "name": "amap-spec",
+    "summary": "Mounts this repository's spec, schemas and fixtures read-only and LIVE into every amap-* sandbox, and tells the agent to conform to them.",
+    "install": "This file lives at the ROOT of the amap-spec checkout. ./install-sandy-feature.sh symlinks $SANDY_HOME/features/amap-spec at this directory, which makes the checkout itself the feature directory -- that is what lets the mounts be live rather than copies.",
+    "note": "The `feature` key is reserved and never interpreted by sandy. It is the ONLY place free prose may go: a selection block accepts `include` and `exclude` and nothing else, and an unknown key refuses the whole manifest -- which fails every launch on the host, not just this feature.",
+    "exclude_note": "sandboxes patterns are matched against the SLUG (amap-spec-<sha8>) and the workspace HOST PATH, anchored at both ends. A bare 'amap-spec' matches neither and is a silent no-op -- nothing warns that a pattern matched zero sandboxes. Two anchors are kept because each covers a naming accident the other does not. Deliberately NOT 'amap-spec-*', which would also swallow a future amap-spec-tools."
+  },
+
+  "sandboxes": {
+    "include": ["amap-*"],
+    "exclude": ["amap-spec-????????", "*/amap-spec"]
+  },
+  "agents": { "include": ["*"] },
+
+  "mounts": [
+    { "name": "spec",           "from": "spec",           "mode": "ro" },
+    { "name": "schemas",        "from": "schemas",        "mode": "ro" },
+    { "name": "fixtures",       "from": "fixtures",       "mode": "ro" },
+    { "name": "CONFORMANCE.md", "from": "CONFORMANCE.md", "mode": "ro" }
+  ],
+
+  "agent_args": {
+    "claude": [
+      "--append-system-prompt-file",
+      "/home/sandy/.amap-spec/CONFORMANCE.md"
+    ]
+  }
+}
