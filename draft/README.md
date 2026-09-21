@@ -96,6 +96,22 @@ unicode-scripts 1.12.0, unicode-types 1.11.0. If drift ever shows up in
 `make -C draft reproducible` across machines, the remedy is a `Gemfile.lock`
 in `draft/`, not a change to this design.
 
+
+**A macOS convenience, which is not the requirement.**
+`draft/tools/install-macos-brew.sh` installs the four pins with Homebrew
+(`--pdf` adds weasyprint and its runtime libraries; `--dry-run` prints the
+plan). It is optional and non-authoritative, and nothing in `draft/Makefile`
+depends on it — that separation is the point. The moment a build target needs
+an installer, the stated requirement has quietly become "have Homebrew", which
+is a far larger claim than "have kramdown-rfc 1.7.43", and it takes the choice
+of mechanism away from the host. The script ends by running `preflight.sh` and
+defers to its verdict: the script installs, preflight decides.
+
+It does not edit your shell profile. Homebrew's ruby is keg-only and its gem
+bin directory is separate again, so two `PATH` lines are needed; the script
+prints them rather than writing them, because a printed line can be read before
+it is run and a rewritten dotfile cannot.
+
 ## 3. Build, check, diff
 
 ```sh

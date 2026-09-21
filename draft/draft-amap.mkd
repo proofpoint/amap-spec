@@ -33,12 +33,7 @@ author:
     ins: T. Adams
     name: Trent Adams
     organization: Proofpoint, Inc.
-    # PLACEHOLDER — email withheld pending the author's own statement of it.
-    # An RFC author block publishes a working address permanently and is the
-    # contact of record for IPR correspondence under BCP 78/79; it is not a
-    # field to infer from a colleague's address pattern. Supply it before
-    # submission, or drop the line if this author prefers none.
-    # email: <ask T. Adams>
+    email: tadams@proofpoint.com
 normative:
   RFC2119:
   RFC8174:

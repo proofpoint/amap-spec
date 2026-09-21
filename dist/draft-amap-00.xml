@@ -25,6 +25,7 @@
     <author initials="T." surname="Adams" fullname="Trent Adams">
       <organization>Proofpoint, Inc.</organization>
       <address>
+        <email>tadams@proofpoint.com</email>
       </address>
     </author>
 
@@ -37,7 +38,7 @@
     <abstract>
 
 
-<?line 82?>
+<?line 77?>
 
 <t>The Agent Mailbox Access Protocol (AMAP) is a wire contract, carried over a
 filesystem namespace, between an untrusted per-agent connector and a trusted,
@@ -83,7 +84,7 @@ Log, 3.1.0).</t>
     <note title="About This Draft">
 
 
-<?line 118?>
+<?line 113?>
 
 <t>This document is an initial draft, distributed for review and comment. It is
 <strong>not</strong> a standard, and no assurance is given that it will become one. It may
@@ -122,7 +123,7 @@ published under the Apache License 2.0.</t>
   <middle>
 
 
-<?line 148?>
+<?line 143?>
 
 <section anchor="sec-1"><name>Introduction — Motivation and Problem Statement</name>
 
@@ -2416,7 +2417,7 @@ assertion means.</t>
 </references>
 
 
-<?line 2113?>
+<?line 2108?>
 
 <section anchor="app-a"><name>Submit-Request Schema</name>
 
