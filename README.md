@@ -123,6 +123,21 @@ around them.
 
 The version history is in `spec/contract.md` §7.
 
+## Contributing
+
+A capability change lands as `spec/` + `schemas/` + `fixtures/` in one change,
+**before** either implementation builds it — a schema change without a fixture
+is the one PR that cannot be merged, because the fixtures *are* the other side.
+[CONTRIBUTING.md](CONTRIBUTING.md) explains that and the traps that are
+invisible from outside: schema selection by filename prefix, the JSON Schema
+keywords `fixtures/validate.py` silently ignores, and why `dist/` is
+regenerated rather than edited.
+
+For a security problem — including a clause that cannot be satisfied securely,
+or two that contradict each other — see [SECURITY.md](SECURITY.md) and please
+do not open a public issue. Participation is covered by the
+[Code of Conduct](CODE_OF_CONDUCT.md).
+
 ## License
 
 Apache 2.0 — see [LICENSE](LICENSE).
