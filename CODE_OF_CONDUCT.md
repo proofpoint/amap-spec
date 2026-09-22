@@ -36,13 +36,7 @@ This Code of Conduct applies within all community spaces, and also applies when 
 
 ## Enforcement
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be reported to the community leaders responsible for enforcement at **`CONDUCT-CONTACT-NOT-YET-SET`**
-
-> This placeholder is deliberate and must be replaced before this repository is
-> public. An invented address would look correct and silently swallow a report.
-> It may or may not be the same address as `SECURITY.md`'s — a conduct complaint
-> and a vulnerability disclosure often reach different people, and defaulting the
-> second to the first is the kind of choice nobody revisits.. All complaints will be reviewed and investigated promptly and fairly.
+Instances of abusive, harassing, or otherwise unacceptable behavior may be reported to the community leaders responsible for enforcement at resero-labs@proofpoint.com. All complaints will be reviewed and investigated promptly and fairly.
 
 All community leaders are obligated to respect the privacy and security of the reporter of any incident.
 

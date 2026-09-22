@@ -6,11 +6,7 @@
 
 Report it privately to:
 
-> **`SECURITY-CONTACT-NOT-YET-SET`**
->
-> This placeholder is deliberate and must be replaced before this repository is
-> public. An invented address would look correct and silently swallow a report,
-> which is worse than an obviously missing one.
+> **resero-labs@proofpoint.com**
 
 You may also use GitHub's private vulnerability reporting on this repository if
 it is enabled.
