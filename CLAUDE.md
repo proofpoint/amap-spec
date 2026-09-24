@@ -49,8 +49,8 @@ language** — README's "What AMAP is not" says this normatively; keep it true.
 |---|---|
 | Contract version | **v3.1.0 DRAFT** (in the draft; also the frozen `spec/contract.md` title) |
 | Wire `contract_version` | **`"2"`** — unchanged by 3.1.0, which is additive |
-| `README.md` claims | **3.1.0 DRAFT, 82 fixtures** — matches the gate |
-| Actual gate result | **82 fixtures, 0 unexpected** (31 valid + 51 invalid) |
+| `README.md` claims | **3.1.0 DRAFT, 89 fixtures** — matches the gate |
+| Actual gate result | **89 fixtures, 0 unexpected** (34 valid + 55 invalid) |
 | Canonical prose | `draft/draft-amap.xml`, hand-edited; `make -C draft` renders and gates |
 
 The contract's own SemVer and the wire major are **two different axes** as of
@@ -101,7 +101,7 @@ python3 fixtures/validate.py
 
 Stdlib only — no `jsonschema` dependency, no network, **no counterpart
 present**. Exit 0 iff every `valid/` fixture passes and every `invalid/` one
-fails. Verified: `82 fixtures checked, 0 unexpected.`
+fails. Verified: `89 fixtures checked, 0 unexpected.`
 
 There is no pytest suite in this repo. (A `.pytest_cache/` directory exists; it
 is a leftover, not a suite.)
@@ -135,6 +135,7 @@ validates against the wrong schema and passes for the wrong reason:
 | `result-*` | `result.schema.json` |
 | `identity-*` | `binding-record.schema.json` |
 | `directory-*` | `directory.schema.json` |
+| `roster-*` | `roster.schema.json` |
 
 Note the collision this map papers over: on disk, a runtime names both the
 deliver-notice and the message spool `notice-<id>.json` from the same

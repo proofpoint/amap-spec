@@ -8,7 +8,7 @@ contract schemas use, so any conforming runtime OR connector can run this with
 no counterpart present. Exit 0 iff all expectations hold.
 
 Fixture -> schema by filename prefix: notice-* -> deliver-notice,
-request-* -> submit-request, result-* -> result, identity-* -> binding-record, directory-* -> directory,
+request-* -> submit-request, result-* -> result, identity-* -> binding-record, directory-* -> directory, roster-* -> roster,
 message-* -> inbound-message (v2.1.0, spec/contract.md §5 body-spool path),
 peer-* -> peer-notice (v3.1.0 DRAFT, peer-origin profile, spec/peer-origin.md:
 the `<agent-id>/peer/` tree; same shape as deliver-notice with kind/mailbox
@@ -165,6 +165,7 @@ SCHEMA_DIR = HERE.parent / "schemas"
 
 SCHEMA_FOR_PREFIX = {
     "directory-": "directory.schema.json",
+    "roster-": "roster.schema.json",
     "notice-": "deliver-notice.schema.json",
     "request-": "submit-request.schema.json",
     "result-": "result.schema.json",

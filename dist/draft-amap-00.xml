@@ -1612,6 +1612,73 @@ log the failure. The Agent's only signal remains <tt>written_at</tt> going stale
         </li>
       </ul>
     </section>
+    <section anchor="sec-roster">
+      <name>The Fleet Roster</name>
+      <t>A Runtime MAY publish a fleet roster: a single file, written once for the
+whole fleet, naming the instances the Runtime has admitted. The Peer Directory
+(<xref target="sec-directory"/>) answers which peers an Agent may address; the
+roster answers only which instances exist. It is a separate artifact, and no
+obligation of <xref target="sec-directory"/> applies to it except where this
+section states one.</t>
+      <ul spacing="normal">
+        <li>
+          <t><strong>Existence is not authorisation.</strong> A member's presence says
+the instance exists. It does not say this Agent may address it, and it is not a
+prediction that a submission to it will be accepted: authorisation is evaluated
+by the Runtime at submission time, and the Result (<xref target="sec-6"/>) is
+the only thing that reports what happened. A Connector MUST NOT treat membership
+as authorisation or as a prediction of acceptance.</t>
+        </li>
+        <li>
+          <t><strong>Not a source of identity.</strong> The roster is fleet-wide, so the
+reader's own address MAY appear in it. A consumer MUST NOT derive its own
+identity from the roster and MUST NOT treat its own entry as a peer:
+attribution is the Namespace a file arrived in (<xref target="sec-4"/>), and an
+address read from a file is a claim rather than an identity.</t>
+        </li>
+        <li>
+          <t><strong>Write-only from the Runtime's side.</strong> A Runtime MUST NOT read
+the roster back, for any purpose, for the reasons given for the directory in
+<xref target="sec-directory"/>.</t>
+        </li>
+        <li>
+          <t><strong>Written whole and atomically.</strong> A Runtime MUST NOT list a newly
+admitted instance before it has adopted that instance itself.
+<tt>router</tt> is the publishing Runtime's own address and MUST NOT appear in
+<tt>members</tt>. Every address is one bare addr-spec.</t>
+        </li>
+        <li>
+          <t><strong>Unknown is not empty.</strong> <tt>members</tt> is always present.
+When the Runtime cannot determine membership, it MUST NOT write an empty
+<tt>members</tt> list; it leaves the previous file in place to age.
+<tt>written_at</tt> is the only staleness signal a consumer gets, and
+<tt>interval_s</tt>, when present, is the Runtime's nominal rewrite interval to
+judge it against. A consumer MUST treat an absent roster, or one it judges
+stale, as unknown, never as an empty fleet.</t>
+        </li>
+        <li>
+          <t><strong>Readability is split between the parties that can observe it.</strong>
+A Runtime cannot observe a mount. It MUST publish the roster only into a
+location the deployment designates for it, and MUST NOT create that location.
+The deployment MUST expose that location read-only to each Agent it points at
+the roster, and SHOULD stop pointing Agents at the roster before, or together
+with, ceasing to expose it. A roster written where nothing is exposed is inert,
+not a violation: an Agent is only ever pointed at a roster its deployment
+exposes.</t>
+        </li>
+        <li>
+          <t><strong>Conveyed, where the consumer is an Agent.</strong> A Connector that
+surfaces the roster to its Agent MUST convey that membership is neither
+authorisation nor a prediction of acceptance, that the roster is not the
+Agent's identity, and that an absent or stale roster means unknown.</t>
+        </li>
+      </ul>
+      <t>The roster's shape is pinned by its schema (<xref target="app-roster"/>)
+and by the <tt>roster-*</tt> fixtures (<xref target="app-h"/>). The envelope is
+Runtime-authored and therefore open (<xref target="sec-10-1"/>): a consumer
+ignores members it does not recognize, and emitting one remains producer
+non-conformance.</t>
+    </section>
     <section anchor="sec-10">
       <name>Versioning and Conformance</name>
       <section anchor="sec-10-1">
@@ -1849,6 +1916,14 @@ bump.</t>
                 <em>(the file itself is OPTIONAL — <xref target="sec-9"/>)</em>; if present: <tt>agent_id, address, provisioned_ts</tt></td>
               <td align="left">
                 <tt>label</tt>; <tt>contract_version</tt> (optional — if present, pinned to <tt>"2"</tt>)</td>
+            </tr>
+            <tr>
+              <td align="left">
+                <strong>roster</strong></td>
+              <td align="left">
+                <em>(the artifact itself is OPTIONAL — <xref target="sec-roster"/>)</em>; if present: <tt>contract_version, router, written_at, members[]</tt> (items require <tt>address, state</tt>)</td>
+              <td align="left">
+                <tt>interval_s</tt></td>
             </tr>
           </tbody>
         </table>
@@ -3165,6 +3240,107 @@ NOTE: '\' line wrapping per RFC 8792
 ]]></sourcecode>
       </figure>
     </section>
+    <section anchor="app-roster">
+      <name>Fleet-Roster Schema (v3.1.0 DRAFT)</name>
+      <t><em>(Normative for the shape it pins; the section it belongs to is DRAFT.)</em>
+JSON Schema 2020-12; governs the fleet roster defined in
+<xref target="sec-roster"/>. The document is Runtime-authored and therefore open
+(<xref target="sec-10-1"/>), and it pins shape only: whether a member exists
+says nothing about whether it may be addressed.</t>
+      <figure anchor="schema-roster">
+        <name>schemas/roster.schema.json</name>
+        <sourcecode type="json" name="roster.schema.json"><![CDATA[
+NOTE: '\' line wrapping per RFC 8792
+
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://amap-spec/schemas/roster.schema.json",
+  "title": "roster",
+  "description": "runtime -> every agent: the fleet roster, the runt\
+    ime's most recent word about which instances it has admitted, wr\
+    itten once for the whole fleet to a location the deployment desi\
+    gnates and exposes read-only to each agent it points at the rost\
+    er. amap-spec v3.1.0 DRAFT (the draft's section \"The Fleet Rost\
+    er\"). EXISTENCE IS NOT AUTHORISATION: a member's presence says \
+    the instance exists, never that this agent may address it or tha\
+    t a submission to it will be accepted; authorisation is evaluate\
+    d by the runtime at submit time and only the result reports wha\
+    t happened. NOT A SOURCE OF THE READER'S IDENTITY: the reader's \
+    own address may appear, and attribution stays the namespace a fi\
+    le arrived in. A runtime MUST NOT read this file back. The file \
+    MAY be absent; absent or stale means unknown, never an empty fle\
+    et. Runtime-authored: envelope is OPEN at every level — a consum\
+    er MUST ignore members it does not recognize; emitting an unreco\
+    gnized member remains producer non-conformance.",
+  "type": "object",
+  "required": [
+    "contract_version",
+    "router",
+    "written_at",
+    "members"
+  ],
+  "properties": {
+    "contract_version": {
+      "const": "2"
+    },
+    "router": {
+      "type": "string",
+      "description": "the publishing runtime's own address, one bar\
+    e addr-spec. Never appears in members.",
+      "pattern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+(?\
+    !\\n)$"
+    },
+    "written_at": {
+      "type": "string",
+      "minLength": 1,
+      "description": "RFC 3339, the publishing runtime's clock. The \
+    only staleness signal a consumer gets; an honest marker, not a f\
+    reshness guarantee.",
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*(?!\\n)$"
+    },
+    "interval_s": {
+      "type": "number",
+      "minimum": 0,
+      "description": "OPTIONAL: the runtime's nominal rewrite interv\
+    al in seconds, so a consumer can judge written_at against it. Om\
+    itted when the runtime does not know it."
+    },
+    "members": {
+      "type": "array",
+      "description": "the instances the runtime has admitted, sorte\
+    d by address. Always present; never written as empty when member\
+    ship is unknown (the previous file is left to age instead). The \
+    router is never a member.",
+      "items": {
+        "type": "object",
+        "required": [
+          "address",
+          "state"
+        ],
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "the member's address, one bare addr-spec\
+    .",
+            "pattern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9\
+    .-]+(?!\\n)$"
+          },
+          "state": {
+            "type": "string",
+            "minLength": 1,
+            "description": "OPEN advisory vocabulary; \"admitted\" i\
+    s the only value defined at this version. A consumer MUST tolera\
+    te an unknown value as opaque.",
+            "pattern": "^[^\\u0000-\\u001f\\u007f]*(?!\\n)$"
+          }
+        }
+      }
+    }
+  }
+}
+]]></sourcecode>
+      </figure>
+    </section>
     <section anchor="app-g">
       <name>Golden Examples</name>
       <t><em>(Normative.)</em> The documents below are reproduced byte-verbatim from the
@@ -3384,7 +3560,7 @@ NOTE: '\' line wrapping per RFC 8792
 is part of the specification.)</em></t>
       <t>The suite consists of golden artifacts under <tt>fixtures/valid/</tt> and
 <tt>fixtures/invalid/</tt>, plus a validator, <tt>fixtures/validate.py</tt>.</t>
-      <t>At this document version the suite contains <strong>82 fixtures — 31 valid and 51 invalid</strong>.</t>
+      <t>At this document version the suite contains <strong>89 fixtures — 34 valid and 55 invalid</strong>.</t>
       <table>
         <thead>
           <tr>
@@ -3578,6 +3754,24 @@ is part of the specification.)</em></t>
               <tt>valid/result-unknown-member.json</tt></td>
             <td align="left">
               <tt>result.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>valid/roster-basic.json</tt></td>
+            <td align="left">
+              <tt>roster.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>valid/roster-empty.json</tt></td>
+            <td align="left">
+              <tt>roster.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>valid/roster-unknown-member.json</tt></td>
+            <td align="left">
+              <tt>roster.schema.json</tt></td>
           </tr>
           <tr>
             <td align="left">
@@ -3885,6 +4079,30 @@ is part of the specification.)</em></t>
             <td align="left">
               <tt>result.schema.json</tt></td>
           </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/roster-display-name-address.json</tt></td>
+            <td align="left">
+              <tt>roster.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/roster-member-missing-state.json</tt></td>
+            <td align="left">
+              <tt>roster.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/roster-missing-members.json</tt></td>
+            <td align="left">
+              <tt>roster.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/roster-version-1.json</tt></td>
+            <td align="left">
+              <tt>roster.schema.json</tt></td>
+          </tr>
         </tbody>
       </table>
       <t><strong>Running it.</strong> The validator is stdlib-only and takes no arguments:</t>
@@ -4133,6 +4351,17 @@ the versioning record of the protocol contract this document renders.)</em></t>
         <name>3.1.0 (DRAFT) — the protocol is AMAP; the outbound extension space; the peer-origin profile's schema</name>
         <t>An additive <strong>minor</strong> bump; the wire major stays <tt>"2"</tt>.</t>
         <ul spacing="normal">
+          <li>
+            <t><strong>The fleet roster</strong> (2026-09-24). A new, optional artifact
+(<xref target="sec-roster"/>, schema in <xref target="app-roster"/>): one
+Runtime-written file naming the instances the Runtime has admitted, so that an
+Agent on a deployment whose addresses carry an underivable suffix can learn
+which peers exist. It answers existence, never authorisation, and states that
+separately from the Peer Directory. Its readability obligation is split between
+the Runtime, which publishes only into a designated location and never creates
+it, and the deployment, which exposes that location. Additive: a new schema and
+seven fixtures, and nothing existing changes shape.</t>
+          </li>
           <li>
             <t><strong>The protocol is AMAP; the schema <tt>$id</tt> authority is <tt>amap-spec</tt></strong>
 (2026-09-15). The protocol formerly called AMP ("Agent Mailbox Protocol")

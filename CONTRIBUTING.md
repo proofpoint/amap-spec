@@ -28,7 +28,7 @@ Run the gate. It is stdlib-only, needs no network, and takes under a second:
 
 ```sh
 python3 fixtures/validate.py
-# 82 fixtures checked, 0 unexpected.
+# 89 fixtures checked, 0 unexpected.
 ```
 
 If you touched `schemas/`, `fixtures/` or the draft, also run the draft build.
