@@ -4,7 +4,7 @@ kramdown-rfc fragments under draft/build/.
 
 This is the load-bearing piece of the draft build: every JSON document that
 appears in the rendered Internet-Draft is either included verbatim from a file
-on disk (the six schemas, via a direct {::include-fold...} in the hand
+on disk (the seven schemas, via a direct {::include-fold...} in the hand
 source) or generated HERE from fixtures/ — never hand-copied into the .mkd.
 draft/check_render.py is the other half of that proof: it re-derives the same
 comparison from the rendered XML and fails the build if the two disagree.

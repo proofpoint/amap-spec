@@ -2077,6 +2077,20 @@ schema ([](#app-c)), and a document with `kind: "deliver"` found under
 ~~~
 {: #schema-peer-notice title="schemas/peer-notice.schema.json" sourcecode-name="peer-notice.schema.json"}
 
+# Peer-Directory Schema (v3.1.0 DRAFT) {#app-directory}
+
+*(Normative for the shape it pins; the profile it belongs to is DRAFT.)*
+JSON Schema 2020-12 {{JSON-SCHEMA-2020-12}}; governs the optional peer
+directory defined in [](#sec-directory), which a Runtime MAY publish at
+`<agent-id>/directory.json`. The document is Runtime-authored and therefore
+open ([](#sec-10-1)), and it is advisory: the schema pins its shape, never
+what it predicts.
+
+~~~ json
+{::include-fold69hardleft4dry schemas/directory.schema.json}
+~~~
+{: #schema-directory title="schemas/directory.schema.json" sourcecode-name="directory.schema.json"}
+
 # Golden Examples {#app-g}
 
 *(Normative.)* The documents below are reproduced byte-verbatim from the

@@ -14,7 +14,7 @@
 # of. `why_fails` is REQUIRED when `file` is under invalid/ — a negative
 # fixture is meaningless inline without its reason, and gen_appendices.py
 # enforces this.
-# `placement` is "appendix" (default; emitted into Appendix G in TOML order)
+# `placement` is "appendix" (default; emitted into the Golden Examples appendix, #app-g, in TOML order)
 # or "body" (emitted as its own fragment, included where the hand source wants
 # it shown inline; the appendix then cross-references it instead of repeating
 # it).

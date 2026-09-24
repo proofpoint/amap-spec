@@ -2960,6 +2960,90 @@ NOTE: '\' line wrapping per RFC 8792
 ]]></sourcecode></figure>
 
 </section>
+<section anchor="app-directory"><name>Peer-Directory Schema (v3.1.0 DRAFT)</name>
+
+<t><em>(Normative for the shape it pins; the profile it belongs to is DRAFT.)</em>
+JSON Schema 2020-12 <xref target="JSON-SCHEMA-2020-12"/>; governs the optional peer
+directory defined in <xref target="sec-directory"></xref>, which a Runtime MAY publish at
+<spanx style="verb">&lt;agent-id&gt;/directory.json</spanx>. The document is Runtime-authored and therefore
+open (<xref target="sec-10-1"></xref>), and it is advisory: the schema pins its shape, never
+what it predicts.</t>
+
+<figure title="schemas/directory.schema.json" anchor="schema-directory"><sourcecode type="json" name="directory.schema.json"><![CDATA[
+NOTE: '\' line wrapping per RFC 8792
+
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://amap-spec/schemas/directory.schema.json",
+  "title": "directory",
+  "description": "runtime -> connector: the router's most recent wor\
+    d about which peers this agent may address, published per instan\
+    ce at <agent-id>/directory.json. amap-spec v3.1.0 DRAFT (spec/co\
+    ntract.md §10). ADVISORY, NEVER AUTHORITATIVE: an address's pres\
+    ence is not a prediction that a submit to it will be accepted, n\
+    or its absence a prediction of refusal — authorisation is evalua\
+    ted by the runtime at submit time and only the result (§4) repor\
+    ts what happened. A runtime MUST NOT read this file back as auth\
+    orisation; enforcement stays the runtime's own graph check on ev\
+    ery message. The file MAY be absent. Runtime-authored: envelope \
+    is OPEN at every level per §7's v3.0.0 tolerance rule — a consum\
+    er MUST ignore members it does not recognize; emitting an unreco\
+    gnized member remains producer non-conformance.",
+  "type": "object",
+  "required": [
+    "router",
+    "written_at",
+    "delegate_to",
+    "mail_to"
+  ],
+  "properties": {
+    "contract_version": {
+      "const": "2"
+    },
+    "router": {
+      "type": "string",
+      "description": "the publishing runtime's own address, one bar\
+    e addr-spec. Never appears in delegate_to or mail_to.",
+      "pattern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+(?\
+    !\\n)$"
+    },
+    "written_at": {
+      "type": "string",
+      "minLength": 1,
+      "description": "RFC 3339, the publishing runtime's clock. The \
+    only staleness signal a consumer gets; an honest marker, not a f\
+    reshness guarantee.",
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*(?!\\n)$"
+    },
+    "delegate_to": {
+      "type": "array",
+      "description": "sorted addresses this agent may task — the aut\
+    horisation graph transposed for this instance. Always present; e\
+    mpty when the lane is closed. Never this agent's own address, an\
+    d never who may task THIS agent (an allowlist, withheld by const\
+    ruction).",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+\
+    (?!\\n)$"
+      }
+    },
+    "mail_to": {
+      "type": "array",
+      "description": "sorted addresses on the mutual mail lane. Alwa\
+    ys present; empty when the lane is closed, which is the normal c\
+    ase for a delegation-only deployment.",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+\
+    (?!\\n)$"
+      }
+    }
+  }
+}
+]]></sourcecode></figure>
+
+</section>
 <section anchor="app-g"><name>Golden Examples</name>
 
 <t><em>(Normative.)</em> The documents below are reproduced byte-verbatim from the

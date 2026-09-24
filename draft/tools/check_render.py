@@ -13,7 +13,7 @@ Checks:
      into the title= attribute). A figure anchored "ex-*" is a hand-written
      illustrative shape (not a fixture) and is exempted from the disk
      comparison, but its JSON must still parse.
-  2. The Appendix H roster sentence ("N fixtures — V valid and I invalid")
+  2. The Conformance Suite appendix (#app-h) roster sentence ("N fixtures — V valid and I invalid")
      matches the on-disk fixture counts.
   3. rfc/@docName is the pinned, unrenamed draft name (D9).
   4. No host path or the operator's personal email appears anywhere in the
@@ -120,7 +120,7 @@ def check_roster(xml_text: str) -> list[str]:
     # "27" here, off the em dash + digit ambiguity — caught by this fix).
     m = re.search(r"(\d+)\s+fixtures\D*(\d+)\s+valid and (\d+)\s+invalid", xml_text)
     if not m:
-        errors.append("Appendix H roster sentence not found in rendered XML")
+        errors.append("Conformance Suite appendix (#app-h) roster sentence not found in rendered XML")
         return errors
     total, valid, invalid = (int(x) for x in m.groups())
     disk_valid = len(list((REPO / "fixtures" / "valid").glob("*.json")))
