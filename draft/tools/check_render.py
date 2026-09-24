@@ -20,10 +20,11 @@ Checks:
      rendered XML.
   5. No SYSTEM "http entity exists (stand_alone held; nothing fetched at
      render time).
-  6. No BROKEN REFERENCE placeholder exists (a bib/reference.*.xml file
-     kramdown-rfc needed was present at build time; offline mode substitutes
-     this placeholder rather than fetching, and it is otherwise schema-valid
-     and silent).
+  6. No BROKEN REFERENCE placeholder exists. The old kramdown-rfc build
+     silently substituted one for a missing bib/ file; the canonical XML
+     inherited its references from that build, so the check stays as a guard
+     against a placeholder surviving into, or being pasted back into, the
+     hand-edited source.
   7. Every illustrative JSON shape in draft/examples/ (the "ex-*" figures
      exempted from check 1's disk comparison) still validates against its
      schema. The schema and the applicable named post-check are picked from
@@ -206,15 +207,15 @@ def check_examples() -> list[str]:
 
 
 def check_no_broken_references(xml_text: str) -> list[str]:
-    """kramdown-rfc silently substitutes a placeholder <reference> whose
+    """The former kramdown-rfc build silently substituted a placeholder <reference> whose
     title is this literal string when a bib/reference.*.xml file it needs is
     missing at build time (offline mode never fetches it instead). That
     placeholder is schema-valid XML and renders as a normal-looking, if
     useless, bibliography entry — the build's exit code stays 0 and this was
     the one class of breakage the mechanical checks below cannot see."""
     if "BROKEN REFERENCE" in xml_text:
-        return ["a BROKEN REFERENCE placeholder is present — a bib/reference.*.xml "
-                "file kramdown-rfc needed was missing at build time; see draft/bib/"]
+        return ["a BROKEN REFERENCE placeholder is present in the draft XML; replace "
+                "it with the real <reference> (draft/bib/ holds the RFC entries)"]
     return []
 
 

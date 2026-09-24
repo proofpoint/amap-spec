@@ -1,190 +1,117 @@
-# draft/ — the Internet-Draft rendering of amap-spec
+# draft/ — the Internet-Draft, the canonical source of AMAP's prose
 
 ## 0. Layout
 
 ```
-draft-amap.mkd          the Internet-Draft source — this is the file you edit
-fixtures.toml           which fixtures appear inline, and why (data, not code)
-prose-exceptions.toml   which spec obligations the draft knowingly omits, and why
-examples/               the four illustrative JSON shapes (hand-written)
-bib/                    committed bibxml cache — FETCHED, never hand-edited;
-                        `make refs` repopulates it from bib.ietf.org
+draft-amap.xml          THE SOURCE: xml2rfc v3 XML, hand-edited. The file you edit.
+coverage.toml           the class of every normative sentence in sections 3-10
+fixtures.toml           which fixtures the draft shows inline, and why (data)
+examples/               the illustrative JSON shapes (hand-written)
+bib/                    RFC <reference> entries, for adding a citation offline
 Makefile                the entry point: `make -C draft`
-tools/                  the build machinery; nothing here is authored content
-build/                  generated fragments (gitignored)
+tools/                  the build and gate machinery; nothing here is content
 ```
-
-Everything above `Makefile` is hand-authored and belongs in review; everything
-below it is machinery or output. `bib/` is the odd one — committed, but a cache
-rather than content, so a build needs no network.
 
 ## 1. What this is
 
-This directory builds `dist/draft-amap-00.{xml,txt}` — and, on demand,
-`.html` and `.pdf` — an xml2rfc v3 rendering of the AMAP contract, produced
-with [kramdown-rfc](https://github.com/cabo/kramdown-rfc) from a
-hand-maintained `.mkd` source plus schemas and fixtures pulled in mechanically
-from `schemas/` and `fixtures/`. It does not replace `spec/contract.md`, which
-stays the normative source; this is a *rendering* of it in Internet-Draft
-structure, built and checked so that it cannot silently drift from what
-`spec/` and `fixtures/` actually say.
+`draft-amap.xml` is the canonical normative prose of AMAP (since 2026-09-24).
+Together with `schemas/` and `fixtures/`, it *is* the contract. It is not
+generated from anything. The standards editor edits it directly, and a change
+made there is the change (`WORKFLOWS.md`, "Editor-first").
 
-**Hand-maintained:** the YAML front matter and the prose of `draft-amap.mkd`.
-Every normative sentence in it traces to `spec/`, and `tools/check_prose.py`
-enforces that: it requires a draft sentence covering every RFC 2119 sentence
-in `spec/`, or an entry in `prose-exceptions.toml` saying why not. An
-obligation cannot quietly vanish from the draft.
+`spec/contract.md` is frozen: the record of the text this draft was reconciled
+against. Its header maps its old sections to the draft's. The peer-origin
+profile, `spec/peer-origin.md`, is **not** frozen: it is v3.1.0 DRAFT, and this
+draft carries only its schema (Appendix F).
 
-**Generated, never typed:** every JSON document in the rendering — the six
-schemas (Appendices A–F, pulled in directly by
-`{::include-fold69hardleft4dry schemas/<name>}`), and the inline fixtures and
-their roster (Appendix G, Appendix H, produced by `tools/gen_appendices.py`
-from `fixtures.toml` plus `fixtures/`). `fixtures.toml` decides *which*
-fixtures are shown; the files on disk decide *what* they say.
-`gen_appendices.py` imports `fixtures/validate.py` — the same module the
-conformance gate runs — and asserts each selected fixture's expected outcome
-still holds, so a fixture whose meaning changes breaks this build rather than
-silently going stale. `tools/check_render.py` is the other half of that proof,
-run after the render: it walks the built XML, unfolds every JSON
-`<sourcecode>` block per RFC 8792, and confirms it is byte-identical (modulo
-the fold and a trailing newline) to the file on disk the include directive
-named. The hand-authored illustrative shapes under `examples/` are anchored
-`ex-*` and exempted from the disk comparison, but must still parse as JSON and
-validate against their schemas.
+The build renders `dist/draft-amap-00.xml` (a byte copy of the source) and
+`dist/draft-amap-00.txt`, and on demand `.html` and `.pdf`.
 
-## 2. Toolchain requirement
+## 2. What a tool writes, and what you write
 
-This repository states the *requirement*, not the mechanism — the same posture
-the conformance gate already takes. How a given machine provides these is its
-own business; `tools/preflight.sh` checks the artifact, never how it got there.
+**You write every byte**, except the body of each JSON `<sourcecode>` block.
+Those are written from disk by `tools/sync_sources.py`:
 
-| requirement | pinned | needed for |
-|---|---|---|
-| Ruby | any Ruby ≥ 3.1 | kramdown-rfc |
-| kramdown-rfc | **1.7.43** exactly | `.mkd` → `.xml` |
-| xml2rfc | **3.34.1** exactly | `.xml` → `.txt`, `.html`, `.pdf` |
-| Python | ≥ 3.11 (`tomllib`) | the three checkers |
-| weasyprint | **63.1** | `make pdf` only |
+| draft anchor | file |
+|---|---|
+| `schema-<name>` | `schemas/<name>.schema.json` |
+| `<anchor>-src`, one per `fixtures.toml` entry | `fixtures/<file>` |
+| `ex-<stem>` | `examples/<stem>.json` |
 
-Every build target depends on `preflight`, so a missing or wrong-versioned
-tool is never a bare "command not found." Run it directly with
-`make -C draft preflight`.
+`make -C draft sync` rewrites any block that differs from its file. It edits
+only the text between `<![CDATA[` and `]]>`, and only in blocks it maps,
+folding long lines per RFC 8792 exactly as the old kramdown-rfc build did
+(`fold69hardleft4dry`). So:
 
-**Ruby's patch version does not need to match across machines**, but only
-because the build normalises for it. kramdown-rfc stamps the interpreter
-version into its generator comment, so two machines with identical pinned
-tools would otherwise emit different bytes and the committed artifacts would
-be un-diffable. The Makefile strips that one field; kramdown-rfc's own
-version is kept, since it is pinned and does affect the output. This was
-found by CI on its first run, not by reasoning — `make reproducible` builds
-twice on one machine and cannot see it.
+- **To change a schema, fixture or example:** edit the file, run `make sync`,
+  and commit both.
+- **To add a schema or a listed fixture:** add a `<figure anchor="…">` with an
+  empty `<sourcecode type="json"><![CDATA[]]></sourcecode>` and run
+  `make sync`. `make check` fails if a schema or listed fixture has no block.
+- **Never paste JSON into the XML by hand.** The check fails on any difference.
 
-Installing them is a one-liner per tool — `gem install kramdown-rfc -v 1.7.43`,
-`pip install xml2rfc==3.34.1 weasyprint==63.1` — plus a system Ruby and, for
-PDF only, pango and the Noto fonts that weasyprint needs. There is
-deliberately no `Gemfile`/`Gemfile.lock` and no `requirements.txt` here:
-either would advertise an install path the build does not take, and the pins
-above are the single source of truth.
+Why not xml2rfc's own `<sourcecode src="…">`: xml2rfc 3.34.1 crashes on any
+non-ASCII UTF-8 in a `src` file (the schemas carry `§` and `—`), and it does no
+RFC 8792 folding (schema lines reach 326 characters).
 
-**Known-good transitive gem set for kramdown-rfc 1.7.43** (recorded for the
-record, not enforced — kramdown-rfc's own `~>` ranges pin these, and every one
-is pure Ruby, so no native build is needed): kramdown 2.4.0,
-kramdown-parser-gfm 1.1.0, kramdown-rfc2629 1.7.43, base64 0.3.0,
-connection_pool 3.0.2, differ 0.1.2, json_pure 2.8.1, net-http-persistent
-4.0.8, ostruct 0.6.3, rexml 3.4.4, unicode-blocks 1.11.0, unicode-name 1.14.0,
-unicode-scripts 1.12.0, unicode-types 1.11.0. If drift ever shows up in
-`make -C draft reproducible` across machines, the remedy is a `Gemfile.lock`
-in `draft/`, not a change to this design.
-
-
-**A macOS convenience, which is not the requirement.**
-`draft/tools/install-macos-brew.sh` installs the four pins with Homebrew
-(`--pdf` adds weasyprint and its runtime libraries; `--dry-run` prints the
-plan). It is optional and non-authoritative, and nothing in `draft/Makefile`
-depends on it — that separation is the point. The moment a build target needs
-an installer, the stated requirement has quietly become "have Homebrew", which
-is a far larger claim than "have kramdown-rfc 1.7.43", and it takes the choice
-of mechanism away from the host. The script ends by running `preflight.sh` and
-defers to its verdict: the script installs, preflight decides.
-
-It does not edit your shell profile. Homebrew's ruby is keg-only and its gem
-bin directory is separate again, so two `PATH` lines are needed; the script
-prints them rather than writing them, because a printed line can be read before
-it is run and a rewritten dotfile cannot.
-
-## 3. Build, check, diff
+## 3. Building, and the gates
 
 ```sh
-make -C draft preflight  # toolchain artifact check only
-make -C draft            # xml + txt + check   (the default)
-make -C draft check      # the three checkers, no rebuild
-make -C draft html       # .html on demand (not in the default target)
-make -C draft pdf        # .pdf on demand (needs weasyprint)
-make -C draft formats    # txt + html + pdf in one command
-make -C draft reproducible   # build twice, cmp the outputs
-make -C draft refs       # (rare) repopulate bib/ from bib.ietf.org
-make -C draft diff OTHER=/path/to/theirs.xml   # local diff, never uploads
+make -C draft                 # render dist/ and run every gate
+make -C draft sync            # rewrite JSON blocks from disk
+make -C draft normdiff BASE=origin/main   # the normative diff, for review
+make -C draft formats         # also .html and .pdf (pdf needs weasyprint)
+make -C draft diff OTHER=theirs.xml       # local diff against another copy
+make -C draft reproducible    # two text renders, byte-compared
 ```
 
-The default target builds exactly the two artifacts that are committed — the
-`.xml` and the `.txt`. `.html` and `.pdf` are derivable and gitignored, so
-they are on demand; `formats` builds the full set in one command. Keeping
-`.pdf` off the default path is deliberate: it is what stops weasyprint and
-its font stack from becoming mandatory for every check run, which matters
-most for a future CI job that needs to verify the draft, not print it.
+`make -C draft` runs:
 
-`bib/` is already committed, so a clean checkout needs only the toolchain and
-`make -C draft`. `refs` exists for adding a new reference, and is the one
-target that touches the network.
+- `tools/sync_sources.py`: JSON blocks equal disk; every block maps to a
+  file; every schema and listed fixture has a block.
+- `tools/check_render.py`: the same equality re-derived from the XML, plus the
+  fixture roster counts, the pinned `docName`, and no host paths or personal
+  identifiers.
+- `tools/check_coverage.py`: every RFC 2119 sentence in sections 3–10 and the
+  peer directory has a class in `coverage.toml` (fixture, operational,
+  informative). The 128 sentences present at the switch are an unclassified
+  **baseline**; classify them as you review them, and never add a new
+  unclassified entry. `--emit` prints stubs for new sentences.
+- `fixtures/validate.py`: the conformance suite.
 
-`check` runs three gates, and all three must pass:
+`tools/normdiff.py` is not a gate. It lists the normative sentences added,
+removed or changed against a git ref, and CI writes it to every PR's summary.
+It is what a reviewer reads instead of the XML diff.
 
-- `tools/check_render.py` — every JSON block in the XML equals its file on
-  disk; the Appendix H roster counts match; `docName` is pinned; no host
-  paths or personal identifiers; no network-fetch entities; no broken
-  references.
-- `tools/check_prose.py` — every RFC 2119 sentence in `spec/` is covered by
-  the draft or listed in `prose-exceptions.toml` with a reason.
-- `fixtures/validate.py` — the conformance gate itself, unchanged.
+### Toolchain requirement
 
-Every recipe `cd`s to the repo root before invoking `kramdown-rfc`, because
-its `{::include}` directives resolve against the current working directory,
-not the source file's location — so the build works the same whether you run
-`make -C draft` or `make` from the repo root.
+| tool | version | used for |
+|---|---|---|
+| xml2rfc | **3.34.1** exactly | rendering `.txt`, `.html`, `.pdf` |
+| Python | ≥ 3.11 | the gates (`tomllib`) |
+| weasyprint | 63.1 | only `make pdf` / `make formats` |
 
-**Fixture selection is not final.** `fixtures.toml` currently inlines 9 of the
-75 fixtures: five carried over from the earlier hand-maintained rendering,
-plus one demonstrating the OPEN envelope, one the CLOSED envelope, one the
-peer-origin cross-lock, and the Binding Record shown inline in its own section
-(`#sec-9` in the source). The count and membership may change after a
-standards review; that is a one-line edit to the TOML, never a code change.
+The repository states the requirement and does not install it.
+`tools/preflight.sh` checks the artifact, never the mechanism. On a Mac,
+`tools/install-macos-brew.sh` is an optional helper. kramdown-rfc and Ruby are
+no longer needed.
 
-## 4. The hold
+## 4. Never transmit anything
 
-This repo is under a standing publication hold pending patent counsel
-(CLAUDE.md). **The build in this directory must never transmit anything.**
-
-- `kramdown-rfc` and `xml2rfc` are invoked directly, never through `kdrfc` —
-  `kdrfc` silently POSTs the XML to `https://author-tools.ietf.org/api/render/`
-  when it cannot exec a local `xml2rfc` (`kdrfc-processor.rb:124-131`).
-- `xml2rfc` is always called with `--no-network`.
-- `kramdown-rfc` is always called with `KRAMDOWN_OFFLINE=1`, except the one
-  explicit `make -C draft refs` target that populates `bib/` (a network *read*
-  from bib.ietf.org, committed afterward so no later build needs it).
-- `make -C draft diff` normalizes and diffs two renderings **locally**; it
-  never uploads anything. Whether to use IETF Author Tools' web diff is the
-  document owner's call, under the hold, and nothing here does it.
-
-A full build has been verified to succeed with all outbound network blocked.
+- `xml2rfc` is always called with `--no-network`, and never through `kdrfc`,
+  which silently POSTs the XML to `https://author-tools.ietf.org/api/render/`
+  when it cannot find a local `xml2rfc`.
+- The build needs no network: every reference is inlined in the source, and
+  `bib/` holds RFC `<reference>` entries to copy in when adding a citation.
+- `make -C draft diff` compares renderings **locally**. Submitting, or using
+  IETF Author Tools, is the document owner's decision, and nothing here does it.
 
 ## 5. What is committed, and what is not
 
-- **Committed:** `dist/draft-amap-00.xml` and `.txt` (small, diffable,
-  reviewable in a PR); `bib/*.xml` (the bibxml cache).
-- **Gitignored:** `dist/draft-amap-00.html` and `.pdf` (both derivable, both
-  large — built on demand) and `draft/build/` (generated intermediates).
-- **Never touched by this build:** `spec/`, `schemas/`, `fixtures/*.json`,
-  and `fixtures/validate.py`.
+- **Committed:** `draft-amap.xml` (the source), `dist/draft-amap-00.xml` (its
+  copy) and `.txt`, `coverage.toml`, `fixtures.toml`, `examples/`, `bib/`.
+- **Gitignored:** `dist/*.html` and `dist/*.pdf`.
+- **Never written by the build:** `schemas/`, `fixtures/`, `spec/`.
 
 ## 6. Counsel gates before this draft may be submitted anywhere
 
@@ -192,18 +119,16 @@ A full build has been verified to succeed with all outbound network blocked.
 router, and the Claude Code connector, plus taking AMAP to the IETF. Other
 Proofpoint products are explicitly out of scope and remain unpublished.
 
-Approved to publish is not the same as ready to submit. **Two** values in the
-front matter are still open, and both are binding legal statements rather than
-editorial choices:
+**Status, 2026-09-24: the operator confirmed that counsel's gates are clear.**
+The front matter carries `ipr="trust200902"` and `submissionType="independent"`,
+and both authors' email addresses. The draft is ready for submission and **has
+not been submitted.** The history of each gate is kept below, because each was
+a binding legal statement rather than an editorial choice.
 
-- **`ipr:`** — currently `none`, which emits no boilerplate and asserts
-  nothing. It is a deliberate non-answer. The real value (`trust200902` and
-  its more restrictive variants) selects the copyright grant made to the IETF
-  Trust under BCP 78. A draft intended for eventual working-group adoption
-  normally needs the full grant, because a working group must be able to
-  modify the text — so this choice can constrain the document's future.
-- **`submissiontype:`** — currently `independent`. The alternative is the
-  IETF stream, which interacts with the choice above.
+- **`ipr`**: settled 2026-09-21 as `trust200902` (below).
+- **`submissionType`**: `independent` (the Independent Submissions Editor). The
+  alternative is the IETF stream, via a working group, which the full BCP 78
+  grant keeps possible.
 
 Separately and independently, **BCP 79 (RFC 8179) imposes a patent-disclosure
 obligation** on contributors: patents or applications known to be potentially
@@ -222,10 +147,8 @@ Settled:
   by hand when the content changes meaningfully — an Internet-Draft's date is
   a meaningful, deliberate signal, not a build artifact.
 
-None of this directory's tooling uploads, submits, or posts anything (see
-"The hold" above), so building here carries no publication risk by itself.
-Treat the render as a diffable local artifact until the two open values above
-are answered.
+None of this directory's tooling uploads, submits, or posts anything (see §4),
+so building here carries no publication risk by itself.
 
 ### `ipr` — SETTLED 2026-09-21: `trust200902`
 
@@ -247,14 +170,14 @@ with our hand-written note of the same name, which had to be renamed to
 submitted under BCP 78/79. Nothing has been submitted anywhere.** That gap
 closes when it is filed, and not before.
 
-### `email:` for the second author — ask, never infer
+### The second author's email — settled
 
-`T. Adams` was added to the author block on the operator's instruction. The
-`email:` line is commented out because an RFC author block publishes a working
-address permanently and is the contact of record for IPR correspondence under
-BCP 78/79. Deriving it from a colleague's address pattern would put a guessed
-address on a rights document. Supply the address the author states, or delete
-the commented line if they prefer none.
+`T. Adams` was added to the author block on the operator's instruction, and the
+author block now carries an email address for each author. The rule that
+governed it still holds for any future author: an RFC author block publishes a
+working address permanently, as the contact of record for IPR correspondence
+under BCP 78/79, so it is the address the author states, never one inferred from
+a colleague's address pattern.
 
 Adding a co-author is itself a rights act, not an editorial one: each listed
 author makes the BCP 78/79 disclosure commitments. Worth confirming with counsel

@@ -1,5 +1,43 @@
 # amap-spec — the volume contract, v3.1.0 DRAFT
 
+> **FROZEN, 2026-09-24. Superseded by [`draft/draft-amap.xml`](../draft/draft-amap.xml).**
+> The Internet-Draft is now the canonical normative prose. It is hand-edited by
+> the standards editor and rendered to `dist/draft-amap-00.txt`. Together with
+> `schemas/` and `fixtures/`, it is the contract. This file is kept unchanged
+> below as the record of the text the draft was reconciled against, and because
+> the schema descriptions and `fixtures/validate.py` still cite its section
+> numbers. **Do not edit it.** A change to the contract goes into the draft XML,
+> and into `schemas/` and `fixtures/` if the shape or the acceptance rules move
+> (`WORKFLOWS.md`).
+>
+> Where each section went, by the draft's rendered numbering:
+>
+> | This file | Draft |
+> |---|---|
+> | §1 Actors and the invariant | §3 Architecture and Trust Model (3.1 Actors, 3.2 The load-bearing invariant) |
+> | §2 Directory layout; Deletion rights | §4 Volume Layout (4.1 Obligations, 4.2 Deletion rights) |
+> | §3 Outbound: submit request | §5 Outbound: Submit Request |
+> | §4 Outbound: result | §6 Outbound: Result |
+> | §5 Inbound: deliver-notice | §7 Inbound: Deliver Notice and Inbound Message |
+> | §6 Task correlation | §8 Task Correlation |
+> | §7 Versioning and conformance; §7.1 Conformance classes | §11 Versioning and Conformance (11.1 Versioning, 11.3 Conformance); the version history is the draft's Change Log |
+> | §8 Required vs. optional | §11.2 Required versus optional |
+> | §9 Binding record | §9 Binding Record |
+> | §10 Peer directory | §10 The Peer Directory; schema in Appendix G |
+> | Appendix A ("handled" signal) | Appendix J |
+>
+> The peer-origin profile, `spec/peer-origin.md`, is **not** frozen. It is
+> v3.1.0 DRAFT, the draft deliberately carries only its schema (Appendix F),
+> and it stays the canonical prose for the peer lane until it leaves DRAFT.
+>
+> Reconciliation before freezing (2026-09-24): every obligation in this file
+> is in the draft, except eight sentences recorded as deliberately absent:
+> version-history narrative, a release-specific migration note, and sentences
+> about this file's own structure. The draft's 27 sentences with no
+> counterpart here were checked, and none contradicts this file or the
+> schemas. The one gap found, the missing directory schema, was added to the
+> draft.
+
 The wire contract between a **trusted mail runtime** (credentialed,
 agent-agnostic) and a per-agent **connector** (untrusted, credential-free).
 This is the IDL both sides depend on; it is owned by neither.
