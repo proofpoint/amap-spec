@@ -976,15 +976,15 @@ note = "A deployment obligation (mounts and exposure), checked operationally."
 text = "The deployment MUST expose that location read-only to each Agent it points at the roster, and SHOULD stop pointing Agents at the roster before, or together with, ceasing to expose it."
 
 [[sentence]]
-id = "618094572569"
-section = "sec-roster"
-class = "operational"
-note = "What a connector conveys to its agent is presentation behaviour, checked operationally."
-text = "A Connector that surfaces the roster to its Agent MUST convey that membership is neither authorisation nor a prediction of acceptance, that the roster is not the Agent's identity, and that an absent or stale roster means unknown."
-
-[[sentence]]
 id = "3d204103674f"
 section = "sec-10-2"
 class = "fixture"
 fixtures = ["valid/roster-basic.json", "invalid/roster-missing-members.json", "invalid/roster-member-missing-state.json"]
 text = "(the artifact itself is OPTIONAL — ); if present: contract_version, router, written_at, members[] (items require address, state)"
+
+[[sentence]]
+id = "6e9aa8a5b268"
+section = "sec-roster"
+class = "operational"
+note = "What an agent is told, and by whom, is presentation behaviour of the connector or deployment, checked operationally. Reworded 2026-09-24 so the duty falls on whatever points the agent at the roster, not only a connector tool."
+text = "Whatever points an Agent at the roster, whether a Connector that surfaces it or a deployment that tells the Agent where to read it, MUST convey that membership is neither authorisation nor a prediction of acceptance, that the roster is not the Agent's identity and its own entry is not a peer, and that an absent or stale roster means unknown."

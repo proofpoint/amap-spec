@@ -1654,7 +1654,11 @@ When the Runtime cannot determine membership, it MUST NOT write an empty
 <tt>written_at</tt> is the only staleness signal a consumer gets, and
 <tt>interval_s</tt>, when present, is the Runtime's nominal rewrite interval to
 judge it against. A consumer MUST treat an absent roster, or one it judges
-stale, as unknown, never as an empty fleet.</t>
+stale, as unknown, never as an empty fleet. Unknown is not unusable: an Agent
+may still address a member of a stale roster, and the Runtime decides; what it
+must not do is conclude that an instance is absent from the fleet. This
+section fixes no freshness bound; how stale is stale is the consumer's
+judgement, made against <tt>interval_s</tt> where it is present.</t>
         </li>
         <li>
           <t><strong>Readability is split between the parties that can observe it.</strong>
@@ -1667,10 +1671,13 @@ not a violation: an Agent is only ever pointed at a roster its deployment
 exposes.</t>
         </li>
         <li>
-          <t><strong>Conveyed, where the consumer is an Agent.</strong> A Connector that
-surfaces the roster to its Agent MUST convey that membership is neither
+          <t><strong>Conveyed, where the consumer is an Agent.</strong> Whatever points an
+Agent at the roster, whether a Connector that surfaces it or a deployment that
+tells the Agent where to read it, MUST convey that membership is neither
 authorisation nor a prediction of acceptance, that the roster is not the
-Agent's identity, and that an absent or stale roster means unknown.</t>
+Agent's identity and its own entry is not a peer, and that an absent or stale
+roster means unknown. Stating these in text the Agent receives whenever it is
+pointed at the roster satisfies this; no tool is required.</t>
         </li>
       </ul>
       <t>The roster's shape is pinned by its schema (<xref target="app-roster"/>)
