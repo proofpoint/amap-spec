@@ -61,7 +61,8 @@ dereferences). Don't add one.
 
 | mount `name` | container path |
 |---|---|
-| `spec` | `~/.amap-spec/spec` |
+| `dist` | `~/.amap-spec/dist` (the rendered Internet-Draft: the normative prose) |
+| `spec` | `~/.amap-spec/spec` (frozen `contract.md`; the live peer-origin profile) |
 | `schemas` | `~/.amap-spec/schemas` |
 | `fixtures` | `~/.amap-spec/fixtures` |
 | `CONFORMANCE.md` | `~/.amap-spec/CONFORMANCE.md` |
@@ -72,7 +73,12 @@ to `/opt/sandy/features/<feature>`, `.` to `~/.<feature>`, and anything else to
 `$SANDY_HOME/features/` — set by `install-sandy-feature.sh` — not `feature.name`, which sandy
 never reads.
 
-Four named mounts rather than one `.` mount of the whole repo: `.` would also
+Five named mounts rather than one `.` mount of the whole repo. `dist` was added
+on 2026-09-24, when the Internet-Draft became the canonical prose: without it,
+every sandbox read a `spec/contract.md` that says it is frozen and points at a
+file no sandbox could open. `dist/` is mounted rather than `draft/` because the
+rendered `draft-amap-00.txt` is what an agent can read. `draft/` holds the XML
+source and build tooling, which an agent has no use for. One `.` mount: `.` would also
 carry `.git` and everything else into every amap sandbox for no benefit, and
 `.git` cannot be named as a `from` anyway (leading dot is rejected).
 
@@ -83,7 +89,7 @@ carry `.git` and everything else into every amap sandbox for no benefit, and
 | `sandboxes.include` | `["amap-*"]` | Matched case-folded against the **slug** (`<basename>-<sha8>`) *and* the workspace host path. `amap-adapter-example` yields slug `amap-adapter-example-<sha8>`, which matches; the path `/Users/you/dev/amap-adapter-example` does not, since the glob is anchored — so the slug does the work. |
 | `sandboxes.exclude` | `["amap-spec-????????", "*/amap-spec"]` | The spec's own workspace. See *Excluding one sandbox* — the obvious spelling silently matches nothing. |
 | `agents.include` | `["*"]` | Every agent gets the reference material. Only `claude` gets the injected prompt, because `--append-system-prompt-file` is Claude Code's flag. |
-| `mounts` | four, `mode: "ro"` | `ro` is the default; it is spelled out because it is the security-relevant field. |
+| `mounts` | five, `mode: "ro"` | `ro` is the default; it is spelled out because it is the security-relevant field. |
 | `agent_args.claude` | `--append-system-prompt-file ~/.amap-spec/CONFORMANCE.md` | Stateless: nothing is written into any sandbox, and the file it names is on a `:ro` mount. |
 | `feature` | prose | The one reserved top-level key sandy never interprets. |
 
