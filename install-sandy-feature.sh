@@ -75,19 +75,19 @@ fi
 # skipped, so a missing CONFORMANCE.md would still hand claude an
 # --append-system-prompt-file naming a path that is not in the container.
 missing=""
-for m in spec schemas fixtures CONFORMANCE.md; do
+for m in dist spec schemas fixtures CONFORMANCE.md; do
     [ -e "$HERE/$m" ] || missing="$missing $m"
 done
 [ -z "$missing" ] || die "this directory is missing:$missing
       install-sandy-feature.sh must sit at the ROOT of the amap-spec checkout, beside
-      spec/, schemas/ and fixtures/. Found: $HERE"
+      dist/, spec/, schemas/ and fixtures/. Found: $HERE"
 
 # --- install --------------------------------------------------------------
 say "plan:"
 say "  feature name : $NAME"
 say "  destination  : $DEST  ->  $HERE   (symlink)"
 say "  applies to   : sandboxes matching 'amap-*', except this one, every agent"
-say "  live mounts  : spec/ schemas/ fixtures/ CONFORMANCE.md  ->  ~/.amap-spec/<same>  (ro)"
+say "  live mounts  : dist/ spec/ schemas/ fixtures/ CONFORMANCE.md  ->  ~/.amap-spec/<same>  (ro)"
 say "  claude args  : --append-system-prompt-file /home/sandy/.amap-spec/CONFORMANCE.md"
 [ "$DRY" = 1 ] && exit 0
 
@@ -127,5 +127,5 @@ say "  cat $DEST/selected.json"
 say "      who was selected, and the reason for everyone who was not."
 say ""
 say "The mounts themselves are live: once a sandbox has launched with them, an"
-say "edit to spec/ here is visible in that container immediately. CONFORMANCE.md"
+say "edit to dist/ (the rendered draft) here is visible in that container immediately. CONFORMANCE.md"
 say "is the exception -- see SANDY-FEATURE.md."
