@@ -38,6 +38,13 @@ $(dir $(OUT)):
 
 # The committed .xml in dist/ is the canonical source, byte for byte. It is kept
 # there so dist/ stays the one place a reader finds the submission artifacts.
+#
+# It is also the easiest file in the repository to edit by mistake: it looks
+# exactly like the source. A direct edit there makes the copy newer than the
+# source, so make treats it as up to date and leaves it alone; `check` then
+# fails on the mismatch and says where the edit belongs. (A guard inside this
+# recipe could never fire for that case: the recipe only runs when the source
+# is the newer file.)
 $(OUT).xml: $(SRC) | $(dir $(OUT))
 	cp $(SRC) $(OUT).xml
 
@@ -70,6 +77,7 @@ $(OUT).html: $(OUT).xml
 #                    fixture, operational-only, or unclassified (baseline)
 #   validate.py      the conformance suite itself
 check: $(OUT).xml
+	@cmp -s $(SRC) $(OUT).xml || { echo "check: dist/$(NAME).xml differs from draft/draft-amap.xml. dist/ is generated: edit draft/draft-amap.xml and run make." >&2; exit 1; }
 	cd $(REPO) && python3 draft/tools/sync_sources.py
 	cd $(REPO) && python3 draft/tools/check_render.py $(SRC)
 	cd $(REPO) && python3 draft/tools/check_coverage.py

@@ -49,6 +49,10 @@ folding long lines per RFC 8792 exactly as the old kramdown-rfc build did
   empty `<sourcecode type="json"><![CDATA[]]></sourcecode>` and run
   `make sync`. `make check` fails if a schema or listed fixture has no block.
 - **Never paste JSON into the XML by hand.** The check fails on any difference.
+- **Never edit `dist/draft-amap-00.xml`.** It is a byte copy of the source and
+  looks identical to it. A direct edit there is not lost silently: `make`
+  leaves the edited copy alone and `make check` fails on the mismatch. Move the
+  edit into `draft/draft-amap.xml`.
 
 Why not xml2rfc's own `<sourcecode src="…">`: xml2rfc 3.34.1 crashes on any
 non-ASCII UTF-8 in a `src` file (the schemas carry `§` and `—`), and it does no
