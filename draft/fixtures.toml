@@ -1,23 +1,20 @@
-# fixtures.toml — which fixtures the Internet-Draft render inlines, and why.
+# fixtures.toml — which fixtures the Internet-Draft shows inline, and why.
 #
-# This is DATA, not code: draft/tools/gen_appendices.py reads it, and no fixture
-# selection is hardcoded in the compiler. Changing the inline set is a one-line
-# edit here, never a code change. See draft/README.md and PLAN.md OPEN-1 for
-# the rationale; the count and membership are not final and may change after a
-# standards review.
+# DATA, read by draft/tools/sync_sources.py: each entry maps the draft anchor
+# `<anchor>-src` to `fixtures/<file>`, and `make -C draft sync` rewrites that
+# JSON block in draft/draft-amap.xml from the file on disk. The prose around
+# each block (the `pins` and `why_fails` text below, and the roster sentence)
+# lives in the canonical XML and is the editor's; these fields record why each
+# fixture was chosen.
 #
 # `file` is relative to fixtures/ and MUST start with "valid/" or "invalid/".
-# `anchor` MUST be unique across the whole document (schemas' own anchors are
-# `schema-*`; keep fixture anchors in the `fx-` namespace so check_render.py's
-# `ex-` (illustrative, hand-written) prefix stays unambiguous).
+# `anchor` MUST be unique across the whole document (schemas use `schema-*`,
+# illustrative examples `ex-*`; fixtures stay in `fx-*`).
 # `pins` is the normative sentence this fixture is the only inline expression
 # of. `why_fails` is REQUIRED when `file` is under invalid/ — a negative
-# fixture is meaningless inline without its reason, and gen_appendices.py
-# enforces this.
-# `placement` is "appendix" (default; emitted into Appendix G in TOML order)
-# or "body" (emitted as its own fragment, included where the hand source wants
-# it shown inline; the appendix then cross-references it instead of repeating
-# it).
+# fixture is meaningless inline without its reason.
+# `placement` records where the block sits: "appendix" (the Golden Examples
+# appendix, #app-g) or "body".
 
 [policy]
 max_inline = 10

@@ -67,7 +67,7 @@ Internet-Draft                    AMAP                    September 2026
    and the reasoning.  Document version 3.1.0 is marked DRAFT: it is an
    additive minor revision of 3.0.0 (Section 11.1, Change Log).  The
    peer-origin profile it introduces is present in this document as its
-   schema and conformance fixtures (Appendix F, Appendix H); the
+   schema and conformance fixtures (Appendix F, Appendix I); the
    profile's prose is a companion document (spec/peer-origin.md, v3.1.0
    DRAFT), and nothing in this document's body specifies the peer/ tree
    beyond what that schema and those fixtures pin.
@@ -75,7 +75,7 @@ Internet-Draft                    AMAP                    September 2026
    *Change control.* A capability change to this protocol — a new field,
    a new message kind, or a change to an existing obligation — is a
    change to _this document and to its conformance fixture suite_
-   (Appendix G, Appendix H), made *before* any implementation adopts it.
+   (Appendix H, Appendix I), made *before* any implementation adopts it.
    No implementation introduces a wire-visible change unilaterally: a
    change that is not reflected here and in the fixtures is not part of
    the protocol.
@@ -191,33 +191,33 @@ Internet-Draft                    AMAP                    September 2026
    Appendix D.  Inbound-Message Schema . . . . . . . . . . . . . . .  64
    Appendix E.  Binding-Record Schema  . . . . . . . . . . . . . . .  65
    Appendix F.  Peer-Notice Schema (v3.1.0 DRAFT)  . . . . . . . . .  66
-   Appendix G.  Golden Examples  . . . . . . . . . . . . . . . . . .  70
-     G.1.  Valid Submit Request with attachments . . . . . . . . . .  70
-     G.2.  Valid Deliver Notice with a clean attachment
-           Descriptor  . . . . . . . . . . . . . . . . . . . . . . .  71
-     G.3.  Valid Inbound Message . . . . . . . . . . . . . . . . . .  71
-     G.4.  Valid Result — a policy hold with per-attachment
-           diagnostics . . . . . . . . . . . . . . . . . . . . . . .  72
-     G.5.  Invalid Deliver Notice — a content_ref that fails the
-           binding . . . . . . . . . . . . . . . . . . . . . . . . .  73
-     G.6.  Valid Deliver Notice carrying an unrecognized member  . .  73
-     G.7.  Invalid Submit Request carrying an unrecognized member  .  74
-     G.8.  Invalid peer notice — a deliver-kind document under the
-           peer tree . . . . . . . . . . . . . . . . . . . . . . . .  74
-   Appendix H.  Conformance Suite  . . . . . . . . . . . . . . . . .  75
-   Appendix I.  A Deferred Seam-Visible "Handled" Signal
-           (Non-Normative) . . . . . . . . . . . . . . . . . . . . .  83
-   Change Log  . . . . . . . . . . . . . . . . . . . . . . . . . . .  85
+   Appendix G.  Peer-Directory Schema (v3.1.0 DRAFT) . . . . . . . .  70
+   Appendix H.  Golden Examples  . . . . . . . . . . . . . . . . . .  71
+     H.1.  Valid Submit Request with attachments . . . . . . . . . .  72
+     H.2.  Valid Deliver Notice with a clean attachment
+           Descriptor  . . . . . . . . . . . . . . . . . . . . . . .  72
+     H.3.  Valid Inbound Message . . . . . . . . . . . . . . . . . .  73
+     H.4.  Valid Result — a policy hold with per-attachment
+           diagnostics . . . . . . . . . . . . . . . . . . . . . . .  74
+     H.5.  Invalid Deliver Notice — a content_ref that fails the
+           binding . . . . . . . . . . . . . . . . . . . . . . . . .  74
+     H.6.  Valid Deliver Notice carrying an unrecognized member  . .  75
+     H.7.  Invalid Submit Request carrying an unrecognized member  .  75
+     H.8.  Invalid peer notice — a deliver-kind document under the
+           peer tree . . . . . . . . . . . . . . . . . . . . . . . .  76
+   Appendix I.  Conformance Suite  . . . . . . . . . . . . . . . . .  76
+   Appendix J.  A Deferred Seam-Visible "Handled" Signal
+           (Non-Normative) . . . . . . . . . . . . . . . . . . . . .  85
+   Change Log  . . . . . . . . . . . . . . . . . . . . . . . . . . .  87
      3.1.0 (DRAFT) — the protocol is AMAP; the outbound extension
-             space; the peer-origin profile's schema . . . . . . . .  85
+             space; the peer-origin profile's schema . . . . . . . .  87
      3.0.0 — direction-aware tolerance, and six closed safety
-             holes . . . . . . . . . . . . . . . . . . . . . . . . .  86
-     2.3.0 — inbound byte access in force  . . . . . . . . . . . . .  88
-     2.2.0 — deletion rights, read-only inbound  . . . . . . . . . .  89
-     2.1.0 — the body spool, and three optional Result members . . .  89
-     2.0.0 — attachments, and contract_version required  . . . . . .  90
-     Fixture identifier normalization  . . . . . . . . . . . . . . .  90
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  90
+             holes . . . . . . . . . . . . . . . . . . . . . . . . .  88
+     2.3.0 — inbound byte access in force  . . . . . . . . . . . . .  90
+     2.2.0 — deletion rights, read-only inbound  . . . . . . . . . .  91
+     2.1.0 — the body spool, and three optional Result members . . .  91
+     2.0.0 — attachments, and contract_version required  . . . . . .  92
+     Fixture identifier normalization  . . . . . . . . . . . . . . .  92
 
 
 
@@ -225,6 +225,8 @@ Rapp & Adams              Expires 20 March 2027                 [Page 4]
 
 Internet-Draft                    AMAP                    September 2026
 
+
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  92
 
 1.  Introduction — Motivation and Problem Statement
 
@@ -272,8 +274,6 @@ Internet-Draft                    AMAP                    September 2026
    interoperability, and no shared conformance bar.  Nothing tells a
    second implementer what the first one guarantees, and nothing tells
    either of them what a third-party reviewer should check.
-
-
 
 
 
@@ -380,7 +380,7 @@ Internet-Draft                    AMAP                    September 2026
 
    Every obligation in this document is grounded in what the contract
    actually provides.  Where a capability is sketched but not in force,
-   it is marked as such (Appendix I), and where a property is a runtime
+   it is marked as such (Appendix J), and where a property is a runtime
    obligation rather than a wire-verifiable fact, this document says so
    plainly (Section 12.14).
 
@@ -408,7 +408,7 @@ Internet-Draft                    AMAP                    September 2026
    [JSON-SCHEMA-2020-12].
 
    Sections and subsections explicitly marked _(informative)_ or _(non-
-   normative)_ carry no requirements; Section 3.4, Appendix I, and the
+   normative)_ carry no requirements; Section 3.4, Appendix J, and the
    Change Log are the only such parts of this document.
 
    *Terminology.*
@@ -1042,7 +1042,7 @@ Internet-Draft                    AMAP                    September 2026
    Sidecars, so that a Runtime's scan of the drop-box never encounters
    Connector-private state.  Either way, the Runtime neither reads nor
    relies on it.  A seam-visible consumption signal is deliberately not
-   specified at this document version; Appendix I records the reasoning.
+   specified at this document version; Appendix J records the reasoning.
 
    *Outbound extension space (v3.1.0 DRAFT).* outbound/ext/<name>/ is a
    Connector-owned side channel, one directory per <name>, that a
@@ -1165,7 +1165,7 @@ Internet-Draft                    AMAP                    September 2026
    | notice-<id>.json, and |           |deployment | a seam-visible    |
    | their .attachments/   |           |leaves     | consumption       |
    | Sidecar directories   |           |inbound    | signal            |
-   |                       |           |writable,  | (Appendix I),     |
+   |                       |           |writable,  | (Appendix J),     |
    |                       |           |the        | retention MUST    |
    |                       |           |Connector  | be conservative   |
    |                       |           |MAY move or| and age-based.    |
@@ -1516,7 +1516,7 @@ Internet-Draft                    AMAP                    September 2026
 
       (Section 4.1).  This constraint is not expressible in JSON Schema
       and is enforced by the conformance gate as a named post-check
-      rather than by the schema (Appendix H).
+      rather than by the schema (Appendix I).
 
       *Two paths, never conflated.* A _malformed_ attachment — a size or
       digest mismatch, a missing or extra Sidecar, a duplicate index —
@@ -1657,7 +1657,7 @@ Internet-Draft                    AMAP                    September 2026
    how the schema is phrased: it is a second, independent condition, not
    a special case of the first.  The conformance suite enforces it as a
    named post-check and pins it with a fixture that is schema-valid on
-   its own and fails only this check (Appendix H).
+   its own and fails only this check (Appendix I).
 
    A *version refusal* — an absent or non-matching contract_version
    major — is explicitly *not* part of this drop path.  It is handled
@@ -1838,7 +1838,7 @@ Internet-Draft                    AMAP                    September 2026
    text as the path, since a Descriptor could otherwise point into
    another Notice's Sidecar directory.  This is a wire-shaped, document-
    level obligation, enforced by the conformance gate as a named post-
-   check (Appendix H) in the same way the Result-side
+   check (Appendix I) in the same way the Result-side
    attachments[i].index == i binding is.
 
 
@@ -2355,7 +2355,7 @@ Internet-Draft                    AMAP                    September 2026
 
 
    Section 12.15), and the peer-origin profile's schema and conformance
-   fixtures (Appendix F, Appendix H).  No existing schema rule or
+   fixtures (Appendix F, Appendix I).  No existing schema rule or
    fixture changed.  The profile's prose is a companion document not yet
    drafted; until it is, the schema and the peer-* fixtures are
    normative for the shape of a peer notice, and this document specifies
@@ -2526,7 +2526,7 @@ Internet-Draft                    AMAP                    September 2026
 
    *The fixtures are the other side.* fixtures/ holds golden artifacts,
    and a producer or consumer proves conformance by passing them with
-   *no counterpart present* (Appendix H).  That is what makes
+   *no counterpart present* (Appendix I).  That is what makes
    independent implementation practical: neither side needs the other to
    exist in order to demonstrate conformance.
 
@@ -2534,7 +2534,7 @@ Internet-Draft                    AMAP                    September 2026
    obligation — one about how an implementation acts against a
    filesystem, rather than about the shape of a document — lies outside
    the fixture gate by construction and is checked operationally
-   instead.  Appendix H lists every obligation of this kind that a green
+   instead.  Appendix I lists every obligation of this kind that a green
    run does not prove.
 
    This document defines two conformance classes.  An implementation MAY
@@ -2566,7 +2566,7 @@ Internet-Draft                    AMAP                    September 2026
       satisfies the valid identity-* shape.
 
    *  MUST uphold the filesystem and policy obligations of Sections 4
-      through 8 that no document validator can observe.  Appendix H
+      through 8 that no document validator can observe.  Appendix I
       lists them explicitly as what a green fixture run does *not*
       prove, and they are obligations of the class regardless — write-
       side path discipline (the conjunctive parent-chain-pinning, no-
@@ -3050,7 +3050,7 @@ Internet-Draft                    AMAP                    September 2026
    It proves nothing about a filesystem.  The following are Runtime or
    Connector obligations that no document validator can observe, and a
    reviewer assessing an implementation must check them another way
-   (Appendix H lists them as the gate's own honesty statement):
+   (Appendix I lists them as the gate's own honesty statement):
 
    *  Sidecar file existence, and the binding between an ordinal and a
       directory entry on disk.
@@ -3336,7 +3336,7 @@ Appendix B.  Result Schema
    at every level: a consumer tolerates unrecognized members
    (Section 11.1).  The attachments[i].index == i binding stated in
    Section 6.1 is not expressible here and is enforced as a named post-
-   check by the conformance gate (Appendix H).
+   check by the conformance gate (Appendix I).
 
    NOTE: '\' line wrapping per RFC 8792
 
@@ -3409,7 +3409,7 @@ Appendix C.  Deliver-Notice Schema
    level.  The two allOf conditionals implement the clean-gating of
    content_ref and sha256 (Section 7.2); the content_ref index and
    prefix binding, by contrast, is not expressible here and is enforced
-   as a named post-check (Appendix H).
+   as a named post-check (Appendix I).
 
 
 
@@ -3677,7 +3677,7 @@ Appendix F.  Peer-Notice Schema (v3.1.0 DRAFT)
    notice, the artifact the peer-origin profile places under <agent-
    id>/peer/notices/. The profile's prose is a companion document (spec/
    peer-origin.md, v3.1.0 DRAFT); at this document version the schema
-   and the peer-* fixtures (Appendix H) are the whole of what this
+   and the peer-* fixtures (Appendix I) are the whole of what this
    document specifies about it.  The envelope is Runtime-authored and
    therefore open (Section 11.1).  A document with kind: "peer" found
    under inbound/notices/ fails the deliver-notice schema (Appendix C),
@@ -3870,17 +3870,115 @@ Internet-Draft                    AMAP                    September 2026
 
                  Figure 13: schemas/peer-notice.schema.json
 
-Appendix G.  Golden Examples
+Appendix G.  Peer-Directory Schema (v3.1.0 DRAFT)
+
+   _(Normative for the shape it pins; the profile it belongs to is
+   DRAFT.)_ JSON Schema 2020-12 [JSON-SCHEMA-2020-12]; governs the
+   optional peer directory defined in Section 10, which a Runtime MAY
+   publish at <agent-id>/directory.json.  The document is Runtime-
+   authored and therefore open (Section 11.1), and it is advisory: the
+   schema pins its shape, never what it predicts.
+
+   NOTE: '\' line wrapping per RFC 8792
+
+   {
+     "$schema": "https://json-schema.org/draft/2020-12/schema",
+     "$id": "https://amap-spec/schemas/directory.schema.json",
+     "title": "directory",
+     "description": "runtime -> connector: the router's most recent wor\
+       d about which peers this agent may address, published per instan\
+       ce at <agent-id>/directory.json. amap-spec v3.1.0 DRAFT (spec/co\
+       ntract.md §10). ADVISORY, NEVER AUTHORITATIVE: an address's pres\
+       ence is not a prediction that a submit to it will be accepted, n\
+       or its absence a prediction of refusal — authorisation is evalua\
+       ted by the runtime at submit time and only the result (§4) repor\
+       ts what happened. A runtime MUST NOT read this file back as auth\
+       orisation; enforcement stays the runtime's own graph check on ev\
+       ery message. The file MAY be absent. Runtime-authored: envelope \
+       is OPEN at every level per §7's v3.0.0 tolerance rule — a consum\
+       er MUST ignore members it does not recognize; emitting an unreco\
+       gnized member remains producer non-conformance.",
+     "type": "object",
+     "required": [
+       "router",
+       "written_at",
+       "delegate_to",
+       "mail_to"
+     ],
+     "properties": {
+       "contract_version": {
+         "const": "2"
+       },
+       "router": {
+         "type": "string",
+         "description": "the publishing runtime's own address, one bar\
+       e addr-spec. Never appears in delegate_to or mail_to.",
+         "pattern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+(?\
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 70]
+
+Internet-Draft                    AMAP                    September 2026
+
+
+       !\\n)$"
+       },
+       "written_at": {
+         "type": "string",
+         "minLength": 1,
+         "description": "RFC 3339, the publishing runtime's clock. The \
+       only staleness signal a consumer gets; an honest marker, not a f\
+       reshness guarantee.",
+         "pattern": "^[^\\u0000-\\u001f\\u007f]*(?!\\n)$"
+       },
+       "delegate_to": {
+         "type": "array",
+         "description": "sorted addresses this agent may task — the aut\
+       horisation graph transposed for this instance. Always present; e\
+       mpty when the lane is closed. Never this agent's own address, an\
+       d never who may task THIS agent (an allowlist, withheld by const\
+       ruction).",
+         "items": {
+           "type": "string",
+           "pattern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+\
+       (?!\\n)$"
+         }
+       },
+       "mail_to": {
+         "type": "array",
+         "description": "sorted addresses on the mutual mail lane. Alwa\
+       ys present; empty when the lane is closed, which is the normal c\
+       ase for a delegation-only deployment.",
+         "items": {
+           "type": "string",
+           "pattern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+\
+       (?!\\n)$"
+         }
+       }
+     }
+   }
+
+                  Figure 14: schemas/directory.schema.json
+
+Appendix H.  Golden Examples
 
    _(Normative.)_ The documents below are reproduced byte-verbatim from
-   the conformance suite (Appendix H).  They are a small selection
+   the conformance suite (Appendix I).  They are a small selection
    covering each artifact type and three rejections; the suite itself is
    the authority.  The selection is configured in draft/fixtures.toml,
    not hardcoded in this document's build tooling, and one further
    example — a Binding Record — is shown inline at Section 9 instead of
    being repeated here.
 
-G.1.  Valid Submit Request with attachments
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 71]
+
+Internet-Draft                    AMAP                    September 2026
+
+
+H.1.  Valid Submit Request with attachments
 
    Sidecar blobs are named by array index (req-<id>.attachments/<i>); no
    content_ref may appear on a request and the schema rejects one
@@ -3910,24 +4008,31 @@ G.1.  Valid Submit Request with attachments
      }
    }
 
-             Figure 14: fixtures/valid/request-attachments.json
+             Figure 15: fixtures/valid/request-attachments.json
 
-
-
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 70]
-
-Internet-Draft                    AMAP                    September 2026
-
-
-G.2.  Valid Deliver Notice with a clean attachment Descriptor
+H.2.  Valid Deliver Notice with a clean attachment Descriptor
 
    content_ref's prefix equals the enclosing document's own notice_id
    and its trailing index equals the Descriptor's own array position
    (Section 7.2); a Connector that relays the Notice without ever
    dereferencing the reference is fully conformant.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 72]
+
+Internet-Draft                    AMAP                    September 2026
+
 
    NOTE: '\' line wrapping per RFC 8792
 
@@ -3953,30 +4058,12 @@ G.2.  Valid Deliver Notice with a clean attachment Descriptor
      }
    }
 
-         Figure 15: fixtures/valid/notice-attachment-clean-ref.json
+         Figure 16: fixtures/valid/notice-attachment-clean-ref.json
 
-G.3.  Valid Inbound Message
+H.3.  Valid Inbound Message
 
    The body spool for a delivered message is keyed on the Runtime-minted
    notice_id, never on the provider message.id (Section 7.3).
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 71]
-
-Internet-Draft                    AMAP                    September 2026
-
 
    {
      "contract_version": "2",
@@ -3993,9 +4080,17 @@ Internet-Draft                    AMAP                    September 2026
      ]
    }
 
-                Figure 16: fixtures/valid/message-clean.json
+                Figure 17: fixtures/valid/message-clean.json
 
-G.4.  Valid Result — a policy hold with per-attachment diagnostics
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 73]
+
+Internet-Draft                    AMAP                    September 2026
+
+
+H.4.  Valid Result — a policy hold with per-attachment diagnostics
 
    attachments[i].index == i on a Result, contiguous and unique over
    0..n-1; per-attachment entries are diagnostic detail under one
@@ -4021,20 +4116,9 @@ G.4.  Valid Result — a policy hold with per-attachment diagnostics
      ]
    }
 
-           Figure 17: fixtures/valid/result-attachments-held.json
+           Figure 18: fixtures/valid/result-attachments-held.json
 
-
-
-
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 72]
-
-Internet-Draft                    AMAP                    September 2026
-
-
-G.5.  Invalid Deliver Notice — a content_ref that fails the binding
+H.5.  Invalid Deliver Notice — a content_ref that fails the binding
 
    The drop rule of Section 7.1 is two independent checks: this document
    is schema-valid and is caught only by the content_ref post-check
@@ -4050,6 +4134,17 @@ G.5.  Invalid Deliver Notice — a content_ref that fails the binding
 
    $.attachments[0].content_ref: 'OTHER-NOTICE.attachments/7' !=
      'n-index-mismatch.attachments/0'
+
+
+
+
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 74]
+
+Internet-Draft                    AMAP                    September 2026
+
 
    {
      "contract_version": "2",
@@ -4071,24 +4166,13 @@ G.5.  Invalid Deliver Notice — a content_ref that fails the binding
      }
    }
 
-   Figure 18: fixtures/invalid/notice-attachment-ref-index-mismatch.json
+   Figure 19: fixtures/invalid/notice-attachment-ref-index-mismatch.json
 
-G.6.  Valid Deliver Notice carrying an unrecognized member
+H.6.  Valid Deliver Notice carrying an unrecognized member
 
    The Runtime-authored envelope is OPEN as of document version 3.0.0: a
    consumer MUST ignore a member it does not recognize, at every level
    (Section 11.1).
-
-
-
-
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 73]
-
-Internet-Draft                    AMAP                    September 2026
-
 
    NOTE: '\' line wrapping per RFC 8792
 
@@ -4098,9 +4182,9 @@ Internet-Draft                    AMAP                    September 2026
        "p", "mailbox": "inbox",
                   "x_message_injected": "also surprise" } }
 
-            Figure 19: fixtures/valid/notice-unknown-member.json
+            Figure 20: fixtures/valid/notice-unknown-member.json
 
-G.7.  Invalid Submit Request carrying an unrecognized member
+H.7.  Invalid Submit Request carrying an unrecognized member
 
    The Agent-authored envelope stays CLOSED at every level: an
    unrecognized member is a designed, legible rejected refusal, never a
@@ -4111,6 +4195,13 @@ G.7.  Invalid Submit Request carrying an unrecognized member
 
    The conformance gate's own errors for this document:
 
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 75]
+
+Internet-Draft                    AMAP                    September 2026
+
+
    $: additional property 'x_injected' not allowed
 
    NOTE: '\' line wrapping per RFC 8792
@@ -4119,9 +4210,9 @@ G.7.  Invalid Submit Request carrying an unrecognized member
        rise",
      "draft": { "to": ["a@b"], "subject": "s", "body_text": "b" } }
 
-            Figure 20: fixtures/invalid/request-extra-field.json
+            Figure 21: fixtures/invalid/request-extra-field.json
 
-G.8.  Invalid peer notice — a deliver-kind document under the peer tree
+H.8.  Invalid peer notice — a deliver-kind document under the peer tree
 
    Origin class comes from the tree a notice arrived in, never from a
    self-declared field: a kind: "deliver" document found under peer/
@@ -4135,17 +4226,6 @@ G.8.  Invalid peer notice — a deliver-kind document under the peer tree
 
    $.kind: 'deliver' != const 'peer'
 
-
-
-
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 74]
-
-Internet-Draft                    AMAP                    September 2026
-
-
    NOTE: '\' line wrapping per RFC 8792
 
    { "contract_version": "2", "notice_id": "9f1c2b7e4d3a4f60b8e2c1d5a7f\
@@ -4154,9 +4234,9 @@ Internet-Draft                    AMAP                    September 2026
        anner@fleet.example", "subject": "s", "preview": "p", "mailbox"\
        : "peer" } }
 
-             Figure 21: fixtures/invalid/peer-kind-deliver.json
+             Figure 22: fixtures/invalid/peer-kind-deliver.json
 
-Appendix H.  Conformance Suite
+Appendix I.  Conformance Suite
 
    _(Normative for the classes of Section 11.3; the honesty statement
    below is part of the specification.)_
@@ -4166,6 +4246,17 @@ Appendix H.  Conformance Suite
 
    At this document version the suite contains *82 fixtures — 31 valid
    and 51 invalid*.
+
+
+
+
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 76]
+
+Internet-Draft                    AMAP                    September 2026
+
 
    +======================================+============================+
    | fixture                              | schema                     |
@@ -4194,14 +4285,6 @@ Appendix H.  Conformance Suite
    | ref.json                             | notice.schema.json         |
    +--------------------------------------+----------------------------+
    | valid/notice-attachments-            | deliver-                   |
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 75]
-
-Internet-Draft                    AMAP                    September 2026
-
-
    | descriptors.json                     | notice.schema.json         |
    +--------------------------------------+----------------------------+
    | valid/notice-enriched.json           | deliver-                   |
@@ -4223,6 +4306,14 @@ Internet-Draft                    AMAP                    September 2026
    |                                      | notice.schema.json         |
    +--------------------------------------+----------------------------+
    | valid/peer-exposure-true.json        | peer-                      |
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 77]
+
+Internet-Draft                    AMAP                    September 2026
+
+
    |                                      | notice.schema.json         |
    +--------------------------------------+----------------------------+
    | valid/peer-minimal.json              | peer-                      |
@@ -4250,14 +4341,6 @@ Internet-Draft                    AMAP                    September 2026
    |                                      | request.schema.json        |
    +--------------------------------------+----------------------------+
    | valid/result-accepted.json           | result.schema.json         |
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 76]
-
-Internet-Draft                    AMAP                    September 2026
-
-
    +--------------------------------------+----------------------------+
    | valid/result-attachments-            | result.schema.json         |
    | accepted.json                        |                            |
@@ -4279,6 +4362,14 @@ Internet-Draft                    AMAP                    September 2026
    +--------------------------------------+----------------------------+
    | invalid/directory-version-1.json     | directory.schema.json      |
    +--------------------------------------+----------------------------+
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 78]
+
+Internet-Draft                    AMAP                    September 2026
+
+
    | invalid/identity-extra-field.json    | binding-                   |
    |                                      | record.schema.json         |
    +--------------------------------------+----------------------------+
@@ -4306,14 +4397,6 @@ Internet-Draft                    AMAP                    September 2026
    | invalid/notice-attachment-sha-not-   | deliver-                   |
    | clean.json                           | notice.schema.json         |
    +--------------------------------------+----------------------------+
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 77]
-
-Internet-Draft                    AMAP                    September 2026
-
-
    | invalid/notice-attachment-traversal- | deliver-                   |
    | ref.json                             | notice.schema.json         |
    +--------------------------------------+----------------------------+
@@ -4335,6 +4418,14 @@ Internet-Draft                    AMAP                    September 2026
    | invalid/notice-wrong-kind.json       | deliver-                   |
    |                                      | notice.schema.json         |
    +--------------------------------------+----------------------------+
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 79]
+
+Internet-Draft                    AMAP                    September 2026
+
+
    | invalid/peer-attachment-ref-index-   | peer-                      |
    | mismatch.json                        | notice.schema.json         |
    +--------------------------------------+----------------------------+
@@ -4362,14 +4453,6 @@ Internet-Draft                    AMAP                    September 2026
    | invalid/peer-message-id-encoded.json | peer-                      |
    |                                      | notice.schema.json         |
    +--------------------------------------+----------------------------+
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 78]
-
-Internet-Draft                    AMAP                    September 2026
-
-
    | invalid/peer-notice-id-trailing-     | peer-                      |
    | newline.json                         | notice.schema.json         |
    +--------------------------------------+----------------------------+
@@ -4391,6 +4474,14 @@ Internet-Draft                    AMAP                    September 2026
    | invalid/request-attachment-negative- | submit-                    |
    | size.json                            | request.schema.json        |
    +--------------------------------------+----------------------------+
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 80]
+
+Internet-Draft                    AMAP                    September 2026
+
+
    | invalid/request-empty-to.json        | submit-                    |
    |                                      | request.schema.json        |
    +--------------------------------------+----------------------------+
@@ -4418,14 +4509,6 @@ Internet-Draft                    AMAP                    September 2026
    | invalid/request-traversal-reqid.json | submit-                    |
    |                                      | request.schema.json        |
    +--------------------------------------+----------------------------+
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 79]
-
-Internet-Draft                    AMAP                    September 2026
-
-
    | invalid/request-version-absent.json  | submit-                    |
    |                                      | request.schema.json        |
    +--------------------------------------+----------------------------+
@@ -4446,6 +4529,14 @@ Internet-Draft                    AMAP                    September 2026
    +--------------------------------------+----------------------------+
    | invalid/result-bad-outcome.json      | result.schema.json         |
    +--------------------------------------+----------------------------+
+
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 81]
+
+Internet-Draft                    AMAP                    September 2026
+
 
                                   Table 4
 
@@ -4472,16 +4563,6 @@ Internet-Draft                    AMAP                    September 2026
    *  the Result-side binding attachments[i].index == i, contiguous and
       unique over 0 through n-1 (Section 6.1);
 
-
-
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 80]
-
-Internet-Draft                    AMAP                    September 2026
-
-
    *  the content_ref index and prefix binding on Notice, Inbound
       Message, and peer-notice documents: every Descriptor carrying
       content_ref must equal <notice_id>.attachments/<i> for its own
@@ -4491,7 +4572,7 @@ Internet-Draft                    AMAP                    September 2026
    A Connector conformance claim requires running *both* the schema
    validation and the second post-check, because exactly one invalid
    notice-* fixture — and its peer-* counterpart — is schema-valid on
-   its own and is caught only by that post-check (Appendix G,
+   its own and is caught only by that post-check (Appendix H,
    Section 11.3).
 
    *A note on pattern anchoring, and a portability cost.* Every schema
@@ -4505,6 +4586,13 @@ Internet-Draft                    AMAP                    September 2026
    in any one validator.  Seven fixtures pin the trailing-newline case
    specifically, distinct from the CRLF fixtures, which embed \r\n and
    were already rejected even under a permissive engine.
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 82]
+
+Internet-Draft                    AMAP                    September 2026
+
 
    The cost is disclosed rather than discovered: *lookahead-less engines
    cannot compile these patterns at all.* RE2 (Go's regexp), Rust's
@@ -4530,14 +4618,6 @@ Internet-Draft                    AMAP                    September 2026
 
    *  size_bytes and sha256 actually matching the bytes on disk.
 
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 81]
-
-Internet-Draft                    AMAP                    September 2026
-
-
    *  filename display-sanitization, and the "never a path" invariant.
 
    *  The binding between an ordinal and a directory entry on disk.  The
@@ -4557,6 +4637,18 @@ Internet-Draft                    AMAP                    September 2026
 
    *  The absence of a spooled body for a quarantined or blocked message
       (enforcement by absence, Section 7.3).
+
+
+
+
+
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 83]
+
+Internet-Draft                    AMAP                    September 2026
+
 
    *  A Connector's tolerance of a read-only inbound/ tree.  The
       prescribed check is operational, not a fixture: run the Connector
@@ -4587,13 +4679,6 @@ Internet-Draft                    AMAP                    September 2026
       and deployment invariant, such as an OS-level lock held for the
       process lifetime (Section 4.1).
 
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 82]
-
-Internet-Draft                    AMAP                    September 2026
-
-
    *  Compose-time header-boundary stripping: even where the schemas'
       control-character patterns are bypassed upstream, the Runtime
       rejects or strips CR, LF, and NUL before composing the outbound
@@ -4614,6 +4699,13 @@ Internet-Draft                    AMAP                    September 2026
       refused rather than stripped; and at-most-once action by the
       Connector, with an ambiguous target held rather than fanned out.
 
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 84]
+
+Internet-Draft                    AMAP                    September 2026
+
+
    Beyond these, the behavioral obligations of Sections 7 and 8 — the
    untrusted-content posture, the treatment of task_id as correlation
    rather than authorization, and the requirement that verified sender
@@ -4621,7 +4713,7 @@ Internet-Draft                    AMAP                    September 2026
    gate entirely.  They constrain what an implementation _does_ with a
    valid document, which no document-level gate can see.
 
-Appendix I.  A Deferred Seam-Visible "Handled" Signal (Non-Normative)
+Appendix J.  A Deferred Seam-Visible "Handled" Signal (Non-Normative)
 
    *This appendix is non-normative and is not in force at this document
    version.* It records the reasoning behind a gap deliberately left
@@ -4643,14 +4735,7 @@ Appendix I.  A Deferred Seam-Visible "Handled" Signal (Non-Normative)
 
    outbound/acks/notice-<id>   # sketch only - not part of the protocol
 
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 83]
-
-Internet-Draft                    AMAP                    September 2026
-
-
-             Figure 22: Sketch only — not part of this protocol
+             Figure 23: Sketch only — not part of this protocol
 
    A Runtime could then delete the acknowledged Notice and its spooled
    message, and finally the marker itself.  This is presented purely as
@@ -4667,6 +4752,15 @@ Internet-Draft                    AMAP                    September 2026
    "the Agent writes it, so it cannot be trusted" case in this document
    — but it is a distinction a future version would need to state
    explicitly rather than assume.
+
+
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 85]
+
+Internet-Draft                    AMAP                    September 2026
+
 
    *Why a high-water mark cannot substitute.* Section 8 requires task_id
    to be unguessable and never sequential, and nothing in this document
@@ -4698,14 +4792,6 @@ Internet-Draft                    AMAP                    September 2026
       point lookup from a notice identifier to a body.  "Search my
       archive" is a materially larger capability — decompression,
       indexing, query — for a deliberately dumb, credential-free relay
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 84]
-
-Internet-Draft                    AMAP                    September 2026
-
-
       to take on.  If archives are ever exposed to an Agent, that likely
       belongs behind a Runtime-served surface rather than the file-drop
       seam.
@@ -4718,6 +4804,19 @@ Internet-Draft                    AMAP                    September 2026
    three modes: move, ledger, and in-memory.  There is no second data
    point yet to generalize from, and specifying now would freeze one
    side's convention as the protocol's answer.
+
+
+
+
+
+
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 86]
+
+Internet-Draft                    AMAP                    September 2026
+
 
    *One honesty note for a future implementer.* The sketch's own
    garbage-collection step is not atomic: if a Runtime crashes between
@@ -4757,7 +4856,20 @@ peer-origin profile's schema
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 85]
+
+
+
+
+
+
+
+
+
+
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 87]
 
 Internet-Draft                    AMAP                    September 2026
 
@@ -4813,7 +4925,7 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 86]
+Rapp & Adams              Expires 20 March 2027                [Page 88]
 
 Internet-Draft                    AMAP                    September 2026
 
@@ -4869,7 +4981,7 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 87]
+Rapp & Adams              Expires 20 March 2027                [Page 89]
 
 Internet-Draft                    AMAP                    September 2026
 
@@ -4925,7 +5037,7 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 88]
+Rapp & Adams              Expires 20 March 2027                [Page 90]
 
 Internet-Draft                    AMAP                    September 2026
 
@@ -4981,7 +5093,7 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 89]
+Rapp & Adams              Expires 20 March 2027                [Page 91]
 
 Internet-Draft                    AMAP                    September 2026
 
@@ -5037,4 +5149,4 @@ Authors' Addresses
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 90]
+Rapp & Adams              Expires 20 March 2027                [Page 92]

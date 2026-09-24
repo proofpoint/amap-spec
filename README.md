@@ -12,7 +12,7 @@ people and versioned independently.
 
 **Current version: 3.1.0 (DRAFT)** (wire `contract_version` `"2"` - the contract's
 own SemVer and the wire major track different things as of 3.0.0; see
-`spec/contract.md` section 7).
+the draft's Versioning and Conformance section, 11).
 Conformance gate: **82 fixtures**, 0 unexpected.
 
 ## Motivation
@@ -123,18 +123,20 @@ which actions are allowed.
 ## Layout
 
 ```
-spec/contract.md   the normative contract - actors, invariant, directory
-                   layout, message shapes, correlation, versioning
-schemas/           JSON Schema (2020-12) for each message
-fixtures/          golden valid + invalid artifacts, and the validator
-dist/              a standalone, IETF-flavored draft, generated from the above;
-                   non-authoritative on conflict - regenerated, never patched
+draft/draft-amap.xml  the normative prose, as an IETF Internet-Draft - actors,
+                      invariant, directory layout, message shapes, correlation,
+                      versioning; hand-edited, and the source of dist/
+schemas/              JSON Schema (2020-12) for each message
+fixtures/             golden valid + invalid artifacts, and the validator
+dist/                 the draft rendered: draft-amap-00.txt to read, .xml to submit
+spec/contract.md      FROZEN - the prose the draft was reconciled against
+spec/peer-origin.md   the peer-origin profile (DRAFT), canonical for the peer lane
 ```
 
-`spec/contract.md`, together with `schemas/` and `fixtures/`, is the
-normative contract. `dist/` is a rendering generated from it for standalone
-reading; where the two disagree, `spec/contract.md` and the fixture gate
-govern.
+The Internet-Draft (`draft/draft-amap.xml`), together with `schemas/` and
+`fixtures/`, is the normative contract. Read it as `dist/draft-amap-00.txt`.
+The JSON the draft shows is written into it from `schemas/` and `fixtures/`,
+never copied by hand, and the build fails if the two ever differ.
 
 Run the conformance gate - no counterpart, no network, no dependencies:
 
@@ -144,10 +146,10 @@ python3 fixtures/validate.py
 
 ## How changes reach the spec
 
-Changes enter from two ends - implementations propose against `spec/`, and
-the Internet-Draft is hand-edited by a standards contact whose edits are
-canonical. The two directions have different rules, and both are enforced by
-`make -C draft check`. See [WORKFLOWS.md](WORKFLOWS.md).
+Changes enter from two ends - implementations propose against `schemas/` and
+`fixtures/`, and the Internet-Draft is hand-edited by a standards editor whose
+edits are canonical. The two directions have different rules, and `make -C
+draft` enforces both. See [WORKFLOWS.md](WORKFLOWS.md).
 
 ## How conformance works
 
@@ -157,20 +159,20 @@ is what makes independent implementation practical.
 
 Two rules govern change:
 
-- **A capability change starts here** - a PR against `spec/contract.md` +
-  `schemas/` + `fixtures/`, *before* either side builds it. Neither a runtime
+- **A capability change starts here** - a PR against `schemas/` +
+  `fixtures/` + the draft's prose, *before* either side builds it. Neither a runtime
   nor a connector may invent a wire field locally.
 - **Additive changes imply a minor bump; breaking a fixture implies a major
   bump**, taken deliberately by both sides. A version mismatch fails closed; it never
-  silently mis-parses. As of 3.0.0 this splits into two axes - see section 7:
+  silently mis-parses. As of 3.0.0 this splits into two axes - see the draft's section 11:
   the *wire* major (`contract_version`) tracks envelope-shape compatibility,
   while the contract's own SemVer tracks the fuller set of obligations on
   both sides.
 
 Some obligations are behavioral rather than wire-shaped - for example, that a
 connector must not require write access to the inbound tree. Those sit outside
-the fixture gate by construction, and section 7 names the operational check for
-each. `fixtures/validate.py`'s docstring lists what a green run does *not* prove.
+the fixture gate by construction, and the draft's Conformance section (11.3)
+names the operational check for each. `fixtures/validate.py`'s docstring lists what a green run does *not* prove.
 
 ## Status
 
@@ -185,11 +187,12 @@ The contract remains a draft. Review and implementation experience are welcome,
 particularly on the trust boundary, independently enforced obligations, and
 interoperability between separately developed runtimes and connectors.
 
-The version history is in `spec/contract.md` section 7.
+The version history is the draft's Change Log; the history before 2026-09-24
+is in the frozen `spec/contract.md`, section 7.
 
 ## Contributing
 
-A capability change lands as `spec/` + `schemas/` + `fixtures/` in one change,
+A capability change lands as `schemas/` + `fixtures/` + the draft's prose in one change,
 **before** either implementation builds it - a schema change without a fixture
 is the one PR that cannot be merged, because the fixtures *are* the other side.
 [CONTRIBUTING.md](CONTRIBUTING.md) explains that and the traps that are

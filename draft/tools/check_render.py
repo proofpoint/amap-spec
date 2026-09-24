@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """check_render.py — post-build gate for the rendered Internet-Draft XML.
 
-Proves the thing gen_appendices.py cannot prove by construction: that what
-actually landed in dist/draft-amap-00.xml still equals a
+Proves that what actually lands in the draft XML (draft/draft-amap.xml, the
+canonical source, and its copy dist/draft-amap-00.xml) still equals a
 real file on disk, byte for byte (modulo RFC 8792 folding and a trailing
 newline). Run after every build; `make -C draft check` wires it in.
 
@@ -10,20 +10,21 @@ Checks:
   1. Every <sourcecode type="json"> whose enclosing figure's anchor ends in
      "-src" is RFC-8792-unfolded and compared against the fixtures/ or
      schemas/ file its own anchor names (the fence directive baked the path
-     into the title= attribute). A figure anchored "ex-*" is a hand-written
+     into the caption: v3 <name>, or title= in the legacy v2 rendering). A figure anchored "ex-*" is a hand-written
      illustrative shape (not a fixture) and is exempted from the disk
      comparison, but its JSON must still parse.
-  2. The Appendix H roster sentence ("N fixtures — V valid and I invalid")
+  2. The Conformance Suite appendix (#app-h) roster sentence ("N fixtures — V valid and I invalid")
      matches the on-disk fixture counts.
   3. rfc/@docName is the pinned, unrenamed draft name (D9).
   4. No host path or the operator's personal email appears anywhere in the
      rendered XML.
   5. No SYSTEM "http entity exists (stand_alone held; nothing fetched at
      render time).
-  6. No BROKEN REFERENCE placeholder exists (a bib/reference.*.xml file
-     kramdown-rfc needed was present at build time; offline mode substitutes
-     this placeholder rather than fetching, and it is otherwise schema-valid
-     and silent).
+  6. No BROKEN REFERENCE placeholder exists. The old kramdown-rfc build
+     silently substituted one for a missing bib/ file; the canonical XML
+     inherited its references from that build, so the check stays as a guard
+     against a placeholder surviving into, or being pasted back into, the
+     hand-edited source.
   7. Every illustrative JSON shape in draft/examples/ (the "ex-*" figures
      exempted from check 1's disk comparison) still validates against its
      schema. The schema and the applicable named post-check are picked from
@@ -89,14 +90,19 @@ def check_sourcecode_blocks(root: ET.Element) -> list[str]:
                 continue
             if anchor.startswith("ex-"):
                 continue  # illustrative, hand-written shape; not a fixture
+            # The source path is the figure's caption: v3 carries it in a
+            # <name> child, the legacy v2 rendering in a title= attribute.
             title = None
             for e in [figure] + list(figure.iter()):
+                if ns_strip(e.tag) == "name" and (e.text or "").strip():
+                    title = e.text.strip()
+                    break
                 if e.get("title"):
                     title = e.get("title")
                     break
             src_path = title or _guess_path_from_anchor(anchor)
             if src_path is None:
-                errors.append(f"{anchor}: no title= naming a source file, and anchor "
+                errors.append(f"{anchor}: no caption naming a source file, and anchor "
                                f"doesn't start with 'ex-' to exempt it")
                 continue
             disk_path = REPO / src_path
@@ -120,7 +126,7 @@ def check_roster(xml_text: str) -> list[str]:
     # "27" here, off the em dash + digit ambiguity — caught by this fix).
     m = re.search(r"(\d+)\s+fixtures\D*(\d+)\s+valid and (\d+)\s+invalid", xml_text)
     if not m:
-        errors.append("Appendix H roster sentence not found in rendered XML")
+        errors.append("Conformance Suite appendix (#app-h) roster sentence not found in rendered XML")
         return errors
     total, valid, invalid = (int(x) for x in m.groups())
     disk_valid = len(list((REPO / "fixtures" / "valid").glob("*.json")))
@@ -201,15 +207,15 @@ def check_examples() -> list[str]:
 
 
 def check_no_broken_references(xml_text: str) -> list[str]:
-    """kramdown-rfc silently substitutes a placeholder <reference> whose
+    """The former kramdown-rfc build silently substituted a placeholder <reference> whose
     title is this literal string when a bib/reference.*.xml file it needs is
     missing at build time (offline mode never fetches it instead). That
     placeholder is schema-valid XML and renders as a normal-looking, if
     useless, bibliography entry — the build's exit code stays 0 and this was
     the one class of breakage the mechanical checks below cannot see."""
     if "BROKEN REFERENCE" in xml_text:
-        return ["a BROKEN REFERENCE placeholder is present — a bib/reference.*.xml "
-                "file kramdown-rfc needed was missing at build time; see draft/bib/"]
+        return ["a BROKEN REFERENCE placeholder is present in the draft XML; replace "
+                "it with the real <reference> (draft/bib/ holds the RFC entries)"]
     return []
 
 

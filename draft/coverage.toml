@@ -1,0 +1,906 @@
+# coverage.toml — the classification of every normative sentence in the
+# protocol sections (3-10 and the peer directory) of draft/draft-amap.xml.
+# Enforced by draft/tools/check_coverage.py, which documents the classes.
+#
+# The entries marked `baseline = true` are the migration baseline: the 128
+# sentences present when the draft XML became the canonical source
+# (2026-09-24), recorded but not yet reasoned about. Classify them — fixture,
+# operational or informative — as they are reviewed; that is how this file
+# earns its keep. Never add an unclassified entry: a new sentence gets its real
+# class when it lands.
+
+[[sentence]]
+id = "085f5ab1ac02"
+section = "sec-4"
+class = "unclassified"
+baseline = true
+text = "Within that Namespace, write access may be narrower still: the inbound/ subtree is Runtime-owned and MAY be mounted read-only."
+
+[[sentence]]
+id = "1984d7dfd72d"
+section = "sec-4-1"
+class = "unclassified"
+baseline = true
+text = "A Runtime MUST reject a Submit Request whose agent_id, when present, does not match the Namespace it was found in, and MUST NOT use that member to attribute the request."
+
+[[sentence]]
+id = "fdb6c6a09de8"
+section = "sec-4-1"
+class = "unclassified"
+baseline = true
+text = "Readers MUST ignore *.tmp entries."
+
+[[sentence]]
+id = "d7abb5420b0f"
+section = "sec-4-1"
+class = "unclassified"
+baseline = true
+text = "Each side MUST ensure single-instance operation over a Namespace by a mechanism outside this protocol, such as an OS-level lock held for the process lifetime."
+
+[[sentence]]
+id = "147b9121c88b"
+section = "sec-4-1"
+class = "unclassified"
+baseline = true
+text = "A Runtime MUST NOT run two concurrent drains of one Namespace, and a Connector MUST NOT run two concurrent writers into one."
+
+[[sentence]]
+id = "14862fff42dc"
+section = "sec-4-1"
+class = "unclassified"
+baseline = true
+text = "An identifier taken from a file's contents — a req_id member in a request body, for instance — MUST NOT determine a write path."
+
+[[sentence]]
+id = "7c543ab207dd"
+section = "sec-4-1"
+class = "unclassified"
+baseline = true
+text = "Every write, rename, directory creation, or archive move into or within a Namespace MUST satisfy all three of the following conjunctively."
+
+[[sentence]]
+id = "37a939cdf8d5"
+section = "sec-4-1"
+class = "unclassified"
+baseline = true
+text = "Each directory component that goes into that parent chain MUST itself have been opened with O_NOFOLLOW|O_DIRECTORY at the moment it was added to the pinned chain."
+
+[[sentence]]
+id = "7dc23866d0ba"
+section = "sec-4-1"
+class = "unclassified"
+baseline = true
+text = "The final path component MUST NOT be followed if a symlink exists at that name: the open MUST carry O_NOFOLLOW and MUST fail closed on ELOOP rather than writing through whatever the name currently resolves to."
+
+[[sentence]]
+id = "54842e29e635"
+section = "sec-4-1"
+class = "unclassified"
+baseline = true
+text = "A newly created file — the .tmp sibling the atomicity rule above already requires, and any Sidecar blob — MUST additionally be created with O_EXCL (O_WRONLY|O_CREAT|O_EXCL, never O_TRUNC in place of O_EXCL), failing closed on EEXIST."
+
+[[sentence]]
+id = "6e819deb910e"
+section = "sec-4-1"
+class = "unclassified"
+baseline = true
+text = "It MUST instead open with O_NOFOLLOW|O_APPEND|O_NONBLOCK (or use mkdirat with the parent pinned per (b)), MUST NOT block on a special file, and MUST verify through the resulting descriptor (fstat, never a pre-open stat) that the object is a regular file it may append to; it SHOULD refuse a target whose link count exceeds 1."
+
+[[sentence]]
+id = "675e4a50d944"
+section = "sec-4-1"
+class = "unclassified"
+baseline = true
+text = "When the Runtime opens any path the Agent can influence — every req-<id>.json, every Sidecar ordinal, and, in a deployment that leaves inbound/ writable, anything it later reads back from there — it MUST open without following symbolic links at any component (per-component O_NOFOLLOW, or an equivalently pinned directory-descriptor walk from the Namespace root, matching the write-side rule above), MUST NOT block on a special file (a non-blocking open), MUST verify that the opened object is a regular file through the open descriptor (fstat and an S_ISREG test — never a pre-open stat, which is a race), SHOULD refuse a file whose link count exceeds 1, and MUST enforce a deployment-configured per-file size cap (a bounded read) and a per-request Sidecar count cap."
+
+[[sentence]]
+id = "78b1f9c5e8b2"
+section = "sec-4-1"
+class = "unclassified"
+baseline = true
+text = "A Connector's one Agent-influenceable read path — resolving a notice_id to inbound/messages/notice-<id>.json — MUST be built only from a pattern-validated notice_id (the schemas pin the pattern) and MUST confine resolution to the Connector's own inbound/ tree ()."
+
+[[sentence]]
+id = "3567af1c1446"
+section = "sec-4-1"
+class = "unclassified"
+baseline = true
+text = "The Runtime MUST verify that every referenced ordinal exists and MUST re-verify size and digest before acting on the request, against the snapshot it took at ingest (below), never against the live path."
+
+[[sentence]]
+id = "24f7a56c4dfb"
+section = "sec-4-1"
+class = "unclassified"
+baseline = true
+text = "Before validating, evaluating policy on, or composing from any Agent-authored artifact — req-<id>.json and every Sidecar ordinal — the Runtime MUST copy the bytes into Runtime-private Staging and MUST act only on that private copy."
+
+[[sentence]]
+id = "26e19e7fc058"
+section = "sec-4-1"
+class = "unclassified"
+baseline = true
+text = "All checks — schema validation, recipient policy, size and sha256 verification — and all message composition MUST run over that snapshot, and the Runtime MUST NOT re-read any Agent-writable path after a decision that depends on its content."
+
+[[sentence]]
+id = "a180a0381222"
+section = "sec-4-1"
+class = "unclassified"
+baseline = true
+text = "This obligation is what makes the Connector's \"MUST NOT delete or rewrite a published request\" () a pure well-formedness rule: a Runtime MAY treat an observed post-publish change as malformed, but no safety property depends on the Connector honoring immutability — which is what the invariant of requires."
+
+[[sentence]]
+id = "3f9ea9bb8815"
+section = "sec-4-1"
+class = "unclassified"
+baseline = true
+text = "The Runtime MUST NOT place non-clean bytes in an Agent's Namespace. content_ref is the Runtime's access grant, present only for bytes it has published as clean ()."
+
+[[sentence]]
+id = "1a8ea4941aeb"
+section = "sec-4-1"
+class = "unclassified"
+baseline = true
+text = "Every Runtime-owned inbound-class tree is an origin class: a consumer derives the class of a document from the tree it was read from, and never from any member of the document. notice_id uniqueness is per tree, and where a tree has more than one writer each MUST mint so that cross-writer collision is negligible — at least 128 bits of entropy under the identifier character set, or a writer-specific prefix — and a consumer keying state across trees MUST include the tree in that key. content_ref resolves only within the notices/ directory of the tree the enclosing document was read from."
+
+[[sentence]]
+id = "a2738d93384f"
+section = "sec-4-1"
+class = "unclassified"
+baseline = true
+text = "Write authority per tree is distinct and MUST be structurally enforced, never by configuration the writer itself reads. inbound/ is the one tree this document defines; a profile MAY define others."
+
+[[sentence]]
+id = "553979be8d2e"
+section = "sec-4-1"
+class = "unclassified"
+baseline = true
+text = "A Runtime MAY expose it to the sandbox read-only — for instance as a read-only mount, which is the mechanism that actually makes a delivered Notice unforgeable, since file permission bits do not bind a same-uid Agent, which can change a mode it owns."
+
+[[sentence]]
+id = "6e0e18a01716"
+section = "sec-4-1"
+class = "unclassified"
+baseline = true
+text = "A Connector MUST NOT require write access anywhere under inbound/: it MUST start, relay Notices, and resolve bodies when every write, rename, and directory creation under inbound/ fails. inbound/notices/processed/ is OPTIONAL — a conventional archive location a Connector MAY use only where a deployment leaves inbound writable; nothing on either side may depend on its existence or its contents."
+
+[[sentence]]
+id = "f4313d19d7e4"
+section = "sec-4-1"
+class = "unclassified"
+baseline = true
+text = "Such state lives in the Connector's own storage outside the Volume, or in Connector-owned paths under outbound/ not enumerated in the layout tree — which MUST NOT use the req- prefix, reserved for Submit Requests and their Sidecars, so that a Runtime's scan of the drop-box never encounters Connector-private state."
+
+[[sentence]]
+id = "4015578758a5"
+section = "sec-4-1"
+class = "unclassified"
+baseline = true
+text = "Outbound extension space (v3.1.0 DRAFT). outbound/ext/<name>/ is a Connector-owned side channel, one directory per <name>, that a Runtime MAY read by out-of-band agreement. <name> is a stable Connector id: the Connector chooses it once, and it MUST NOT change when the Connector's repository, package, or deployment is renamed or moved."
+
+[[sentence]]
+id = "acaa46cdf4f4"
+section = "sec-4-1"
+class = "unclassified"
+baseline = true
+text = "A Runtime that reads the directory MUST treat <name> as opaque — it is an identifier, never a name to be parsed, resolved, or matched against a repository or path."
+
+[[sentence]]
+id = "9a63a8047234"
+section = "sec-4-1"
+class = "unclassified"
+baseline = true
+text = "An outcome is a statement by the receiving side about what it did with a Notice; a party MUST NOT treat an outcome as proof of delivery or of non-delivery, and the Runtime's own delivery record is authoritative over it ()."
+
+[[sentence]]
+id = "99797338f56a"
+section = "sec-4-2"
+class = "unclassified"
+baseline = true
+text = "The Connector MUST NOT delete or rewrite a published request; the JSON file's presence is the commit signal, and un-publishing is unspecified."
+
+[[sentence]]
+id = "8f118c15e3e5"
+section = "sec-4-2"
+class = "unclassified"
+baseline = true
+text = "Caveat: derives req_id from max(pending, processed, results) + 1, so a Connector that deletes here (or in results/) MUST preserve req_id monotonicity by other durable means, such as its own counter."
+
+[[sentence]]
+id = "7557f2d40ac6"
+section = "sec-4-2"
+class = "unclassified"
+baseline = true
+text = "Correspondingly, a Runtime MUST NOT rely on processed/ contents as durable state (for deduplication, say) — the Connector may delete there, and the Runtime's own record lives outside this protocol."
+
+[[sentence]]
+id = "37c57ea1f54e"
+section = "sec-4-2"
+class = "unclassified"
+baseline = true
+text = "No signal in this protocol tells the Runtime that a Connector has read a verdict, so Runtime-side deletion SHOULD be age-based and generous: a Result deleted before it is read is a lost verdict."
+
+[[sentence]]
+id = "151ad7e8ac0c"
+section = "sec-4-2"
+class = "unclassified"
+baseline = true
+text = "Where a deployment leaves inbound writable, the Connector MAY move or delete per the optional processed/ convention, but MUST NOT depend on the ability."
+
+[[sentence]]
+id = "e16428a415c0"
+section = "sec-4-2"
+class = "unclassified"
+baseline = true
+text = "Absent a seam-visible consumption signal (), retention MUST be conservative and age-based."
+
+[[sentence]]
+id = "34efe3b99bd3"
+section = "sec-5"
+class = "unclassified"
+baseline = true
+text = "The Submit Request envelope is closed: additionalProperties is false at every level, and a Runtime MUST reject a request carrying any unrecognized member. explains why this direction is closed while the Runtime-authored artifacts are open."
+
+[[sentence]]
+id = "9cabf697b54a"
+section = "sec-5-1"
+class = "unclassified"
+baseline = true
+text = "contract_version (REQUIRED) is the wire major version, the string \"2\" at this document version."
+
+[[sentence]]
+id = "dcd80991c55d"
+section = "sec-5-1"
+class = "unclassified"
+baseline = true
+text = "A Runtime MUST check it before schema validation and MUST fail closed on an absent, lower, or higher major ()."
+
+[[sentence]]
+id = "68f0d251a00c"
+section = "sec-5-1"
+class = "unclassified"
+baseline = true
+text = "req_id (REQUIRED) is monotonic per Namespace and MUST NOT be reused across the drop-box's life; derive it from max(pending, processed, results) + 1."
+
+[[sentence]]
+id = "f489a26db66c"
+section = "sec-5-1"
+class = "unclassified"
+baseline = true
+text = "agent_id (OPTIONAL), if present, MUST match the Namespace the request was found in, and a Runtime MUST reject a mismatch."
+
+[[sentence]]
+id = "ec57cd8ab4d9"
+section = "sec-5-1"
+class = "unclassified"
+baseline = true
+text = "ts (OPTIONAL) is the Connector's timestamp for the request."
+
+[[sentence]]
+id = "0565f9df4e84"
+section = "sec-5-1"
+class = "unclassified"
+baseline = true
+text = "in_reply_to (OPTIONAL) correlates this request with prior inbound work."
+
+[[sentence]]
+id = "fcedca51c6d5"
+section = "sec-5-1"
+class = "unclassified"
+baseline = true
+text = "It is a hint from an untrusted party and MUST NOT by itself widen what the request is permitted to do — the same posture fixes for task_id."
+
+[[sentence]]
+id = "31aa402a9d8e"
+section = "sec-5-1"
+class = "unclassified"
+baseline = true
+text = "draft.subject and draft.body_text are REQUIRED and MAY be empty strings. body_text is plain text; this document defines no alternative body representation at this version."
+
+[[sentence]]
+id = "bb46abc353b3"
+section = "sec-5-1"
+class = "unclassified"
+baseline = true
+text = "draft.reply_to_message_id (OPTIONAL, nullable) names the message this draft replies to, as an message identifier."
+
+[[sentence]]
+id = "e9ec434f3f0d"
+section = "sec-5-1"
+class = "unclassified"
+baseline = true
+text = "A Runtime MUST reject — with a top-level rejected Result — a request whose recipient entries do not parse under this profile, MUST evaluate recipient policy over exactly the recipient set it will transmit to, and MUST NOT transmit to any address not present in draft.to or draft.cc."
+
+[[sentence]]
+id = "02e96fda39f5"
+section = "sec-5-1"
+class = "unclassified"
+baseline = true
+text = "Separately, a Runtime MUST NOT allow any Agent-authored string — subject, a recipient entry, an attachment filename, an attachment media_type, draft.reply_to_message_id, in_reply_to, agent_id, ts, or body_text where it abuts headers — to introduce a header boundary in the composed message."
+
+[[sentence]]
+id = "e2e66f996893"
+section = "sec-5-1"
+class = "unclassified"
+baseline = true
+text = "CR, LF, and NUL MUST be rejected or stripped before composition even where schema validation was bypassed upstream: the schema-level control-character patterns on subject, filename, media_type, reply_to_message_id, in_reply_to, agent_id, and ts are the first line of defense, not the only one."
+
+[[sentence]]
+id = "aa21ea8424fa"
+section = "sec-5-1"
+class = "unclassified"
+baseline = true
+text = "draft.attachments[] (OPTIONAL) is an array of Descriptors, each carrying filename, media_type, size_bytes, and sha256. size_bytes and sha256 are REQUIRED on every Descriptor, computed by the Connector over the decoded bytes it wrote, with sha256 in lowercase hexadecimal."
+
+[[sentence]]
+id = "d4d2baa2e57d"
+section = "sec-5-1"
+class = "unclassified"
+baseline = true
+text = "The Runtime re-derives each Sidecar's path from req-<id> plus the Descriptor's array index, which is the sole binding authority; an Agent-supplied path string would be pure disagreement and attack surface, so it is absent from the schema entirely and additionalProperties: false rejects it. attachments: [] is valid and is equivalent to the member being absent; the Sidecar directory MUST then be absent."
+
+[[sentence]]
+id = "0ea0aed43474"
+section = "sec-6"
+class = "unclassified"
+baseline = true
+text = "The Result envelope is open: a consumer MUST tolerate members it does not recognize, at every level ()."
+
+[[sentence]]
+id = "c038970cf9bd"
+section = "sec-6-1"
+class = "unclassified"
+baseline = true
+text = "outcome (REQUIRED) is one of accepted, queued_for_human, or rejected."
+
+[[sentence]]
+id = "37a192ca9ea5"
+section = "sec-6-1"
+class = "unclassified"
+baseline = true
+text = "Any policy miss — allowlist, rate limit, DLP hold, halt — MUST produce queued_for_human."
+
+[[sentence]]
+id = "997b9511898e"
+section = "sec-6-1"
+class = "unclassified"
+baseline = true
+text = "detail (OPTIONAL, nullable) is human-readable text."
+
+[[sentence]]
+id = "f9bd64eb3d4c"
+section = "sec-6-1"
+class = "unclassified"
+baseline = true
+text = "reason_code (OPTIONAL) records which policy path authorized or refused the request; human text stays in detail."
+
+[[sentence]]
+id = "cbe4cd0c4b93"
+section = "sec-6-1"
+class = "unclassified"
+baseline = true
+text = "A Runtime SHOULD set a reason on every Result, successes included."
+
+[[sentence]]
+id = "f360d8c07c82"
+section = "sec-6-1"
+class = "unclassified"
+baseline = true
+text = "Two consumer obligations follow: a consumer MUST tolerate a reason_code it does not recognize, treating it as opaque and never as an error, and a consumer MUST NOT infer the outcome from it. outcome is the sole authoritative verdict; reason_code only explains which path produced it, and a Runtime may add codes at any time without a protocol change. unsupported_contract_version is the code a Runtime sets on the rejected Result it writes for a version-refused Submit Request ()."
+
+[[sentence]]
+id = "5399102d56bf"
+section = "sec-6-1"
+class = "unclassified"
+baseline = true
+text = "ts (OPTIONAL) is the Runtime-set, of-record time of the verdict, in ISO-8601 form."
+
+[[sentence]]
+id = "4fc1d30ccd04"
+section = "sec-6-1"
+class = "unclassified"
+baseline = true
+text = "recipients (OPTIONAL) records the recipient set the Runtime actually transmitted to."
+
+[[sentence]]
+id = "a9103247d268"
+section = "sec-6-1"
+class = "unclassified"
+baseline = true
+text = "message_id (OPTIONAL, nullable) is the message identifier the Runtime assigned to the composed message."
+
+[[sentence]]
+id = "e25b87f96822"
+section = "sec-6-1"
+class = "unclassified"
+baseline = true
+text = "job_id (OPTIONAL, nullable) is a provider-side job identifier, opaque to this protocol."
+
+[[sentence]]
+id = "8be91501d75a"
+section = "sec-6-1"
+class = "unclassified"
+baseline = true
+text = "attestation (OPTIONAL) is the identity stamp the Runtime applied to the outbound message."
+
+[[sentence]]
+id = "9a2de6c44ffe"
+section = "sec-6-1"
+class = "unclassified"
+baseline = true
+text = "attachments[] (OPTIONAL) carries one diagnostic entry per submitted attachment: index, an outcome of accepted, dlp_held, rejected_type, or too_large, and an optional detail. index MUST equal the entry's own position in the array — contiguous, unique, and covering 0 through n-1 exactly once."
+
+[[sentence]]
+id = "a8baed8fc255"
+section = "sec-7"
+class = "unclassified"
+baseline = true
+text = "The Deliver Notice envelope is open: a consumer MUST tolerate members it does not recognize, at every level ()."
+
+[[sentence]]
+id = "f94d31255851"
+section = "sec-7-1"
+class = "unclassified"
+baseline = true
+text = "It MUST drop — not surface — a Notice that fails either of two independent checks, treating a failure of either one alone as sufficient grounds to drop:"
+
+[[sentence]]
+id = "ef19fea39334"
+section = "sec-7-1"
+class = "unclassified"
+baseline = true
+text = "A Connector MUST run this check independently of schema validation and MUST drop the Notice on failure exactly as it would a schema failure."
+
+[[sentence]]
+id = "de959b000038"
+section = "sec-7-1"
+class = "unclassified"
+baseline = true
+text = "contract_version, notice_id, ts, kind, and message are REQUIRED. notice_id is Runtime-minted and is pinned by the schema to a character set that is safe as a path component and as a content_ref prefix."
+
+[[sentence]]
+id = "5ad9345b7cb7"
+section = "sec-7-1"
+class = "unclassified"
+baseline = true
+text = "It is external and not character-set-safe, and MUST NOT be used as a path component anywhere ()."
+
+[[sentence]]
+id = "ab4f938bcac8"
+section = "sec-7-1"
+class = "unclassified"
+baseline = true
+text = "Its display-name half is chosen freely by the sender — \"security@yourbank.example <attacker@evil.example>\" is a legal value — and it MUST NOT be used for any trust decision, nor rendered to a human or to an Agent as verified identity."
+
+[[sentence]]
+id = "4b491eec2caa"
+section = "sec-7-1"
+class = "unclassified"
+baseline = true
+text = "A Connector that presents a message body to its Agent MUST convey two things, whatever words it uses: quoted or forwarded material inside the body carries no authority of its own — a message's authority extends to what its author wrote, never to what they relayed — and that an attachment's disposition is the Runtime's assertion about handling and not a scanner verdict, so a Connector MUST NOT imply that bytes have been screened and MUST NOT contradict the per-attachment status the Runtime published."
+
+[[sentence]]
+id = "288d7cd5402e"
+section = "sec-7-1"
+class = "unclassified"
+baseline = true
+text = "A Connector MUST also convey that an attachment's filename and media_type are sender-chosen display strings on the mail tree; on a tree whose sender the Runtime authenticated it SHOULD, and MUST where the attachment was relayed rather than authored by that sender."
+
+[[sentence]]
+id = "c6d41ce4d29d"
+section = "sec-7-1"
+class = "unclassified"
+baseline = true
+text = "On the mail tree a Connector MUST additionally convey that the sender is not authenticated beyond whatever standing the Runtime has already summarized — carried in sender_standing and verdict, named here as the locus and not as vocabulary to repeat to a reader — and that message.from is sender-chosen text."
+
+[[sentence]]
+id = "6a75f8629d67"
+section = "sec-7-1"
+class = "unclassified"
+baseline = true
+text = "These are obligations about substance, not vocabulary: a Connector satisfies them with any wording its reader can act on without consulting this document, and they MUST be satisfiable by a literal string the Connector carries, requiring no lookup or computation when a body is presented."
+
+[[sentence]]
+id = "db595938efc5"
+section = "sec-7-1"
+class = "unclassified"
+baseline = true
+text = "message.sender_standing (OPTIONAL) is an open, advisory vocabulary — known, agent-tier, first-contact, read-only, and others."
+
+[[sentence]]
+id = "aa2acfb65027"
+section = "sec-7-1"
+class = "unclassified"
+baseline = true
+text = "How the values are computed is Runtime policy and out of scope; the wire fixes only today's known vocabulary, so that a Connector can tell its Agent \"stranger,\" \"agent,\" or \"needs sign-off.\" A Connector MUST tolerate a value outside this list, treating it as opaque — never as grounds to drop the Notice — and a Runtime MAY add a value as a minor change ()."
+
+[[sentence]]
+id = "3dfa7a2f2106"
+section = "sec-7-1"
+class = "unclassified"
+baseline = true
+text = "message.provenance (OPTIONAL) classifies the message source — external, internal, and others — so that a Runtime can route provenance-labelled screening."
+
+[[sentence]]
+id = "75a26519d24e"
+section = "sec-7-1"
+class = "unclassified"
+baseline = true
+text = "It is likewise an open, advisory vocabulary: a Connector MUST tolerate a value outside this list, treating it as opaque, and MUST NOT drop the Notice on its account; a Runtime MAY add a value as a minor change."
+
+[[sentence]]
+id = "9d17a26dd880"
+section = "sec-7-1"
+class = "unclassified"
+baseline = true
+text = "message.verdict (OPTIONAL) carries the upstream authentication, screening, and entitlement results the Runtime consumed."
+
+[[sentence]]
+id = "eaf7fe6567f6"
+section = "sec-7-1"
+class = "unclassified"
+baseline = true
+text = "message.thread_id, message.in_reply_to, and message.references (all OPTIONAL) carry provider and threading identity."
+
+[[sentence]]
+id = "f750d0e9adf8"
+section = "sec-7-1"
+class = "unclassified"
+baseline = true
+text = "message.task_id (OPTIONAL) is Runtime-minted; states the obligations on it."
+
+[[sentence]]
+id = "d9d96070266c"
+section = "sec-7-1"
+class = "unclassified"
+baseline = true
+text = "This artifact is Runtime-authored, and its envelope is open at every level: a Connector MUST tolerate a member it does not recognize, in message or at the top level, and MUST NOT drop the Notice on that account."
+
+[[sentence]]
+id = "dc9e9e02956e"
+section = "sec-7-2"
+class = "unclassified"
+baseline = true
+text = "message.attachments[] (OPTIONAL) is an array of Descriptors carrying filename, media_type, and size_bytes — all REQUIRED — plus a REQUIRED disposition, and OPTIONAL sha256 and content_ref members gated on it."
+
+[[sentence]]
+id = "de85ad236490"
+section = "sec-7-2"
+class = "unclassified"
+baseline = true
+text = "The counterpart obligation is equally plain: a Runtime that cannot make the determination MUST NOT assert clean."
+
+[[sentence]]
+id = "d6eb6951dd1c"
+section = "sec-7-2"
+class = "unclassified"
+baseline = true
+text = "A Runtime MAY publish an attachment's bytes at inbound/notices/<notice-id>.attachments/<index> only for a Descriptor it asserts disposition == \"clean\", and only then MAY it emit content_ref (a path of the form <notice-id>.attachments/<index>) and sha256."
+
+[[sentence]]
+id = "6f052fc1425f"
+section = "sec-7-2"
+class = "unclassified"
+baseline = true
+text = "The content_ref binding. content_ref's leading notice_id prefix MUST equal the enclosing document's own notice_id, and its trailing <index> MUST equal the Descriptor's own 0-based array index."
+
+[[sentence]]
+id = "54c334868c75"
+section = "sec-7-2"
+class = "unclassified"
+baseline = true
+text = "The array index remains the sole binding authority (), and a consumer that resolves bytes MUST derive the path from the enclosing notice_id and the index — never trusting the content_ref string's own text as the path, since a Descriptor could otherwise point into another Notice's Sidecar directory."
+
+[[sentence]]
+id = "e2c7b22bb259"
+section = "sec-7-2"
+class = "unclassified"
+baseline = true
+text = "A consumer MUST tolerate a Descriptor whose bytes it does not resolve — relaying the Notice as usual — and MUST NOT treat the presence of content_ref as a requirement to fetch."
+
+[[sentence]]
+id = "507c4c6cab22"
+section = "sec-7-2"
+class = "unclassified"
+baseline = true
+text = "A Connector MUST resolve published bytes only within its own Namespace's inbound/notices/ tree and MUST reject any content_ref that does not match the pinned pattern — the same confinement 's read-side discipline requires generally."
+
+[[sentence]]
+id = "80793f5b6400"
+section = "sec-8"
+class = "unclassified"
+baseline = true
+text = "task_id MUST be unguessable and Runtime-minted — an HMAC over the thread root, for instance."
+
+[[sentence]]
+id = "61b24a494023"
+section = "sec-8"
+class = "unclassified"
+baseline = true
+text = "It MUST NOT be a sequential or otherwise guessable value, and it MUST NOT be a capability an inbound sender can assert."
+
+[[sentence]]
+id = "32b29248e785"
+section = "sec-8"
+class = "unclassified"
+baseline = true
+text = "Matching a task_id, by itself, MUST NOT grant a message entry into that task."
+
+[[sentence]]
+id = "731eba5d76a4"
+section = "sec-9-1"
+class = "unclassified"
+baseline = true
+text = "Consumers MUST tolerate its absence, and MUST treat its contents as untrusted data: a malformed, oversized, or hostile file MUST never crash a reader or otherwise affect protocol behavior."
+
+[[sentence]]
+id = "a5b442797b38"
+section = "sec-9-1"
+class = "unclassified"
+baseline = true
+text = "The file is OPTIONAL (): nothing in this protocol requires a Runtime to write it or a Connector to read it, and both sides MUST work correctly with it absent."
+
+[[sentence]]
+id = "2c75d57c2c2a"
+section = "sec-9-1"
+class = "unclassified"
+baseline = true
+text = "Required members, if the file is present, are agent_id, address, and provisioned_ts. label is OPTIONAL. contract_version is OPTIONAL here — the one artifact where it is — because the file is not a protocol artifact a consumer must parse to function; if present it is pinned to \"2\"."
+
+[[sentence]]
+id = "30f9a4fbbb8b"
+section = "sec-directory"
+class = "unclassified"
+baseline = true
+text = "A Runtime MAY publish, at the Agent's Namespace root (<agent-id>/directory.json, beside the lanes rather than inside one), a per-instance projection of the authorisation graph naming which peers that Agent may address."
+
+[[sentence]]
+id = "9891538cdb74"
+section = "sec-directory"
+class = "unclassified"
+baseline = true
+text = "A Connector MUST NOT treat an address's presence as a prediction that a submission to it will be accepted, nor its absence as a prediction of refusal: authorisation is evaluated by the Runtime at submission time, and the Result () is the only thing that reports what happened."
+
+[[sentence]]
+id = "970b3e64054d"
+section = "sec-directory"
+class = "unclassified"
+baseline = true
+text = "A Runtime MUST NOT read directory.json back, for any purpose."
+
+[[sentence]]
+id = "1ae2082be5f2"
+section = "sec-directory"
+class = "unclassified"
+baseline = true
+text = "It MUST NOT carry the set of peers who may address that Agent, which is an allowlist in all but name, and MUST NOT carry the Agent's own address — attribution is the Namespace a file arrived in (), so an address an Agent reads is a claim rather than an identity."
+
+[[sentence]]
+id = "cdbff6a90edf"
+section = "sec-directory"
+class = "unclassified"
+baseline = true
+text = "router is the publishing Runtime's own address and MUST NOT appear in either list."
+
+[[sentence]]
+id = "f5695450b190"
+section = "sec-directory"
+class = "unclassified"
+baseline = true
+text = "Absent and empty MUST NOT be conflated."
+
+[[sentence]]
+id = "6586e6a85b8d"
+section = "sec-directory"
+class = "unclassified"
+baseline = true
+text = "A Runtime MUST NOT publish a newly adopted instance's address to others before it has adopted that instance itself."
+
+[[sentence]]
+id = "311b00bcd4e6"
+section = "sec-directory"
+class = "unclassified"
+baseline = true
+text = "A Runtime that publishes the directory MUST ensure the Agent can read it, and SHOULD expose it read-only."
+
+[[sentence]]
+id = "db3868253045"
+section = "sec-directory"
+class = "unclassified"
+baseline = true
+text = "Publishing is optional, so a Runtime that cannot make the file readable MUST NOT publish it; an unreadable directory is indistinguishable from an absent one to a consumer, and worse than an absent one to an operator, who has a file on disk that looks like it is working."
+
+[[sentence]]
+id = "70fc4b1be132"
+section = "sec-directory"
+class = "unclassified"
+baseline = true
+text = "A Connector that surfaces the directory to its Agent instead of interpreting it satisfies the obligations above by stating them, under the presentation rule in : the Agent is the party forming a belief, so the Connector MUST convey that an address's presence is not a prediction of acceptance, that the file may be absent, that an empty list and an absent list differ, and that written_at is the only staleness signal there is."
+
+[[sentence]]
+id = "342a52ea101a"
+section = "sec-directory"
+class = "unclassified"
+baseline = true
+text = "The file MAY be absent — before first adoption, on a Runtime that does not implement this section, or after a failed write — and a consumer MUST tolerate absence exactly as it tolerates a missing Binding Record ()."
+
+[[sentence]]
+id = "6f51357d02c7"
+section = "sec-directory"
+class = "unclassified"
+baseline = true
+text = "The Runtime MUST log the failure."
+
+[[sentence]]
+id = "6f905975cfe8"
+section = "sec-10-1"
+class = "unclassified"
+baseline = true
+text = "A consumer that reads a higher major than it speaks MUST fail closed — refuse to process the artifact — and MUST NOT silently mis-parse it."
+
+[[sentence]]
+id = "db837b04d5bf"
+section = "sec-10-1"
+class = "unclassified"
+baseline = true
+text = "A consumer MUST implement the version check by reading contract_version before any schema validation, comparing majors as non-negative decimal integers."
+
+[[sentence]]
+id = "f28d9bc5a4ab"
+section = "sec-10-1"
+class = "unclassified"
+baseline = true
+text = "It does not reach the outbound direction: a Runtime version-refusing a Submit Request MAY carry that refusal on the ordinary request-rejection path — a top-level rejected Result with reason_code: \"unsupported_contract_version\" () — and, per the conformance classes below, MUST do so for the version-absent request fixture."
+
+[[sentence]]
+id = "f6cbedb9ad19"
+section = "sec-10-1"
+class = "unclassified"
+baseline = true
+text = "That is still a distinct, legible outcome rather than a fold into the malformed-request case: reason_code is exactly this protocol's mechanism for saying why a rejected fired, and a consumer MUST already tolerate a reason_code it does not otherwise interpret."
+
+[[sentence]]
+id = "3c4216a3c86e"
+section = "sec-10-1"
+class = "unclassified"
+baseline = true
+text = "A consumer MUST ignore members it does not recognize, at every level of the document, and MUST NOT reject, drop, or fail the artifact on their account."
+
+[[sentence]]
+id = "a1a08ef1906f"
+section = "sec-10-1"
+class = "unclassified"
+baseline = true
+text = "Emitting an unknown member remains a producer non-conformance: a Runtime MUST NOT emit members undefined at the version it claims."
+
+[[sentence]]
+id = "685a7be1d43a"
+section = "sec-10-1"
+class = "unclassified"
+baseline = true
+text = "A Runtime MUST reject a request carrying unrecognized members."
+
+[[sentence]]
+id = "eb8c47a20766"
+section = "sec-10-1"
+class = "unclassified"
+baseline = true
+text = "A consumer MUST tolerate a value it does not recognize, treating it as opaque or as the member being absent, and MUST NOT reject, drop, or fail the artifact on that account; a Runtime MAY add a value to either vocabulary as a minor change."
+
+[[sentence]]
+id = "339b967b7af8"
+section = "sec-10-2"
+class = "unclassified"
+baseline = true
+text = "contract_version is REQUIRED on every protocol artifact — Submit Request, Deliver Notice, and Result — with the Binding Record as the single exception ()."
+
+[[sentence]]
+id = "71e1e29504dc"
+section = "sec-10-2"
+class = "unclassified"
+baseline = true
+text = "(the artifact itself is OPTIONAL — ); if present: contract_version, notice_id, body_text"
+
+[[sentence]]
+id = "e5c1d60f40fa"
+section = "sec-10-2"
+class = "unclassified"
+baseline = true
+text = "(the file itself is OPTIONAL — ); if present: agent_id, address, provisioned_ts"
+
+[[sentence]]
+id = "e93a0b375208"
+section = "sec-10-2"
+class = "unclassified"
+baseline = true
+text = "inbound/notices/processed/ is an OPTIONAL directory convention (), not a protocol artifact: it carries no schema, and no fixture exists or is needed for it."
+
+[[sentence]]
+id = "d03d5231fffd"
+section = "sec-10-3"
+class = "unclassified"
+baseline = true
+text = "An implementation MAY claim both."
+
+[[sentence]]
+id = "d9dd5972956a"
+section = "sec-10-3"
+class = "unclassified"
+baseline = true
+text = "MUST produce Deliver Notice documents valid against the deliver-notice schema () and Result documents valid against the result schema (); MAY produce Inbound Message documents, which when produced MUST be valid against the inbound-message schema (); and MAY produce a Binding Record valid against the binding-record schema ()."
+
+[[sentence]]
+id = "05bab06db4ea"
+section = "sec-10-3"
+class = "unclassified"
+baseline = true
+text = "MUST consume Submit Request documents: it MUST accept every valid request-* fixture and MUST reject every invalid request-* fixture."
+
+[[sentence]]
+id = "6aee3e29744b"
+section = "sec-10-3"
+class = "unclassified"
+baseline = true
+text = "MUST demonstrate its producing side by confirming that its own emitted Notices, Results, and Inbound Messages satisfy the same schemas the suite's valid notice-*, result-*, and message-* fixtures satisfy — including the three fixtures carrying unrecognized members."
+
+[[sentence]]
+id = "8744fcb46179"
+section = "sec-10-3"
+class = "unclassified"
+baseline = true
+text = "A Runtime MUST NOT itself emit unrecognized members, but its parser, exercised by those fixtures, is what a Connector conformance run depends on it never having to special-case."
+
+[[sentence]]
+id = "d2ed3dfa8978"
+section = "sec-10-3"
+class = "unclassified"
+baseline = true
+text = "It MUST also confirm that any Binding Record it writes satisfies the valid identity-* shape."
+
+[[sentence]]
+id = "810e7f6e77ee"
+section = "sec-10-3"
+class = "unclassified"
+baseline = true
+text = "MUST uphold the filesystem and policy obligations of Sections through that no document validator can observe. lists them explicitly as what a green fixture run does not prove, and they are obligations of the class regardless — write-side path discipline (the conjunctive parent-chain-pinning, no-follow-while-building, and non-following-final-component rule), ingest by copy, read-side open discipline, and single-writer/single-drainer chief among them."
+
+[[sentence]]
+id = "9cb9945556a1"
+section = "sec-10-3"
+class = "unclassified"
+baseline = true
+text = "MUST produce Submit Request documents valid against the submit-request schema (), and MUST NOT emit an outbound content_ref ()."
+
+[[sentence]]
+id = "48fdec845fb9"
+section = "sec-10-3"
+class = "unclassified"
+baseline = true
+text = "MUST consume Deliver Notice, Inbound Message, and Result documents: it MUST accept every valid notice-*, message-*, and result-* fixture — including those carrying unrecognized members or unrecognized advisory-enum values — and MUST reject, meaning drop rather than surface, every invalid notice-* fixture except the version-refusal one, which it MUST instead refuse via the distinct version-refusal path (): never folded into the drop path, and never surfaced to the Agent either."
+
+[[sentence]]
+id = "b9b51804f8b4"
+section = "sec-10-3"
+class = "unclassified"
+baseline = true
+text = "MUST return \"not resolved\" for a body whose Inbound Message is absent, and MUST NOT attempt any fallback fetch ()."
+
+[[sentence]]
+id = "bee2b3ffb909"
+section = "sec-10-3"
+class = "unclassified"
+baseline = true
+text = "MUST tolerate a Binding Record that is absent, and MUST NOT crash or otherwise misbehave on one that is hostile or malformed ()."
+
+[[sentence]]
+id = "4fb9ae48a08a"
+section = "sec-10-3"
+class = "unclassified"
+baseline = true
+text = "MUST NOT require write access anywhere under inbound/, demonstrated by the operational check below rather than by a fixture ()."
+
+[[sentence]]
+id = "36b8f36a7885"
+section = "sec-10-3"
+class = "unclassified"
+baseline = true
+text = "MUST demonstrate its producing side by confirming that its own emitted requests satisfy the same schema the suite's valid request-* fixtures satisfy, and MUST uphold the write-ordering, atomicity, and read-discipline obligations of , which the fixtures cannot check."

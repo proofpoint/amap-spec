@@ -11,18 +11,17 @@
 # layer, nix, a system package, this script). Nothing in draft/Makefile depends
 # on this file, and it must stay that way: the moment a build target needs it,
 # the requirement has silently become "have Homebrew", which is a much larger
-# claim than "have kramdown-rfc 1.7.43".
+# claim than "have xml2rfc 3.34.1".
 #
-# What it does NOT do: edit your shell profile. It tells you the two lines to
-# add and why, because a script that rewrites a dotfile is harder to undo than
-# one that prints a line you can read first.
+# What it does NOT do: edit your shell profile. pipx prints the PATH line it
+# needs, because a script that rewrites a dotfile is harder to undo than one
+# that prints a line you can read first.
 #
 # Requirement, per draft/tools/preflight.sh:
-#   Ruby >= 3.1 · kramdown-rfc == 1.7.43 · xml2rfc == 3.34.1 · Python >= 3.11
+#   xml2rfc == 3.34.1 · Python >= 3.11
 #   weasyprint == 63.1 only for the opt-in `make pdf` / `make formats` targets.
 set -euo pipefail
 
-KRAMDOWN_VERSION=1.7.43
 XML2RFC_VERSION=3.34.1
 WEASYPRINT_VERSION=63.1
 
@@ -51,11 +50,10 @@ command -v brew >/dev/null 2>&1 || die "Homebrew is not on PATH. Install it from
 ok "macOS, Homebrew at $(command -v brew)"
 
 # --- brew formulae --------------------------------------------------------
-# macOS ships Ruby 2.6 and (via the Xcode CLT) Python 3.9. Both are too old:
-# kramdown-rfc needs >= 3.1, and check_prose/gen_appendices need tomllib, which
-# arrived in 3.11. So both come from brew regardless of what `ruby -v` says now.
+# macOS ships (via the Xcode CLT) Python 3.9, which is too old: the gates use
+# tomllib, which arrived in 3.11. So Python comes from brew.
 step "brew formulae"
-for f in ruby python@3.12 pipx; do
+for f in python@3.12 pipx; do
   if brew list --formula "$f" >/dev/null 2>&1; then ok "$f already installed"
   else run "brew install $f"; fi
 done
@@ -68,33 +66,10 @@ if [ "$WANT_PDF" = 1 ]; then
   done
 fi
 
-# --- PATH -----------------------------------------------------------------
-# Homebrew's ruby is KEG-ONLY: it is deliberately not symlinked into
-# /opt/homebrew/bin, so `ruby` still resolves to the 2.6 in /usr/bin until the
-# keg's bin directory is ahead of it. The gem bin directory is separate again,
-# and it is where `kramdown-rfc` itself lands.
-step "PATH"
-RUBY_PREFIX="$(brew --prefix ruby 2>/dev/null || true)"
-[ -n "$RUBY_PREFIX" ] || die "brew could not report a ruby prefix; is the formula installed?"
-export PATH="$RUBY_PREFIX/bin:$PATH"
-GEM_BIN="$(gem environment gemdir 2>/dev/null)/bin"
-export PATH="$GEM_BIN:$PATH"
-ok "using ruby $(ruby -v | cut -d' ' -f2) from $RUBY_PREFIX"
-
-PROFILE_LINES="export PATH=\"$RUBY_PREFIX/bin:\$PATH\"
-export PATH=\"$GEM_BIN:\$PATH\""
-
-# --- gems and pipx --------------------------------------------------------
-# EXACT versions, not minimums. kramdown-rfc's output is version-sensitive and
-# dist/ is committed, so a different renderer produces a diff that looks like a
-# content change and is not. preflight.sh enforces the same two pins.
-step "kramdown-rfc $KRAMDOWN_VERSION"
-if gem list -i kramdown-rfc -v "$KRAMDOWN_VERSION" >/dev/null 2>&1; then
-  ok "already installed"
-else
-  run "gem install kramdown-rfc -v $KRAMDOWN_VERSION"
-fi
-
+# --- xml2rfc (and weasyprint) via pipx ---------------------------------------
+# EXACT versions, not minimums. xml2rfc's text rendering is version-sensitive
+# and dist/ is committed, so a different renderer produces a diff that looks
+# like a content change and is not. preflight.sh enforces the same pin.
 # pipx rather than `pip install`: brew's python is externally managed (PEP 668),
 # so a plain pip either refuses outright or succeeds into a user site-packages
 # that is not on PATH — and the second failure is the bad one, because it looks
@@ -127,30 +102,21 @@ else
     ok "preflight passes"
   else
     say ""
-    say "preflight did not pass. If it reports something 'not found on PATH' that"
-    say "this script just installed, it is almost certainly the PATH: the exports"
-    say "below are set inside this script and do not survive it."
+    say "preflight did not pass. If it reports xml2rfc 'not found on PATH' just"
+    say "after this script installed it, it is almost certainly PATH: open a new"
+    say "shell so pipx ensurepath takes effect, and re-run preflight."
   fi
 fi
 
 cat <<EOF
 
-ADD THESE TO YOUR SHELL PROFILE (~/.zshrc), then open a new shell:
-
-$PROFILE_LINES
-
-Homebrew's ruby is keg-only, so without the first line \`ruby\` stays the 2.6
-that ships with macOS; without the second, \`kramdown-rfc\` is installed but not
-on PATH. pipx puts xml2rfc on PATH itself, via \`pipx ensurepath\`.
-
-Then, from the repo root:
+pipx puts xml2rfc on PATH itself, via \`pipx ensurepath\`; open a new shell if
+\`xml2rfc\` is not found. Then, from the repo root:
 
     bash draft/tools/preflight.sh     # the authority on whether this worked
-    make -C draft                     # build .xml and .txt, run the three gates
-    make -C draft reproducible        # two builds, byte-compared
+    make -C draft                     # build .xml and .txt, run every gate
+    make -C draft reproducible        # two renders, byte-compared
 $([ "$WANT_PDF" = 1 ] && printf '    make -C draft formats             # adds .html and .pdf\n')
-A build does not need your Ruby to match anyone else's. draft/Makefile strips
-the interpreter patch version from kramdown-rfc's generator comment, which is
-what lets two machines with the same pinned tools produce byte-identical output.
-The two PINS are what must match; the Ruby under them need not.
+The canonical source is draft/draft-amap.xml. Edit it directly; run
+\`make -C draft sync\` after changing a schema, a listed fixture or an example.
 EOF

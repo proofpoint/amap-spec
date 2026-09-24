@@ -1,21 +1,26 @@
 # Contributing to amap-spec
 
-This repository is a **wire contract** and nothing else — `spec/contract.md`,
-`schemas/`, `fixtures/`, and a generated `dist/` rendering. It is not a
+This repository is a **wire contract** and nothing else: the Internet-Draft
+(`draft/draft-amap.xml`, the canonical prose), `schemas/`, `fixtures/`, and the
+`dist/` renderings. It is not a
 connector, not a runtime, not a transport. If you are about to write code that
 *does* something with mail, the change belongs in an implementation.
 
 That makes contributing here different from contributing to a library, in one
 way that costs people real work if nobody says it first:
 
-> **A capability change lands as `spec/` + `schemas/` + `fixtures/` in one
-> change, before either side builds it.**
+> **A capability change lands as `schemas/` + `fixtures/` + the draft's prose
+> in one change, before either side builds it.**
 
 A schema change without a fixture is the most common well-intentioned PR we
 expect to receive, and it is the one we cannot merge. The reason is in §7 of the
 contract: **the fixtures *are* the other side.** A field with no fixture is a
 field no implementer can prove they handle, and an implementation that cannot
 prove it handles a field will be asked to claim conformance it has not earned.
+
+If you can't write the IETF prose yourself, open the PR with the schema and
+fixture change and an issue describing the obligation; the standards editor
+writes the text in the draft.
 
 ## Before you open a PR
 
@@ -26,17 +31,19 @@ python3 fixtures/validate.py
 # 82 fixtures checked, 0 unexpected.
 ```
 
-If you touched `spec/` or `draft/draft-amap.mkd`, also run the draft build —
-see `draft/README.md` for the toolchain, and `draft/tools/install-macos-brew.sh`
-if you are on a Mac:
+If you touched `schemas/`, `fixtures/` or the draft, also run the draft build.
+It needs only xml2rfc and Python (see `draft/README.md`, and
+`draft/tools/install-macos-brew.sh` if you are on a Mac):
 
 ```sh
+make -C draft sync   # only if you changed a schema, a listed fixture or an example
 make -C draft
 ```
 
-That runs three gates: the fixture suite, a check that every JSON block in the
-rendered draft equals a file on disk, and a check that every RFC 2119 sentence
-in `spec/` is covered by the draft.
+That runs the gates: every JSON block in the draft equals its file on disk; the
+fixture suite; and every normative sentence in the draft's protocol sections is
+classified in `draft/coverage.toml`, so a new MUST needs a stated answer to
+"which fixture covers this?".
 
 ## The shape of a change
 
@@ -54,21 +61,23 @@ that subset is *silently ignored*, so a fixture exercising one proves nothing.
 If you add a keyword, extend the validator in the same change. The subset is
 listed at the top of `fixtures/validate.py`.
 
-**`dist/` is regenerated, never hand-edited.** If a diff to `dist/` is not the
-output of `make -C draft`, it is wrong. On a conflict, `spec/contract.md` plus
-the fixture gate govern; `dist/` is non-authoritative.
+**`dist/` is generated, never hand-edited.** If a diff to `dist/` is not the
+output of `make -C draft`, it is wrong. The canonical source is
+`draft/draft-amap.xml`. `spec/contract.md` is frozen, kept only as the record the
+draft was reconciled against.
 
-**Version history is recorded, not rewritten.** §7's house style is to leave a
-wrong bullet standing and attach a *Correction*, because what shipped is a fact.
+**Version history is recorded, not rewritten.** The draft's Change Log (and the
+frozen `spec/contract.md` §7 before it) leaves a wrong bullet standing and
+attaches a *Correction*, because what shipped is a fact.
 Please follow it rather than editing history into agreement with the present.
 
 ## Changes that travel the other way
 
-Some changes arrive from the standards side — the Internet-Draft is hand-edited
-and those edits are canonical. They are then promoted *into* `spec/`, and into
-`schemas/`/`fixtures/` if the shape moved. `WORKFLOWS.md` describes both
-directions and which rules apply to each. Read it before changing `spec/` or
-`draft/draft-amap.mkd`.
+Some changes arrive from the standards side: the Internet-Draft is hand-edited
+by the standards editor, and those edits are canonical. If they change meaning,
+they are followed into `schemas/` and `fixtures/`. `WORKFLOWS.md` describes both
+directions and which rules apply to each. Read it before changing the draft,
+`schemas/` or `fixtures/`.
 
 ## What a green gate does not prove
 
