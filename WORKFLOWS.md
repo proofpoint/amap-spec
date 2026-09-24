@@ -92,7 +92,8 @@ and a change made there is the change. Do not revert, reword or re-derive it.
 
 **What catches you:**
 - `check_coverage.py`: every RFC 2119 sentence in the protocol sections
-  (3–10 and the peer directory) needs a class in `draft/coverage.toml`. A new
+  (Architecture through Versioning and Conformance, including the Peer
+  Directory and the Fleet Roster) needs a class in `draft/coverage.toml`. A new
   sentence, or a reworded one (rewording changes its key), fails the build
   until someone decides what covers it.
 - `normdiff.py` (`make -C draft normdiff BASE=<ref>`; CI writes it to the job
@@ -191,6 +192,9 @@ make -C draft          # build dist/ and run every gate
 make -C draft normdiff BASE=origin/main
 ```
 
+- The dist copy: `dist/draft-amap-00.xml` must equal `draft/draft-amap.xml`
+  byte for byte. It looks identical to the source and is easy to edit by
+  mistake; an edit there fails the check instead of being silently overwritten.
 - `tools/sync_sources.py`: every JSON block in the draft equals its file on
   disk, every block maps to a file, and every schema and listed fixture has a
   block. The last check matters because a missing block is the omission a
@@ -205,7 +209,11 @@ make -C draft normdiff BASE=origin/main
 - `fixtures/validate.py`: the conformance gate itself.
 
 **What none of them prove.** They see RFC 2119 sentences, so normative content
-phrased without a keyword is invisible to them. A classification is only as
+phrased without a keyword is invisible to them. That is not hypothetical: when
+`spec/` was reconciled into the draft, the `directory` row of the required/optional
+table was lost, because a table row carries no keyword. It was found only by
+comparing the two tables row by row. Tables, figures and field lists need a
+reader. A classification is only as
 good as the person who made it: `check_coverage.py` insists a decision was
 made, not that it was right. And none of them can tell a deliberate edit from
 an accident. They only insist that someone looked. Treat them as a floor. The

@@ -4,7 +4,7 @@
 
 ```
 draft-amap.xml          THE SOURCE: xml2rfc v3 XML, hand-edited. The file you edit.
-coverage.toml           the class of every normative sentence in sections 3-10
+coverage.toml           the class of every normative sentence in the protocol sections
 fixtures.toml           which fixtures the draft shows inline, and why (data)
 examples/               the illustrative JSON shapes (hand-written)
 bib/                    RFC <reference> entries, for adding a citation offline
@@ -22,7 +22,7 @@ made there is the change (`WORKFLOWS.md`, "Editor-first").
 `spec/contract.md` is frozen: the record of the text this draft was reconciled
 against. Its header maps its old sections to the draft's. The peer-origin
 profile, `spec/peer-origin.md`, is **not** frozen: it is v3.1.0 DRAFT, and this
-draft carries only its schema (Appendix F).
+draft carries only its schema (the Peer-Notice Schema appendix).
 
 The build renders `dist/draft-amap-00.xml` (a byte copy of the source) and
 `dist/draft-amap-00.txt`, and on demand `.html` and `.pdf`.
@@ -76,8 +76,9 @@ make -C draft reproducible    # two text renders, byte-compared
 - `tools/check_render.py`: the same equality re-derived from the XML, plus the
   fixture roster counts, the pinned `docName`, and no host paths or personal
   identifiers.
-- `tools/check_coverage.py`: every RFC 2119 sentence in sections 3–10 and the
-  peer directory has a class in `coverage.toml` (fixture, operational,
+- `tools/check_coverage.py`: every RFC 2119 sentence in the protocol sections
+  (Architecture through Versioning and Conformance, including the Peer
+  Directory and the Fleet Roster) has a class in `coverage.toml` (fixture, operational,
   informative). The 128 sentences present at the switch are an unclassified
   **baseline**; classify them as you review them, and never add a new
   unclassified entry. `--emit` prints stubs for new sentences.

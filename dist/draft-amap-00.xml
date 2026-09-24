@@ -1926,6 +1926,14 @@ bump.</t>
             </tr>
             <tr>
               <td align="left">
+                <strong>directory</strong></td>
+              <td align="left">
+                <em>(the artifact itself is OPTIONAL — <xref target="sec-directory"/>)</em>; if present: <tt>router, written_at, delegate_to, mail_to</tt></td>
+              <td align="left">
+                <tt>contract_version</tt> (if present, pinned to <tt>"2"</tt>)</td>
+            </tr>
+            <tr>
+              <td align="left">
                 <strong>roster</strong></td>
               <td align="left">
                 <em>(the artifact itself is OPTIONAL — <xref target="sec-roster"/>)</em>; if present: <tt>contract_version, router, written_at, members[]</tt> (items require <tt>address, state</tt>)</td>

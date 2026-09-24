@@ -71,10 +71,12 @@ The draft's JSON is never hand-copied. `draft/tools/sync_sources.py`
 `<sourcecode>` block, rewriting only that CDATA body and folding per RFC 8792.
 xml2rfc's own `src=` can't do it: 3.34.1 crashes on non-ASCII UTF-8 in a src
 file. Gates in `make -C draft`:
+- a byte comparison: `dist/draft-amap-00.xml` must equal the source (never edit `dist/`);
 - `sync_sources.py`: blocks equal disk, and no schema or listed fixture lacks a block;
 - `check_render.py`: the same, plus roster counts, docName, no host paths;
-- `check_coverage.py`: every RFC 2119 sentence in sections 3-10 and the peer
-  directory is classified in `draft/coverage.toml`;
+- `check_coverage.py`: every RFC 2119 sentence in the protocol sections
+  (Architecture through Versioning and Conformance, including the Peer
+  Directory and the Fleet Roster) is classified in `draft/coverage.toml`;
 - the fixture gate.
 
 `normdiff.py` (`make -C draft normdiff BASE=<ref>`) lists the normative
@@ -320,7 +322,7 @@ not defects:
   to the draft.
 
 Cleared 2026-09-24: the draft rendered six of the seven schemas; the
-peer-directory schema is now Appendix G. The spec was reconciled into the draft
+peer-directory schema is now in its own appendix (Peer-Directory Schema). The spec was reconciled into the draft
 before being frozen: 8 spec sentences were deliberately left out, and 27
 draft-only sentences were checked against the spec and schemas and found
 consistent.
