@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """check_render.py — post-build gate for the rendered Internet-Draft XML.
 
-Proves the thing gen_appendices.py cannot prove by construction: that what
-actually landed in dist/draft-amap-00.xml still equals a
+Proves that what actually lands in the draft XML (draft/draft-amap.xml, the
+canonical source, and its copy dist/draft-amap-00.xml) still equals a
 real file on disk, byte for byte (modulo RFC 8792 folding and a trailing
 newline). Run after every build; `make -C draft check` wires it in.
 
@@ -10,7 +10,7 @@ Checks:
   1. Every <sourcecode type="json"> whose enclosing figure's anchor ends in
      "-src" is RFC-8792-unfolded and compared against the fixtures/ or
      schemas/ file its own anchor names (the fence directive baked the path
-     into the title= attribute). A figure anchored "ex-*" is a hand-written
+     into the caption: v3 <name>, or title= in the legacy v2 rendering). A figure anchored "ex-*" is a hand-written
      illustrative shape (not a fixture) and is exempted from the disk
      comparison, but its JSON must still parse.
   2. The Conformance Suite appendix (#app-h) roster sentence ("N fixtures — V valid and I invalid")
@@ -89,14 +89,19 @@ def check_sourcecode_blocks(root: ET.Element) -> list[str]:
                 continue
             if anchor.startswith("ex-"):
                 continue  # illustrative, hand-written shape; not a fixture
+            # The source path is the figure's caption: v3 carries it in a
+            # <name> child, the legacy v2 rendering in a title= attribute.
             title = None
             for e in [figure] + list(figure.iter()):
+                if ns_strip(e.tag) == "name" and (e.text or "").strip():
+                    title = e.text.strip()
+                    break
                 if e.get("title"):
                     title = e.get("title")
                     break
             src_path = title or _guess_path_from_anchor(anchor)
             if src_path is None:
-                errors.append(f"{anchor}: no title= naming a source file, and anchor "
+                errors.append(f"{anchor}: no caption naming a source file, and anchor "
                                f"doesn't start with 'ex-' to exempt it")
                 continue
             disk_path = REPO / src_path
