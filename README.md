@@ -13,7 +13,7 @@ people and versioned independently.
 **Current version: 3.1.0 (DRAFT)** (wire `contract_version` `"2"` - the contract's
 own SemVer and the wire major track different things as of 3.0.0; see
 the draft's Versioning and Conformance section, 11).
-Conformance gate: **82 fixtures**, 0 unexpected.
+Conformance gate: **89 fixtures**, 0 unexpected.
 
 ## Motivation
 

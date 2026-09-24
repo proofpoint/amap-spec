@@ -86,10 +86,11 @@ def extract(xml_text: str) -> list[tuple[str, str]]:
 
 
 def in_coverage_scope(anchor: str) -> bool:
-    """The sections that render the protocol: 3-10 and the peer directory.
+    """The sections that render the protocol: 3-10, the peer directory and the
+    fleet roster.
     Introduction, Terminology, Security Considerations, IANA and the
     appendices are the draft's own apparatus and are not held to fixtures."""
     m = re.match(r"sec-(\d+)", anchor)
     if m:
         return 3 <= int(m.group(1)) <= 10
-    return anchor == "sec-directory"
+    return anchor in ("sec-directory", "sec-roster")

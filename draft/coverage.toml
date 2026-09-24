@@ -904,3 +904,87 @@ section = "sec-10-3"
 class = "unclassified"
 baseline = true
 text = "MUST demonstrate its producing side by confirming that its own emitted requests satisfy the same schema the suite's valid request-* fixtures satisfy, and MUST uphold the write-ordering, atomicity, and read-discipline obligations of , which the fixtures cannot check."
+
+[[sentence]]
+id = "27e61c8bbdc3"
+section = "sec-roster"
+class = "operational"
+note = "Publishing is optional; whether and where a roster is written is runtime and deployment behaviour, not a document property."
+text = "A Runtime MAY publish a fleet roster: a single file, written once for the whole fleet, naming the instances the Runtime has admitted."
+
+[[sentence]]
+id = "bd1aa7a6ef01"
+section = "sec-roster"
+class = "operational"
+note = "Consumer behaviour: how a connector interprets membership is invisible to a document validator."
+text = "A Connector MUST NOT treat membership as authorisation or as a prediction of acceptance."
+
+[[sentence]]
+id = "8104c31b264b"
+section = "sec-roster"
+class = "informative"
+note = "A permission clarifying what the file may contain; it asks nothing checkable of an implementer."
+text = "The roster is fleet-wide, so the reader's own address MAY appear in it."
+
+[[sentence]]
+id = "cceb08df0ebd"
+section = "sec-roster"
+class = "operational"
+note = "Consumer behaviour: identity derivation happens outside any document."
+text = "A consumer MUST NOT derive its own identity from the roster and MUST NOT treat its own entry as a peer: attribution is the Namespace a file arrived in (), and an address read from a file is a claim rather than an identity."
+
+[[sentence]]
+id = "e08006a70ca1"
+section = "sec-roster"
+class = "operational"
+note = "The direction rule: runtime behaviour no document validator can see."
+text = "A Runtime MUST NOT read the roster back, for any purpose, for the reasons given for the directory in ."
+
+[[sentence]]
+id = "dd0bd74c212f"
+section = "sec-roster"
+class = "operational"
+note = "Write ordering and the router-not-a-member rule are runtime behaviour (the latter is not expressible in JSON Schema); the bare addr-spec shape in the same sentence is pinned by invalid/roster-display-name-address.json."
+text = "A Runtime MUST NOT list a newly admitted instance before it has adopted that instance itself. router is the publishing Runtime's own address and MUST NOT appear in members."
+
+[[sentence]]
+id = "8adf69be791d"
+section = "sec-roster"
+class = "operational"
+note = "Whether an empty list was written for an unknown membership is a runtime decision no document can reveal."
+text = "When the Runtime cannot determine membership, it MUST NOT write an empty members list; it leaves the previous file in place to age. written_at is the only staleness signal a consumer gets, and interval_s, when present, is the Runtime's nominal rewrite interval to judge it against."
+
+[[sentence]]
+id = "ad3fcc581880"
+section = "sec-roster"
+class = "operational"
+note = "Consumer behaviour on absence and staleness."
+text = "A consumer MUST treat an absent roster, or one it judges stale, as unknown, never as an empty fleet."
+
+[[sentence]]
+id = "7267ff5ab634"
+section = "sec-roster"
+class = "operational"
+note = "Filesystem placement: which location is written, and that it is never created, is invisible to a document validator."
+text = "It MUST publish the roster only into a location the deployment designates for it, and MUST NOT create that location."
+
+[[sentence]]
+id = "cbdca96264c7"
+section = "sec-roster"
+class = "operational"
+note = "A deployment obligation (mounts and exposure), checked operationally."
+text = "The deployment MUST expose that location read-only to each Agent it points at the roster, and SHOULD stop pointing Agents at the roster before, or together with, ceasing to expose it."
+
+[[sentence]]
+id = "3d204103674f"
+section = "sec-10-2"
+class = "fixture"
+fixtures = ["valid/roster-basic.json", "invalid/roster-missing-members.json", "invalid/roster-member-missing-state.json"]
+text = "(the artifact itself is OPTIONAL — ); if present: contract_version, router, written_at, members[] (items require address, state)"
+
+[[sentence]]
+id = "6e9aa8a5b268"
+section = "sec-roster"
+class = "operational"
+note = "What an agent is told, and by whom, is presentation behaviour of the connector or deployment, checked operationally. Reworded 2026-09-24 so the duty falls on whatever points the agent at the roster, not only a connector tool."
+text = "Whatever points an Agent at the roster, whether a Connector that surfaces it or a deployment that tells the Agent where to read it, MUST convey that membership is neither authorisation nor a prediction of acceptance, that the roster is not the Agent's identity and its own entry is not a peer, and that an absent or stale roster means unknown."
