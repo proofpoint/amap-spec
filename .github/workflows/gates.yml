@@ -26,17 +26,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.3'
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'   # >= 3.11 for tomllib
 
       - name: Install the pinned toolchain
         run: |
-          gem install --no-document kramdown-rfc -v 1.7.43
           pip install --disable-pip-version-check xml2rfc==3.34.1
 
       - name: Conformance gate
@@ -49,7 +44,7 @@ jobs:
         run: |
           if ! git diff --exit-code -- dist/; then
             echo "::error::dist/ does not match the build output."
-            echo "The committed .xml/.txt disagree with draft/draft-amap.mkd."
+            echo "The committed .xml/.txt disagree with draft/draft-amap.xml."
             echo "Run 'make -C draft' and commit the result in the same change"
             echo "as the source edit (WORKFLOWS.md, 'Mechanics')."
             exit 1
@@ -57,3 +52,13 @@ jobs:
 
       - name: Build is reproducible
         run: make -C draft reproducible
+
+      # The normative diff: every RFC 2119 sentence this change adds, removes or
+      # rewords, written to the job summary for the reviewer. Informational;
+      # check_coverage.py (in `make -C draft`) is what fails the build when a
+      # new sentence is left unclassified.
+      - name: Normative diff against the base branch
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch --no-tags --depth=1 origin "${{ github.base_ref }}"
+          python3 draft/tools/normdiff.py "origin/${{ github.base_ref }}" >> "$GITHUB_STEP_SUMMARY"
