@@ -30,7 +30,7 @@
         <email>tadams@proofpoint.com</email>
       </address>
     </author>
-    <date year="2026" month="September" day="26"/>
+    <date year="2026" month="October" day="2"/>
     <abstract>
 
 <t>The Agent Mailbox Access Protocol (AMAP) is a wire contract, carried over a
@@ -213,12 +213,17 @@ when, and only when, they appear in all capitals, as shown here.</t>
 	<xref target="RFC8259"/>, encoded in UTF-8 <xref target="RFC3629"/>. The schemas in <xref target="app-a"/> through
 	<xref target="app-e"/> are written in the JSON Schema 2020-12 dialect
 	<xref target="JSON-SCHEMA-2020-12"/>.</t>
+      <t>Long lines in the JSON examples and schemas in this document are folded
+using the single-backslash strategy of <xref target="RFC8792"/>. Each folded
+block begins with that strategy's header line, which is part of the folded
+content: it is what allows the original to be reconstituted mechanically, so
+it is kept inside the block.</t>
 	      <t>Sections and subsections explicitly marked <em>(informative)</em> or
 	<em>(non-normative)</em> carry no requirements; <xref target="sec-3-4"/>, <xref target="app-i"/>, and the
 	Change Log are the only such parts of this document.</t>
 
       <t>Where this document says an artifact is <em>dropped</em>, it means the consumer MUST
-NOT surface the artificat to its Agent and MUST NOT act on it. Where it says a consumer
+NOT surface the artifact to its Agent and MUST NOT act on it. Where it says a consumer
 <em>fails closed</em>, it means the consumer refuses to process the artifact rather
 than proceeding on a partial or guessed interpretation.</t>
 
@@ -843,10 +848,11 @@ before anything leaves.</t>
 as a JSON text <xref target="RFC8259"/>. Its Sidecar bytes, if any, are written first,
 into <tt>req-&lt;id&gt;.attachments/</tt>, one blob per Descriptor, named by that
 Descriptor's 0-based array index (<xref target="sec-4-1"/>, commit sentinel).</t>
-<t><strong>NOTE:</strong> '\' line wrapping per <xref target="RFC8792" format="default"/></t>
       <figure anchor="ex-submit-request">
         <name>draft/examples/submit-request.json (illustrative — not a fixture)</name>
         <sourcecode type="json" name="submit-request.json"><![CDATA[
+NOTE: '\' line wrapping per RFC 8792
+
 {
   "contract_version": "2",
   "req_id": "00000001",
@@ -2427,7 +2433,18 @@ assertion means.</t>
       <references anchor="sec-normative-references">
         <name>Normative References</name>
 
-        <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.8792.xml"/>
+        <reference anchor="RFC8792" target="https://www.rfc-editor.org/info/rfc8792">
+          <front>
+            <title>Handling Long Lines in Content of Internet-Drafts and RFCs</title>
+            <author fullname="K. Watsen" initials="K." surname="Watsen"/>
+            <author fullname="E. Auerswald" initials="E." surname="Auerswald"/>
+            <author fullname="A. Farrel" initials="A." surname="Farrel"/>
+            <author fullname="Q. Wu" initials="Q." surname="Wu"/>
+            <date month="June" year="2020"/>
+          </front>
+          <seriesInfo name="RFC" value="8792"/>
+          <seriesInfo name="DOI" value="10.17487/RFC8792"/>
+        </reference>
 
         <reference anchor="RFC2119">
           <front>

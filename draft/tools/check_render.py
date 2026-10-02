@@ -18,8 +18,8 @@ Checks:
   3. rfc/@docName is the pinned, unrenamed draft name (D9).
   4. No host path or the operator's personal email appears anywhere in the
      rendered XML.
-  5. No SYSTEM "http entity exists (stand_alone held; nothing fetched at
-     render time).
+  5. No SYSTEM "http entity, and no remote xi:include, exists (stand_alone
+     held; nothing fetched at render time).
   6. No BROKEN REFERENCE placeholder exists. The old kramdown-rfc build
      silently substituted one for a missing bib/ file; the canonical XML
      inherited its references from that build, so the check stays as a guard
@@ -157,6 +157,14 @@ def check_no_identifiers(xml_text: str) -> list[str]:
 def check_no_system_entities(xml_text: str) -> list[str]:
     if 'SYSTEM "http' in xml_text:
         return ['SYSTEM "http entity found — stand_alone rendering should embed <reference> elements, never entities pointing at a network fetch']
+    # An xi:include of a remote bibxml file is the same fetch by another
+    # route. It renders only where xml2rfc happens to hold a cached copy, so it
+    # passes on one machine and fails under --no-network in CI. Embed the
+    # <reference> element instead.
+    remote = re.findall(r'<xi:include\s+href="(https?://[^"]+)"', xml_text)
+    if remote:
+        return [f"remote xi:include found ({u}) — embed the <reference> element instead; the build is offline"
+                for u in remote]
     return []
 
 

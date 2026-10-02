@@ -4,12 +4,12 @@
 
 Network Working Group                                            D. Rapp
 Internet-Draft                                                  T. Adams
-Intended status: Informational                          Proofpoint, Inc.
-Expires: 20 March 2027                                 16 September 2026
+Intended status: Standards Track                        Proofpoint, Inc.
+Expires: 5 April 2027                                     2 October 2026
 
 
                 The Agent Mailbox Access Protocol (AMAP)
-                             draft-amap-00
+                           draft-rapp-amap-00
 
 Abstract
 
@@ -22,66 +22,21 @@ Abstract
    independently, and applies policy to before anything is transmitted,
    and every inbound message is authenticated and screened by the
    runtime before a notice describing it appears in the agent's
-   namespace.  This document specifies the directory layout and its
-   filesystem obligations — ownership, write and delete rights, and the
-   path, symlink, and concurrency discipline a runtime observes; the
-   JSON message shapes for submit requests, results, deliver notices,
-   spooled message bodies, and an optional binding record; the
-   correlation and versioning rules, including a direction-aware
-   unknown-member tolerance rule; and two conformance classes.  AMAP is
-   deliberately not a mail protocol: it neither defines nor replaces
-   SMTP, IMAP, or provider-side infrastructure, and composes with them
-   rather than displacing them.  Its single design center is that no
-   security property depends on the agent — or on the connector speaking
-   for it — behaving correctly.
+   namespace.
 
-   *Naming.* This protocol was called AMP ("Agent Mailbox Protocol")
-   until 2026-09-15.  It was renamed because AMP collides with the IETF
-   DTN working group's adopted draft-ietf-dtn-amp.  The filename of this
-   draft is unchanged at this document version; the schema identifiers
-   moved with the name (Change Log, 3.1.0).
+   This document specifies the directory layout and its filesystem
+   obligations — ownership, write and delete rights, and the path,
+   symlink, and concurrency discipline a runtime observes; the JSON
+   message shapes for submit requests, results, deliver notices, spooled
+   message bodies, and an optional binding record; the correlation and
+   versioning rules, including a direction-aware unknown-member
+   tolerance rule; and two conformance classes.
 
-About This Draft
-
-   This document is an initial draft, distributed for review and
-   comment.  It is *not* a standard, and no assurance is given that it
-   will become one.  It may be updated, replaced, or rendered obsolete
-   by later documents at any time, and it is inappropriate to cite this
-   draft as a stable reference.
-
-
-
-
-
-Rapp & Adams              Expires 20 March 2027                 [Page 1]
-
-Internet-Draft                    AMAP                    September 2026
-
-
-   This draft describes Agent Mailbox Access Protocol wire major version
-   2, document version 3.1.0 (DRAFT).  As of document version 3.0.0
-   these two numbers deliberately track different things, and are
-   allowed to diverge: the wire major tracks whole-document acceptance
-   compatibility, while the document version tracks the fuller set of
-   obligations placed on implementations.  Section 12.1 states the rule
-   and the reasoning.  Document version 3.1.0 is marked DRAFT: it is an
-   additive minor revision of 3.0.0 (Section 12.1, Change Log).  The
-   peer-origin profile it introduces is present in this document as its
-   schema and conformance fixtures (Appendix F, Appendix J); the
-   profile's prose is a companion document (spec/peer-origin.md, v3.1.0
-   DRAFT), and nothing in this document's body specifies the peer/ tree
-   beyond what that schema and those fixtures pin.
-
-   *Change control.* A capability change to this protocol — a new field,
-   a new message kind, or a change to an existing obligation — is a
-   change to _this document and to its conformance fixture suite_
-   (Appendix I, Appendix J), made *before* any implementation adopts it.
-   No implementation introduces a wire-visible change unilaterally: a
-   change that is not reflected here and in the fixtures is not part of
-   the protocol.
-
-   This document and the accompanying schemas and conformance fixtures
-   are published under the Apache License 2.0.
+   AMAP is deliberately not a mail protocol: it neither defines nor
+   replaces SMTP, IMAP, or provider-side infrastructure, and composes
+   with them rather than displacing them.  Its single design center is
+   that no security property depends on the agent — or on the connector
+   speaking for it — behaving correctly.
 
 Status of This Memo
 
@@ -93,46 +48,51 @@ Status of This Memo
    working documents as Internet-Drafts.  The list of current Internet-
    Drafts is at https://datatracker.ietf.org/drafts/current/.
 
+
+
+
+
+
+Rapp & Adams              Expires 5 April 2027                  [Page 1]
+
+Internet-Draft                    AMAP                      October 2026
+
+
    Internet-Drafts are draft documents valid for a maximum of six months
    and may be updated, replaced, or obsoleted by other documents at any
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 20 March 2027.
+   This Internet-Draft will expire on 5 April 2027.
 
 Copyright Notice
 
    Copyright (c) 2026 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
-
-
-
-
-Rapp & Adams              Expires 20 March 2027                 [Page 2]
-
-Internet-Draft                    AMAP                    September 2026
-
-
    This document is subject to BCP 78 and the IETF Trust's Legal
    Provisions Relating to IETF Documents (https://trustee.ietf.org/
    license-info) in effect on the date of publication of this document.
    Please review these documents carefully, as they describe your rights
-   and restrictions with respect to this document.
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
 
 Table of Contents
 
-   1.  Introduction — Motivation and Problem Statement . . . . . . .   5
+   1.  Introduction — Motivation and Problem Statement . . . . . . .   4
      1.1.  Why the existing options are insufficient . . . . . . . .   5
-     1.2.  The approach  . . . . . . . . . . . . . . . . . . . . . .   6
+     1.2.  The approach  . . . . . . . . . . . . . . . . . . . . . .   5
      1.3.  Why a filesystem namespace rather than an API, RPC, or
            queue . . . . . . . . . . . . . . . . . . . . . . . . . .   6
-     1.4.  Design goals  . . . . . . . . . . . . . . . . . . . . . .   7
+     1.4.  Design goals  . . . . . . . . . . . . . . . . . . . . . .   6
      1.5.  Non-goals . . . . . . . . . . . . . . . . . . . . . . . .   7
-   2.  Conventions and Terminology . . . . . . . . . . . . . . . . .   8
-   3.  Architecture and Trust Model  . . . . . . . . . . . . . . . .  10
-     3.1.  Actors  . . . . . . . . . . . . . . . . . . . . . . . . .  10
-     3.2.  The load-bearing invariant  . . . . . . . . . . . . . . .  11
+   2.  Conventions and Terminology . . . . . . . . . . . . . . . . .   7
+     2.1.  Terminology . . . . . . . . . . . . . . . . . . . . . . .   8
+   3.  Architecture and Trust Model  . . . . . . . . . . . . . . . .   9
+     3.1.  Actors  . . . . . . . . . . . . . . . . . . . . . . . . .   9
+     3.2.  The load-bearing invariant  . . . . . . . . . . . . . . .  10
      3.3.  Why a filesystem namespace  . . . . . . . . . . . . . . .  11
      3.4.  Relationship to Other Agent Protocols (Informative) . . .  12
    4.  Volume Layout . . . . . . . . . . . . . . . . . . . . . . . .  13
@@ -146,6 +106,14 @@ Table of Contents
      7.1.  Field semantics and obligations . . . . . . . . . . . . .  29
      7.2.  Inbound attachment Descriptors  . . . . . . . . . . . . .  33
      7.3.  The Inbound Message (body spool)  . . . . . . . . . . . .  34
+
+
+
+Rapp & Adams              Expires 5 April 2027                  [Page 2]
+
+Internet-Draft                    AMAP                      October 2026
+
+
    8.  Task Correlation  . . . . . . . . . . . . . . . . . . . . . .  36
    9.  Binding Record  . . . . . . . . . . . . . . . . . . . . . . .  36
      9.1.  Field semantics and obligations . . . . . . . . . . . . .  37
@@ -162,14 +130,6 @@ Table of Contents
      13.4.  Concurrency  . . . . . . . . . . . . . . . . . . . . . .  52
      13.5.  Attribution spoofing . . . . . . . . . . . . . . . . . .  52
      13.6.  Untrusted content  . . . . . . . . . . . . . . . . . . .  52
-
-
-
-Rapp & Adams              Expires 20 March 2027                 [Page 3]
-
-Internet-Draft                    AMAP                    September 2026
-
-
      13.7.  Recipient policy and header injection  . . . . . . . . .  53
      13.8.  The outbound digest is not a trust boundary  . . . . . .  54
      13.9.  Confirmation-oracle avoidance  . . . . . . . . . . . . .  54
@@ -185,22 +145,31 @@ Internet-Draft                    AMAP                    September 2026
    14. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  58
    15. References  . . . . . . . . . . . . . . . . . . . . . . . . .  58
      15.1.  Normative References . . . . . . . . . . . . . . . . . .  58
-     15.2.  Informative References . . . . . . . . . . . . . . . . .  59
+     15.2.  Informative References . . . . . . . . . . . . . . . . .  60
    Appendix A.  Submit-Request Schema  . . . . . . . . . . . . . . .  60
    Appendix B.  Result Schema  . . . . . . . . . . . . . . . . . . .  62
    Appendix C.  Deliver-Notice Schema  . . . . . . . . . . . . . . .  63
-   Appendix D.  Inbound-Message Schema . . . . . . . . . . . . . . .  65
+   Appendix D.  Inbound-Message Schema . . . . . . . . . . . . . . .  66
    Appendix E.  Binding-Record Schema  . . . . . . . . . . . . . . .  67
    Appendix F.  Peer-Notice Schema (v3.1.0 DRAFT)  . . . . . . . . .  68
-   Appendix G.  Peer-Directory Schema (v3.1.0 DRAFT) . . . . . . . .  71
+   Appendix G.  Peer-Directory Schema (v3.1.0 DRAFT) . . . . . . . .  72
    Appendix H.  Fleet-Roster Schema (v3.1.0 DRAFT) . . . . . . . . .  73
-   Appendix I.  Golden Examples  . . . . . . . . . . . . . . . . . .  75
-     I.1.  Valid Submit Request with attachments . . . . . . . . . .  75
+   Appendix I.  Golden Examples  . . . . . . . . . . . . . . . . . .  76
+     I.1.  Valid Submit Request with attachments . . . . . . . . . .  76
      I.2.  Valid Deliver Notice with a clean attachment
            Descriptor  . . . . . . . . . . . . . . . . . . . . . . .  76
      I.3.  Valid Inbound Message . . . . . . . . . . . . . . . . . .  77
      I.4.  Valid Result — a policy hold with per-attachment
            diagnostics . . . . . . . . . . . . . . . . . . . . . . .  78
+
+
+
+
+Rapp & Adams              Expires 5 April 2027                  [Page 3]
+
+Internet-Draft                    AMAP                      October 2026
+
+
      I.5.  Invalid Deliver Notice — a content_ref that fails the
            binding . . . . . . . . . . . . . . . . . . . . . . . . .  78
      I.6.  Valid Deliver Notice carrying an unrecognized member  . .  79
@@ -218,14 +187,6 @@ Internet-Draft                    AMAP                    September 2026
      2.3.0 — inbound byte access in force  . . . . . . . . . . . . .  95
      2.2.0 — deletion rights, read-only inbound  . . . . . . . . . .  95
      2.1.0 — the body spool, and three optional Result members . . .  95
-
-
-
-Rapp & Adams              Expires 20 March 2027                 [Page 4]
-
-Internet-Draft                    AMAP                    September 2026
-
-
      2.0.0 — attachments, and contract_version required  . . . . . .  96
      Fixture identifier normalization  . . . . . . . . . . . . . . .  96
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  96
@@ -258,6 +219,13 @@ Internet-Draft                    AMAP                    September 2026
    credential has no identity of its own that a recipient — or its own
    operator — can verify independently of that credential.
 
+
+
+Rapp & Adams              Expires 5 April 2027                  [Page 4]
+
+Internet-Draft                    AMAP                      October 2026
+
+
 1.1.  Why the existing options are insufficient
 
    Handing the agent mailbox credentials, or a mail-send API, makes the
@@ -269,18 +237,6 @@ Internet-Draft                    AMAP                    September 2026
    itself, because a callable send capability is still a capability the
    agent holds; what matters is whether the capability crosses the
    boundary at all.
-
-
-
-
-
-
-
-
-Rapp & Adams              Expires 20 March 2027                 [Page 5]
-
-Internet-Draft                    AMAP                    September 2026
-
 
    The common alternative is per-deployment glue: a bespoke script or
    service wired between one agent harness and one mail system.  Such
@@ -315,6 +271,17 @@ Internet-Draft                    AMAP                    September 2026
       runtime-side.  A compromised agent or connector can at most write
       a well-formed request that the runtime then refuses.
 
+
+
+
+
+
+
+Rapp & Adams              Expires 5 April 2027                  [Page 5]
+
+Internet-Draft                    AMAP                      October 2026
+
+
    AMAP is the wire contract at exactly that trust boundary, and is
    deliberately owned by neither side of it.  That ownership choice is
    what allows a runtime and a connector built by different parties, on
@@ -330,14 +297,6 @@ Internet-Draft                    AMAP                    September 2026
    behaving, and on the transport being what it claims to be.  A file
    written into a directory grants nothing at all.  It has no callee, no
    session, and no side effect until a separate, trusted process chooses
-
-
-
-Rapp & Adams              Expires 20 March 2027                 [Page 6]
-
-Internet-Draft                    AMAP                    September 2026
-
-
    to read it — at a time of that process's choosing, into memory of its
    own, under validation of its own.  The runtime is free to ignore the
    file, to refuse it, to hold it for human review, or to consume it and
@@ -366,6 +325,19 @@ Internet-Draft                    AMAP                    September 2026
    *  *Portability across agent runtimes.* Nothing in the contract
       presumes a particular agent harness, language, or tool interface.
 
+
+
+
+
+
+
+
+
+Rapp & Adams              Expires 5 April 2027                  [Page 6]
+
+Internet-Draft                    AMAP                      October 2026
+
+
 1.5.  Non-goals
 
    *  *AMAP is not a mail transport.* It neither defines nor replaces
@@ -383,16 +355,6 @@ Internet-Draft                    AMAP                    September 2026
       how a sender's standing is computed — is deliberately out of
       scope.  The wire defines only the shapes of requests and verdicts,
       never the computation that produces them.
-
-
-
-
-
-
-Rapp & Adams              Expires 20 March 2027                 [Page 7]
-
-Internet-Draft                    AMAP                    September 2026
-
 
    Every obligation in this document is grounded in what the contract
    actually provides.  Where a capability is sketched but not in force,
@@ -413,17 +375,42 @@ Internet-Draft                    AMAP                    September 2026
    through Appendix E are written in the JSON Schema 2020-12 dialect
    [JSON-SCHEMA-2020-12].
 
+   Long lines in the JSON examples and schemas in this document are
+   folded using the single-backslash strategy of [RFC8792].  Each folded
+   block begins with that strategy's header line, which is part of the
+   folded content: it is what allows the original to be reconstituted
+   mechanically, so it is kept inside the block.
+
    Sections and subsections explicitly marked _(informative)_ or _(non-
    normative)_ carry no requirements; Section 3.4, Appendix K, and the
    Change Log are the only such parts of this document.
 
-   *Terminology.*
+
+
+
+
+Rapp & Adams              Expires 5 April 2027                  [Page 7]
+
+Internet-Draft                    AMAP                      October 2026
+
+
+   Where this document says an artifact is _dropped_, it means the
+   consumer MUST NOT surface the artifact to its Agent and MUST NOT act
+   on it.  Where it says a consumer _fails closed_, it means the
+   consumer refuses to process the artifact rather than proceeding on a
+   partial or guessed interpretation.
+
+2.1.  Terminology
 
    *  *Agent* — the untrusted process whose email capability this
       protocol mediates.  It holds no credential, has no send path of
       its own, and reaches the protocol only through its Connector.
       Nothing in this document places a requirement on the Agent,
       because no security property may depend on it.
+
+   *  *Binding Record* — the optional, informational artifact at the
+      Volume root naming which mailbox the Volume is bound to
+      (Section 9).
 
    *  *Connector* — the per-Agent component that speaks the Agent-side
       half of this contract: it writes Submit Requests, reads Results
@@ -434,57 +421,6 @@ Internet-Draft                    AMAP                    September 2026
       and non-crashing obligations, never obligations another party's
       safety rests on.
 
-   *  *Runtime* — the trusted, credentialed, Agent-agnostic component
-      that speaks the other half: it holds mail credentials, owns each
-      Agent's identity, makes every policy decision, and is the only
-      party that transmits or receives mail.
-
-   *  *Volume* — the runtime-owned filesystem tree carrying this
-      protocol, containing one Namespace per Agent plus an optional
-      Binding Record at its root.  Its mount path is a deployment
-
-
-
-Rapp & Adams              Expires 20 March 2027                 [Page 8]
-
-Internet-Draft                    AMAP                    September 2026
-
-
-      choice; this document writes <volume-root>/ for it and nothing in
-      the protocol derives from its name.  No implementation may depend
-      on that name or any other.
-
-   *  *Namespace* — the per-Agent subtree <volume-root>/<agent-id>/,
-      mounted into that Agent's sandbox.  It is the unit of isolation
-      and the sole authority for attributing an artifact to an Agent.
-
-   *  *Submit Request* — the Connector-authored artifact requesting that
-      a message be sent (Section 5).  It is inert: it carries no
-      capability and effects nothing by existing.
-
-   *  *Result* — the Runtime-authored verdict for one consumed Submit
-      Request (Section 6).
-
-   *  *Notice* (Deliver Notice) — the Runtime-authored artifact
-      announcing that a message was delivered to the Agent's mailbox
-      (Section 7).  It is a pointer and summary, not the message.
-
-   *  *Inbound Message* — the Runtime-authored artifact carrying a
-      delivered message's body text and headers, spooled under a
-      Notice's identifier and fetched on demand (Section 7.3).
-
-   *  *Binding Record* — the optional, informational artifact at the
-      Volume root naming which mailbox the Volume is bound to
-      (Section 9).
-
-   *  *Sidecar* — attachment bytes stored beside a Submit Request or a
-      Notice, in a directory named after that artifact, with each blob
-      named by a 0-based ordinal.
-
-   *  *Ordinal* — the integer naming a Sidecar blob.  It equals the
-      index of the corresponding Descriptor in its array, and is the
-      sole binding authority between a Descriptor and its bytes.
-
    *  *Descriptor* — one entry in an attachments[] array, describing an
       attachment (its display filename, media type, size, and —
       depending on direction — digest, Disposition, or content
@@ -494,23 +430,56 @@ Internet-Draft                    AMAP                    September 2026
       attachment's handling: clean, stripped, quarantined, or unscanned
       (Section 7.2).
 
+   *  *Inbound Message* — the Runtime-authored artifact carrying a
+      delivered message's body text and headers, spooled under a
+      Notice's identifier and fetched on demand (Section 7.3).
+
+   *  *Namespace* — the per-Agent subtree <volume-root>/<agent-id>/,
+      mounted into that Agent's sandbox.  It is the unit of isolation
+      and the sole authority for attributing an artifact to an Agent.
+
+   *  *Notice* (Deliver Notice) — the Runtime-authored artifact
+      announcing that a message was delivered to the Agent's mailbox
+      (Section 7).  It is a pointer and summary, not the message.
+
+
+
+
+Rapp & Adams              Expires 5 April 2027                  [Page 8]
+
+Internet-Draft                    AMAP                      October 2026
+
+
+   *  *Ordinal* — the integer naming a Sidecar blob.  It equals the
+      index of the corresponding Descriptor in its array, and is the
+      sole binding authority between a Descriptor and its bytes.
+
+   *  *Result* — the Runtime-authored verdict for one consumed Submit
+      Request (Section 6).
+
+   *  *Runtime* — the trusted, credentialed, Agent-agnostic component
+      that speaks the other half: it holds mail credentials, owns each
+      Agent's identity, makes every policy decision, and is the only
+      party that transmits or receives mail.
+
+   *  *Sidecar* — attachment bytes stored beside a Submit Request or a
+      Notice, in a directory named after that artifact, with each blob
+      named by a 0-based ordinal.
+
    *  *Staging* — Runtime-private storage outside the Volume,
       unreachable from any Agent's mount, into which the Runtime copies
       Agent-authored bytes before acting on them (Section 4.1).
 
+   *  *Submit Request* — the Connector-authored artifact requesting that
+      a message be sent (Section 5).  It is inert: it carries no
+      capability and effects nothing by existing.
 
-
-
-Rapp & Adams              Expires 20 March 2027                 [Page 9]
-
-Internet-Draft                    AMAP                    September 2026
-
-
-   Where this document says an artifact is _dropped_, it means the
-   consumer does not surface it to its Agent and does not act on it;
-   where it says a consumer _fails closed_, it means the consumer
-   refuses to process the artifact rather than proceeding on a partial
-   or guessed interpretation.
+   *  *Volume* — the runtime-owned filesystem tree carrying this
+      protocol, containing one Namespace per Agent plus an optional
+      Binding Record at its root.  Its mount path is a deployment
+      choice; this document writes <volume-root>/ for it and nothing in
+      the protocol derives from its name.  No implementation may depend
+      on that name or any other.
 
 3.  Architecture and Trust Model
 
@@ -529,6 +498,14 @@ Internet-Draft                    AMAP                    September 2026
     | (per Agent) | Agent-side    | credentialed       | Namespace on |
     |             |               |                    | the Volume;  |
     |             |               |                    | its Agent's  |
+
+
+
+Rapp & Adams              Expires 5 April 2027                  [Page 9]
+
+Internet-Draft                    AMAP                      October 2026
+
+
     |             |               |                    | input and    |
     |             |               |                    | output       |
     +-------------+---------------+--------------------+--------------+
@@ -552,15 +529,6 @@ Internet-Draft                    AMAP                    September 2026
       tolerate a missing artifact, do not crash on hostile input.  A
       Connector that violates one harms itself and its own Agent, not
       any other party.
-
-
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 10]
-
-Internet-Draft                    AMAP                    September 2026
-
 
    *  *Obligations that protect an Agent from its own inbox* — the
       untrusted-content posture of Section 7.  These are necessarily
@@ -586,6 +554,14 @@ Internet-Draft                    AMAP                    September 2026
    is why the Agent's declared identity is a cross-check rather than an
    attribution source (Section 4.1); why the Runtime re-derives every
    path from data it controls rather than from a file's contents
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 10]
+
+Internet-Draft                    AMAP                      October 2026
+
+
    (Section 4.1); why recipient policy is evaluated Runtime-side over
    the exact recipient set that will be transmitted to (Section 5.1);
    why the digest an Agent supplies for its own attachment bytes is an
@@ -604,19 +580,6 @@ Internet-Draft                    AMAP                    September 2026
    The Runtime mounts each Agent's Namespace into that Agent's sandbox,
    and the Agent's entire protocol surface is that directory.  This is a
    deliberate choice of medium, with three consequences.
-
-
-
-
-
-
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 11]
-
-Internet-Draft                    AMAP                    September 2026
-
 
    *A file drop carries no capability.* Writing a file invokes nothing.
    There is no callee to authenticate, no session to hijack, no method
@@ -643,6 +606,18 @@ Internet-Draft                    AMAP                    September 2026
    for the medium's advantages, and Section 13 revisits each as a
    threat.
 
+
+
+
+
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 11]
+
+Internet-Draft                    AMAP                      October 2026
+
+
 3.4.  Relationship to Other Agent Protocols (Informative)
 
    _This subsection is informative.  It contains no requirements and
@@ -666,14 +641,6 @@ Internet-Draft                    AMAP                    September 2026
    surface.  The contrast worth stating is exactly the one that
    motivates the two coexisting: an MCP-style interface grants live
    capability across the boundary it spans, while AMAP's channel
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 12]
-
-Internet-Draft                    AMAP                    September 2026
-
-
    deliberately grants none — the Agent-side surface can be as rich as
    the harness likes, because what crosses the trust boundary underneath
    it is an inert file.  The current stable MCP specification revision
@@ -695,6 +662,17 @@ Internet-Draft                    AMAP                    September 2026
    *The two protocols abbreviated "ACP" are not the same protocol*, and
    the collision is worth disambiguating in a document a reviewer may
    arrive at with one of them in mind.
+
+
+
+
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 12]
+
+Internet-Draft                    AMAP                      October 2026
+
 
    *  The *Agent Communication Protocol* (IBM/BeeAI) is of historical
       interest here: it merged into A2A under the Linux Foundation,
@@ -719,21 +697,38 @@ Internet-Draft                    AMAP                    September 2026
    write access may be narrower still: the inbound/ subtree is Runtime-
    owned and MAY be mounted read-only.
 
-
-
-
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 13]
-
-Internet-Draft                    AMAP                    September 2026
-
-
    The Volume root's own name is a *deployment choice and is not part of
    this protocol* — nothing derives from it, and no implementation may
    depend on it. <volume-root>/ below stands for whatever a deployment
    calls it.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 13]
+
+Internet-Draft                    AMAP                      October 2026
+
 
    <volume-root>/
      identity.json           # runtime/provisioner: Binding Record (S9)
@@ -779,16 +774,17 @@ Internet-Draft                    AMAP                    September 2026
    *Isolation is structural.* A Connector scoped to <agent-id>/ cannot
    read another Agent's drafts or Notices.
 
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 14]
-
-Internet-Draft                    AMAP                    September 2026
-
-
    *All writes are atomic.* Every artifact in the tree above is
    published by writing a .tmp sibling and then renaming it into place
    (os.replace or the equivalent).  Readers MUST ignore *.tmp entries.
+
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 14]
+
+Internet-Draft                    AMAP                      October 2026
+
 
    *Single writer, single drainer.* At any moment a Namespace has
    exactly one Connector instance writing outbound/ and exactly one
@@ -832,22 +828,20 @@ Internet-Draft                    AMAP                    September 2026
       no-follow equivalent at all, so a bare "writes do not follow
       symlinks" requirement is not sufficient on its own.
 
-
-
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 15]
-
-Internet-Draft                    AMAP                    September 2026
-
-
    *  *(b) No-follow while building the chain.* Each directory component
       that goes into that parent chain MUST itself have been opened with
       O_NOFOLLOW|O_DIRECTORY at the moment it was added to the pinned
       chain.  A descriptor counts as pinned only if the open that
       produced it refused to follow a symlink at that step.  Requirement
       (a) without this is equally insufficient, and the gap is the
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 15]
+
+Internet-Draft                    AMAP                      October 2026
+
+
       symmetric one: nothing otherwise stops the Runtime from
       _acquiring_ a "pinned" descriptor by following an Agent-planted
       symlink in the first place — the Agent replaces a Namespace
@@ -889,15 +883,6 @@ Internet-Draft                    AMAP                    September 2026
          one write this document names that has no .tmp sibling
          unprotected.
 
-
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 16]
-
-Internet-Draft                    AMAP                    September 2026
-
-
       Requirement (c) is needed in both of its branches because an Agent
       can pre-plant a symlink at a filename the Runtime is about to
       write. req_id is Agent-chosen, and every Runtime-written filename
@@ -905,6 +890,14 @@ Internet-Draft                    AMAP                    September 2026
       processed/req-<id>.json, inbound/notices/notice-<id>.json,
       inbound/messages/notice-<id>.json, audit/log.jsonl — is reachable
       to an Agent that can predict or observe it.  Absent (c), such a
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 16]
+
+Internet-Draft                    AMAP                      October 2026
+
+
       name gets its bytes written through the planted symlink with the
       Runtime's own privileges, even though the parent chain that
       reached the containing directory was itself correctly pinned under
@@ -941,19 +934,6 @@ Internet-Draft                    AMAP                    September 2026
    which is the sole binding authority.  Nothing else names a blob; a
    Descriptor's filename is display-only and is never a path.
 
-
-
-
-
-
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 17]
-
-Internet-Draft                    AMAP                    September 2026
-
-
    *Commit sentinel.* All Sidecar bytes are written — .tmp sibling, then
    rename — *before* req-<id>.json; the JSON file's presence is the only
    publish signal.  The Runtime MUST verify that every referenced
@@ -966,6 +946,14 @@ Internet-Draft                    AMAP                    September 2026
    is external and is not character-set-safe; using one as a path
    component was a confirmed exploit path in an early implementation.
    The same rule extends to the body artifact: inbound/messages/
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 17]
+
+Internet-Draft                    AMAP                      October 2026
+
+
    notice-<id>.json is keyed on the notice identifier, never on
    message.id.  Inbound bytes are published only at inbound/
    notices/<notice-id>.attachments/<index>, the single Sidecar directory
@@ -1002,14 +990,6 @@ Internet-Draft                    AMAP                    September 2026
    *Tree rules.* Every Runtime-owned inbound-class tree is an *origin
    class*: a consumer derives the class of a document from the tree it
    was read from, and never from any member of the document. notice_id
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 18]
-
-Internet-Draft                    AMAP                    September 2026
-
-
    uniqueness is per tree, and where a tree has more than one writer
    each MUST mint so that cross-writer collision is negligible — at
    least 128 bits of entropy under the identifier character set, or a
@@ -1019,6 +999,16 @@ Internet-Draft                    AMAP                    September 2026
    from.  Write authority per tree is distinct and MUST be structurally
    enforced, never by configuration the writer itself reads. inbound/ is
    the one tree this document defines; a profile MAY define others.
+
+
+
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 18]
+
+Internet-Draft                    AMAP                      October 2026
+
 
    *Inbound is Runtime-owned, and read-only is a valid posture.* The
    inbound/ tree is Runtime-owned end to end.  A Runtime MAY expose it
@@ -1058,19 +1048,23 @@ Internet-Draft                    AMAP                    September 2026
    receiving Agent's own uid and therefore forgeable by construction.
    An outcome is a statement by the receiving side about what it did
    with a Notice; a party MUST NOT treat an outcome as proof of delivery
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 19]
-
-Internet-Draft                    AMAP                    September 2026
-
-
    or of non-delivery, and the Runtime's own delivery record is
    authoritative over it (Section 13.15).  There is deliberately no
    inbound extension space: an inbound tree is a Runtime assertion about
    origin, and a Connector cannot know what a vendor-named assertion
    means.
+
+
+
+
+
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 19]
+
+Internet-Draft                    AMAP                      October 2026
+
 
 4.2.  Deletion rights
 
@@ -1114,20 +1108,20 @@ Internet-Draft                    AMAP                    September 2026
    |                       |           |           | deletes here (or  |
    |                       |           |           | in results/)      |
    |                       |           |           | MUST preserve     |
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 20]
-
-Internet-Draft                    AMAP                    September 2026
-
-
    |                       |           |           | req_id            |
    |                       |           |           | monotonicity by   |
    |                       |           |           | other durable     |
    |                       |           |           | means, such as    |
    |                       |           |           | its own counter.  |
    |                       |           |           | Correspondingly,  |
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 20]
+
+Internet-Draft                    AMAP                      October 2026
+
+
    |                       |           |           | a Runtime MUST    |
    |                       |           |           | NOT rely on       |
    |                       |           |           | processed/        |
@@ -1170,20 +1164,20 @@ Internet-Draft                    AMAP                    September 2026
    |                       |           |Connector  | be conservative   |
    |                       |           |MAY move or| and age-based.    |
    |                       |           |delete per | A Connector       |
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 21]
-
-Internet-Draft                    AMAP                    September 2026
-
-
    |                       |           |the        | already           |
    |                       |           |optional   | tolerates the     |
    |                       |           |processed/ | disappearance of  |
    |                       |           |convention,| these artifacts:  |
    |                       |           |but MUST   | a read against a  |
    |                       |           |NOT depend | missing one       |
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 21]
+
+Internet-Draft                    AMAP                      October 2026
+
+
    |                       |           |on the     | returns "not      |
    |                       |           |ability.   | resolved"         |
    |                       |           |           | (Section 7.3).    |
@@ -1229,9 +1223,15 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 22]
+
+
+
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 22]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    NOTE: '\' line wrapping per RFC 8792
@@ -1285,9 +1285,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 23]
+Rapp & Adams              Expires 5 April 2027                 [Page 23]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    *  *req_id* (REQUIRED) is *monotonic per Namespace* and MUST NOT be
@@ -1341,9 +1341,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 24]
+Rapp & Adams              Expires 5 April 2027                 [Page 24]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
       this version and may be added later.  A Runtime MUST reject — with
@@ -1397,9 +1397,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 25]
+Rapp & Adams              Expires 5 April 2027                 [Page 25]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    {
@@ -1453,9 +1453,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 26]
+Rapp & Adams              Expires 5 April 2027                 [Page 26]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    *  *accepted* means the provider accepted the message for relay.
@@ -1509,9 +1509,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 27]
+Rapp & Adams              Expires 5 April 2027                 [Page 27]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
       (Section 4.1).  This constraint is not expressible in JSON Schema
@@ -1565,9 +1565,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 28]
+Rapp & Adams              Expires 5 April 2027                 [Page 28]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    {
@@ -1621,9 +1621,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 29]
+Rapp & Adams              Expires 5 April 2027                 [Page 29]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    1.  *Schema failure.* The Notice fails validation against the
@@ -1677,9 +1677,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 30]
+Rapp & Adams              Expires 5 April 2027                 [Page 30]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    *  *contract_version*, *notice_id*, *ts*, *kind*, and *message* are
@@ -1733,9 +1733,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 31]
+Rapp & Adams              Expires 5 April 2027                 [Page 31]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    *  *The untrusted-content posture covers every sender-originated
@@ -1789,9 +1789,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 32]
+Rapp & Adams              Expires 5 April 2027                 [Page 32]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
 7.2.  Inbound attachment Descriptors
@@ -1845,9 +1845,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 33]
+Rapp & Adams              Expires 5 April 2027                 [Page 33]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    *A grant, never a directive.* A consumer MUST tolerate a Descriptor
@@ -1901,9 +1901,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 34]
+Rapp & Adams              Expires 5 April 2027                 [Page 34]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    {
@@ -1957,9 +1957,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 35]
+Rapp & Adams              Expires 5 April 2027                 [Page 35]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
 8.  Task Correlation
@@ -2013,9 +2013,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 36]
+Rapp & Adams              Expires 5 April 2027                 [Page 36]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
 9.1.  Field semantics and obligations
@@ -2069,9 +2069,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 37]
+Rapp & Adams              Expires 5 April 2027                 [Page 37]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    {
@@ -2125,9 +2125,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 38]
+Rapp & Adams              Expires 5 April 2027                 [Page 38]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    *  *Written whole and atomically.* A Runtime MUST NOT publish a newly
@@ -2181,9 +2181,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 39]
+Rapp & Adams              Expires 5 April 2027                 [Page 39]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
 11.  The Fleet Roster
@@ -2237,9 +2237,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 40]
+Rapp & Adams              Expires 5 April 2027                 [Page 40]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    *  *Readability is split between the parties that can observe it.* A
@@ -2293,9 +2293,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 41]
+Rapp & Adams              Expires 5 April 2027                 [Page 41]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    Runtime version-refusing a Submit Request MAY carry that refusal on
@@ -2349,9 +2349,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 42]
+Rapp & Adams              Expires 5 April 2027                 [Page 42]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
       remains a *producer* non-conformance: a Runtime MUST NOT emit
@@ -2405,9 +2405,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 43]
+Rapp & Adams              Expires 5 April 2027                 [Page 43]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    the valid and invalid sets, and it adds Runtime obligations a
@@ -2461,9 +2461,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 44]
+Rapp & Adams              Expires 5 April 2027                 [Page 44]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
        dropping exclusive-create there let an Agent that pre-plants a
@@ -2517,9 +2517,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 45]
+Rapp & Adams              Expires 5 April 2027                 [Page 45]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    |                   |                   | (items require filename, |
@@ -2573,9 +2573,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 46]
+Rapp & Adams              Expires 5 April 2027                 [Page 46]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    |                   | members[] (items  |                          |
@@ -2629,9 +2629,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 47]
+Rapp & Adams              Expires 5 April 2027                 [Page 47]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    *  MUST demonstrate its producing side by confirming that its own
@@ -2685,9 +2685,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 48]
+Rapp & Adams              Expires 5 April 2027                 [Page 48]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
       Accepting the clean-Descriptor fixture — a Descriptor asserted
@@ -2741,9 +2741,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 49]
+Rapp & Adams              Expires 5 April 2027                 [Page 49]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
 13.1.  Path authority and traversal
@@ -2797,9 +2797,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 50]
+Rapp & Adams              Expires 5 April 2027                 [Page 50]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    The append-only audit log is the one write with no .tmp sibling to
@@ -2853,9 +2853,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 51]
+Rapp & Adams              Expires 5 April 2027                 [Page 51]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
 13.4.  Concurrency
@@ -2909,9 +2909,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 52]
+Rapp & Adams              Expires 5 April 2027                 [Page 52]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    *An attachment filename is an injection payload.* A Descriptor is
@@ -2965,9 +2965,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 53]
+Rapp & Adams              Expires 5 April 2027                 [Page 53]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    Header injection is the second half.  Any Agent-authored string that
@@ -3021,9 +3021,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 54]
+Rapp & Adams              Expires 5 April 2027                 [Page 54]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
 13.10.  Byte-absence and artifact-absence as the access gate
@@ -3077,9 +3077,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 55]
+Rapp & Adams              Expires 5 April 2027                 [Page 55]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    The value-level tolerance is scoped to the two explicitly advisory
@@ -3133,9 +3133,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 56]
+Rapp & Adams              Expires 5 April 2027                 [Page 56]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
 13.14.  What is wire-verifiable, and what is a Runtime obligation
@@ -3189,9 +3189,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 57]
+Rapp & Adams              Expires 5 April 2027                 [Page 57]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    Two of these deserve emphasis as trust-model statements rather than
@@ -3245,9 +3245,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 58]
+Rapp & Adams              Expires 5 April 2027                 [Page 58]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    [RFC2046]  Freed, N. and N. Borenstein, "Multipurpose Internet Mail
@@ -3293,18 +3293,23 @@ Internet-Draft                    AMAP                    September 2026
               DOI 10.17487/RFC8259, December 2017,
               <https://www.rfc-editor.org/rfc/rfc8259>.
 
+   [RFC8792]  Watsen, K., Auerswald, E., Farrel, A., and Q. Wu,
+              "Handling Long Lines in Content of Internet-Drafts and
+              RFCs", RFC 8792, DOI 10.17487/RFC8792, June 2020,
+              <https://www.rfc-editor.org/info/rfc8792>.
+
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 59]
+
+Internet-Draft                    AMAP                      October 2026
+
+
 15.2.  Informative References
 
    [A2A]      Linux Foundation, "Agent2Agent Protocol, v1.0.1", May
               2026, <https://a2a-protocol.org>.
-
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 59]
-
-Internet-Draft                    AMAP                    September 2026
-
 
    [ACP-CLIENT]
               Zed Industries, "Agent Client Protocol", n.d.,
@@ -3349,19 +3354,19 @@ Appendix A.  Submit-Request Schema
          "minLength": 1,
          "description": "monotonic per namespace; filename-safe (path a\
        uthority is the filename, not this field — §2, the filename-auth\
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 60]
+
+Internet-Draft                    AMAP                      October 2026
+
+
        ority-for-paths obligation).",
          "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*(?!\\n)$"
        },
        "agent_id": { "type": "string", "minLength": 1, "pattern": "^[^\\
        u0000-\u001f\u007f]*(?!\\n)$" },
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 60]
-
-Internet-Draft                    AMAP                    September 2026
-
-
        "ts": { "type": "string", "minLength": 1, "pattern": "^[^\u0000-\
        \u001f\u007f]*(?!\\n)$" },
        "in_reply_to": { "type": "string", "pattern": "^[^\u0000-\u001f\\
@@ -3405,19 +3410,19 @@ Internet-Draft                    AMAP                    September 2026
                "required": ["filename", "media_type", "size_bytes", "sh\
        a256"],
                "additionalProperties": false,
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 61]
+
+Internet-Draft                    AMAP                      October 2026
+
+
                "properties": {
                  "filename":   { "type": "string", "minLength": 1, "pat\
        tern": "^[^\u0000-\u001f\u007f]*(?!\\n)$" },
                  "media_type": { "type": "string", "minLength": 1, "pat\
        tern": "^[^\u0000-\u001f\u007f]*(?!\\n)$" },
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 61]
-
-Internet-Draft                    AMAP                    September 2026
-
-
                  "size_bytes": { "type": "integer", "minimum": 0 },
                  "sha256":     { "type": "string", "pattern": "^[a-f0-9\
        ]{64}(?!\\n)$" }
@@ -3461,19 +3466,19 @@ Appendix B.  Result Schema
          "type": "string",
          "enum": ["accepted", "queued_for_human", "rejected"]
        },
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 62]
+
+Internet-Draft                    AMAP                      October 2026
+
+
        "detail": { "type": ["string", "null"] },
        "reason_code": { "type": "string", "minLength": 1 },
        "ts": { "type": "string", "minLength": 1 },
        "recipients": { "type": "array", "items": { "type": "string" } },
        "message_id": { "type": ["string", "null"] },
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 62]
-
-Internet-Draft                    AMAP                    September 2026
-
-
        "job_id": { "type": ["string", "null"] },
        "attestation": {
          "type": "object",
@@ -3513,6 +3518,18 @@ Appendix C.  Deliver-Notice Schema
    prefix binding, by contrast, is not expressible here and is enforced
    as a named post-check (Appendix J).
 
+
+
+
+
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 63]
+
+Internet-Draft                    AMAP                      October 2026
+
+
    NOTE: '\' line wrapping per RFC 8792
 
    {
@@ -3522,14 +3539,6 @@ Appendix C.  Deliver-Notice Schema
      "description": "runtime -> connector: one notice per delivered mes\
        sage. amap-spec v3.0.0 (spec/contract.md §5). Runtime-authored: \
        this document's envelope is OPEN (no additionalProperties:false\
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 63]
-
-Internet-Draft                    AMAP                    September 2026
-
-
        ) at every level per §7's v3.0.0 tolerance rule — a consumer MUS\
        T ignore members it does not recognize; emitting an unrecognize\
        d member remains producer non-conformance.",
@@ -3569,6 +3578,14 @@ Internet-Draft                    AMAP                    September 2026
              "description": "advisory, open vocabulary (external, inter\
        nal, ...). A consumer MUST tolerate a value outside this list, t\
        reating it as opaque — never grounds to drop the notice; a runti\
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 64]
+
+Internet-Draft                    AMAP                      October 2026
+
+
        me may add a value as a MINOR change (v3.0.0, contract.md §5/§7)\
        ."
            },
@@ -3578,14 +3595,6 @@ Internet-Draft                    AMAP                    September 2026
                "auth": { "type": "string" },
                "screen": { "type": "string" },
                "entitlement": { "type": "string" }
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 64]
-
-Internet-Draft                    AMAP                    September 2026
-
-
              }
            },
            "attachments": {
@@ -3624,23 +3633,21 @@ Internet-Draft                    AMAP                    September 2026
 
                Figure 10: schemas/deliver-notice.schema.json
 
+
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 65]
+
+Internet-Draft                    AMAP                      October 2026
+
+
 Appendix D.  Inbound-Message Schema
 
    _(Normative.)_ JSON Schema 2020-12 [JSON-SCHEMA-2020-12]; governs the
    artifact defined in Section 7.3.  Runtime-authored and open at every
    level.  Its Descriptor rules, including the clean-gating
    conditionals, match the deliver-notice schema's.
-
-
-
-
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 65]
-
-Internet-Draft                    AMAP                    September 2026
-
 
    NOTE: '\' line wrapping per RFC 8792
 
@@ -3683,6 +3690,14 @@ Internet-Draft                    AMAP                    September 2026
        4}(?!\\n)$" },
              "disposition": { "type": "string",
                               "enum": ["clean", "stripped", "quarantine\
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 66]
+
+Internet-Draft                    AMAP                      October 2026
+
+
        d", "unscanned"] },
              "content_ref": { "type": "string",
                               "pattern": "^[A-Za-z0-9_.-]+\\.attachment\
@@ -3690,14 +3705,6 @@ Internet-Draft                    AMAP                    September 2026
            },
            "allOf": [
              { "if": { "required": ["content_ref"] },
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 66]
-
-Internet-Draft                    AMAP                    September 2026
-
-
                "then": { "properties": { "disposition": { "const": "cle\
        an" } } } },
              { "if": { "required": ["sha256"] },
@@ -3717,6 +3724,35 @@ Appendix E.  Binding-Record Schema
    artifact defined in Section 9.  This envelope is closed, for the
    reason given in Section 9.1 — an anti-secret-leak lint rather than a
    compatibility surface.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 67]
+
+Internet-Draft                    AMAP                      October 2026
+
 
    NOTE: '\' line wrapping per RFC 8792
 
@@ -3746,14 +3782,6 @@ Appendix E.  Binding-Record Schema
 
                Figure 12: schemas/binding-record.schema.json
 
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 67]
-
-Internet-Draft                    AMAP                    September 2026
-
-
 Appendix F.  Peer-Notice Schema (v3.1.0 DRAFT)
 
    _(Normative for the shape it pins; the profile it belongs to is
@@ -3774,6 +3802,14 @@ Appendix F.  Peer-Notice Schema (v3.1.0 DRAFT)
      "$schema": "https://json-schema.org/draft/2020-12/schema",
      "$id": "https://amap-spec/schemas/peer-notice.schema.json",
      "title": "peer-notice",
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 68]
+
+Internet-Draft                    AMAP                      October 2026
+
+
      "description": "runtime -> connector: one notice per peer message \
        placed in <agent-id>/peer/notices/. amap-spec v3.1.0 DRAFT, peer\
        -origin profile (spec/peer-origin.md). Same layout as deliver-no\
@@ -3802,14 +3838,6 @@ Appendix F.  Peer-Notice Schema (v3.1.0 DRAFT)
          "type": "object",
          "required": ["id", "from", "subject", "preview", "mailbox"],
          "properties": {
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 68]
-
-Internet-Draft                    AMAP                    September 2026
-
-
            "id": {
              "type": "string", "minLength": 1,
              "description": "the peer message id: minted by the sendin\
@@ -3830,6 +3858,14 @@ Internet-Draft                    AMAP                    September 2026
        ]+(?!\\n)$"
            },
            "subject": { "type": "string" },
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 69]
+
+Internet-Draft                    AMAP                      October 2026
+
+
            "preview": { "type": "string" },
            "mailbox": { "const": "peer" },
            "task_id": { "type": "string", "minLength": 1 },
@@ -3858,14 +3894,6 @@ Internet-Draft                    AMAP                    September 2026
        the tree on a peer notice and MAY be omitted. Never grounds to d\
        erive or override origin class."
            },
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 69]
-
-Internet-Draft                    AMAP                    September 2026
-
-
            "verdict": {
              "type": "object",
              "properties": {
@@ -3886,6 +3914,14 @@ Internet-Draft                    AMAP                    September 2026
              "properties": {
                "asserted_by": { "type": "string", "minLength": 1, "patt\
        ern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+(?!\\n)$\
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 70]
+
+Internet-Draft                    AMAP                      October 2026
+
+
        " },
                "external_mail_delivered": { "type": "boolean" },
                "window_start": { "type": "string", "minLength": 1 },
@@ -3914,14 +3950,6 @@ Internet-Draft                    AMAP                    September 2026
                  "size_bytes":  { "type": "integer", "minimum": 0 },
                  "sha256":      { "type": "string", "pattern": "^[a-f0-\
        9]{64}(?!\\n)$" },
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 70]
-
-Internet-Draft                    AMAP                    September 2026
-
-
                  "disposition": { "type": "string",
                                   "enum": ["clean", "stripped", "quaran\
        tined", "unscanned"] },
@@ -3942,6 +3970,14 @@ Internet-Draft                    AMAP                    September 2026
          }
        }
      }
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 71]
+
+Internet-Draft                    AMAP                      October 2026
+
+
    }
 
                  Figure 13: schemas/peer-notice.schema.json
@@ -3970,14 +4006,6 @@ Appendix G.  Peer-Directory Schema (v3.1.0 DRAFT)
        ted by the runtime at submit time and only the result (§4) repor\
        ts what happened. A runtime MUST NOT read this file back as auth\
        orisation; enforcement stays the runtime's own graph check on ev\
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 71]
-
-Internet-Draft                    AMAP                    September 2026
-
-
        ery message. The file MAY be absent. Runtime-authored: envelope \
        is OPEN at every level per §7's v3.0.0 tolerance rule — a consum\
        er MUST ignore members it does not recognize; emitting an unreco\
@@ -3998,6 +4026,14 @@ Internet-Draft                    AMAP                    September 2026
          "description": "the publishing runtime's own address, one bar\
        e addr-spec. Never appears in delegate_to or mail_to.",
          "pattern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+(?\
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 72]
+
+Internet-Draft                    AMAP                      October 2026
+
+
        !\\n)$"
        },
        "written_at": {
@@ -4026,14 +4062,6 @@ Internet-Draft                    AMAP                    September 2026
          "description": "sorted addresses on the mutual mail lane. Alwa\
        ys present; empty when the lane is closed, which is the normal c\
        ase for a delegation-only deployment.",
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 72]
-
-Internet-Draft                    AMAP                    September 2026
-
-
          "items": {
            "type": "string",
            "pattern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+\
@@ -4052,6 +4080,15 @@ Appendix H.  Fleet-Roster Schema (v3.1.0 DRAFT)
    Section 11.  The document is Runtime-authored and therefore open
    (Section 12.1), and it pins shape only: whether a member exists says
    nothing about whether it may be addressed.
+
+
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 73]
+
+Internet-Draft                    AMAP                      October 2026
+
 
    NOTE: '\' line wrapping per RFC 8792
 
@@ -4082,14 +4119,6 @@ Appendix H.  Fleet-Roster Schema (v3.1.0 DRAFT)
        "written_at",
        "members"
      ],
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 73]
-
-Internet-Draft                    AMAP                    September 2026
-
-
      "properties": {
        "contract_version": {
          "const": "2"
@@ -4109,6 +4138,14 @@ Internet-Draft                    AMAP                    September 2026
        reshness guarantee.",
          "pattern": "^[^\\u0000-\\u001f\\u007f]*(?!\\n)$"
        },
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 74]
+
+Internet-Draft                    AMAP                      October 2026
+
+
        "interval_s": {
          "type": "number",
          "minimum": 0,
@@ -4138,14 +4175,6 @@ Internet-Draft                    AMAP                    September 2026
              },
              "state": {
                "type": "string",
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 74]
-
-Internet-Draft                    AMAP                    September 2026
-
-
                "minLength": 1,
                "description": "OPEN advisory vocabulary; \"admitted\" i\
        s the only value defined at this version. A consumer MUST tolera\
@@ -4159,6 +4188,19 @@ Internet-Draft                    AMAP                    September 2026
    }
 
                    Figure 15: schemas/roster.schema.json
+
+
+
+
+
+
+
+
+
+Rapp & Adams              Expires 5 April 2027                 [Page 75]
+
+Internet-Draft                    AMAP                      October 2026
+
 
 Appendix I.  Golden Examples
 
@@ -4175,32 +4217,6 @@ I.1.  Valid Submit Request with attachments
    Sidecar blobs are named by array index (req-<id>.attachments/<i>); no
    content_ref may appear on a request and the schema rejects one
    (Section 5.1).
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 75]
-
-Internet-Draft                    AMAP                    September 2026
-
 
    NOTE: '\' line wrapping per RFC 8792
 
@@ -4237,25 +4253,9 @@ I.2.  Valid Deliver Notice with a clean attachment Descriptor
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 76]
+Rapp & Adams              Expires 5 April 2027                 [Page 76]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    NOTE: '\' line wrapping per RFC 8792
@@ -4309,9 +4309,9 @@ I.3.  Valid Inbound Message
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 77]
+Rapp & Adams              Expires 5 April 2027                 [Page 77]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
 I.4.  Valid Result — a policy hold with per-attachment diagnostics
@@ -4365,9 +4365,9 @@ I.5.  Invalid Deliver Notice — a content_ref that fails the binding
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 78]
+Rapp & Adams              Expires 5 April 2027                 [Page 78]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    {
@@ -4421,9 +4421,9 @@ I.7.  Invalid Submit Request carrying an unrecognized member
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 79]
+Rapp & Adams              Expires 5 April 2027                 [Page 79]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    $: additional property 'x_injected' not allowed
@@ -4477,9 +4477,9 @@ Appendix J.  Conformance Suite
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 80]
+Rapp & Adams              Expires 5 April 2027                 [Page 80]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    +======================================+============================+
@@ -4533,9 +4533,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 81]
+Rapp & Adams              Expires 5 April 2027                 [Page 81]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    |                                      | notice.schema.json         |
@@ -4589,9 +4589,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 82]
+Rapp & Adams              Expires 5 April 2027                 [Page 82]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    +--------------------------------------+----------------------------+
@@ -4645,9 +4645,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 83]
+Rapp & Adams              Expires 5 April 2027                 [Page 83]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    | invalid/notice-version-1.json        | deliver-                   |
@@ -4701,9 +4701,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 84]
+Rapp & Adams              Expires 5 April 2027                 [Page 84]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    | invalid/request-attachment-missing-  | submit-                    |
@@ -4757,9 +4757,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 85]
+Rapp & Adams              Expires 5 April 2027                 [Page 85]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    | invalid/result-bad-attestation-      | result.schema.json         |
@@ -4813,9 +4813,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 86]
+Rapp & Adams              Expires 5 April 2027                 [Page 86]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    A Connector conformance claim requires running *both* the schema
@@ -4869,9 +4869,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 87]
+Rapp & Adams              Expires 5 April 2027                 [Page 87]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    *  Inbound Sidecar directories keyed on the Runtime-minted notice
@@ -4925,9 +4925,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 88]
+Rapp & Adams              Expires 5 April 2027                 [Page 88]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    *  The peer-origin profile's operational obligations (v3.1.0 DRAFT),
@@ -4981,9 +4981,9 @@ Appendix K.  A Deferred Seam-Visible "Handled" Signal (Non-Normative)
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 89]
+Rapp & Adams              Expires 5 April 2027                 [Page 89]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    A Runtime could then delete the acknowledged Notice and its spooled
@@ -5037,9 +5037,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 90]
+Rapp & Adams              Expires 5 April 2027                 [Page 90]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    *  *It must not grow the read surface.* The read available today is a
@@ -5093,9 +5093,9 @@ peer-origin profile's schema
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 91]
+Rapp & Adams              Expires 5 April 2027                 [Page 91]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    *  *The protocol is AMAP; the schema $id authority is amap-spec*
@@ -5149,9 +5149,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 92]
+Rapp & Adams              Expires 5 April 2027                 [Page 92]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
       the peer- prefix to the new schema and applies the content_ref
@@ -5205,9 +5205,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 93]
+Rapp & Adams              Expires 5 April 2027                 [Page 93]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
       base64, a URN, or anything else carrying punctuation outside it —
@@ -5261,9 +5261,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 94]
+Rapp & Adams              Expires 5 April 2027                 [Page 94]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
       fixture was added; the content_ref index-mismatch fixture was
@@ -5317,9 +5317,9 @@ Internet-Draft                    AMAP                    September 2026
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 95]
+Rapp & Adams              Expires 5 April 2027                 [Page 95]
 
-Internet-Draft                    AMAP                    September 2026
+Internet-Draft                    AMAP                      October 2026
 
 
    *Correction (recorded at 3.0.0).* That "additive minor" label was
@@ -5362,7 +5362,7 @@ Authors' Addresses
    Email: drapp@proofpoint.com
 
 
-   Trent Adams
+   J. Trent Adams
    Proofpoint, Inc.
    Email: tadams@proofpoint.com
 
@@ -5373,4 +5373,4 @@ Authors' Addresses
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 96]
+Rapp & Adams              Expires 5 April 2027                 [Page 96]
