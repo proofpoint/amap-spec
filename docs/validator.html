@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Validator · AMAP</title>
+<meta name="description" content="Check an AMAP document against the published schemas in your browser.">
+<link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap header-row">
+    <a class="brand" href="index.html" aria-label="AMAP home">
+      <img src="assets/mark.svg" alt="" width="28" height="28">
+      <span class="brand-name">AMAP</span>
+      <span class="brand-sub">Agent Mailbox Access Protocol</span>
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <nav id="site-nav" class="site-nav" aria-label="Main">
+      <ul><li><a href="index.html">Home</a></li><li><a href="why.html">Why AMAP</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="identity.html">Identity</a></li><li><a href="implementers.html">Implementers</a></li><li><a href="validator.html" aria-current="page">Validator</a></li><li><a href="status.html">Status</a></li><li><a href="faq.html">FAQ</a></li><li><a href="get-involved.html">Get involved</a></li></ul>
+    </nav>
+  </div>
+</header>
+<main id="main" class="wrap">
+<p class="eyebrow">Tool</p>
+<h1>Validate an AMAP document</h1>
+<p class="lede">Paste or load a JSON document and check it against the published AMAP schemas. Nothing you paste leaves your browser: the schemas are built into this page, and the check runs locally.</p>
+
+<div class="callout">
+  <p><strong>This validator gives the same verdict as the specification's own conformance gate,</strong> <code>fixtures/validate.py</code>. It checks the same schema rules and the same two extra checks that JSON Schema can't express: attachment indexes must match their position in the array, and every <code>content_ref</code> must point to its own notice. It reaches the same verdict, with the same error messages, on all 89 conformance fixtures.</p>
+</div>
+
+<h2>1. Choose the document type</h2>
+<p>The conformance gate picks a schema from the fixture's filename prefix. You can't do that with real files: on disk, a runtime names both a delivery notice and the spooled message behind it <code>notice-&lt;id&gt;.json</code>, from the same notice id. So choose the type explicitly.</p>
+<p>
+  <label for="v-type">Document type</label><br>
+  <select id="v-type">
+    <option value="notice-">Delivery notice (deliver-notice), from inbound/notices/</option>
+    <option value="peer-">Peer notice (peer-notice), from peer/notices/</option>
+    <option value="message-">Inbound message (inbound-message), from inbound/messages/</option>
+    <option value="request-">Submit request (submit-request), from outbound/</option>
+    <option value="result-">Result (result), from outbound/results/</option>
+    <option value="identity-">Binding record (binding-record), identity.json</option>
+    <option value="directory-">Peer directory (directory), directory.json</option>
+    <option value="roster-">Fleet roster (roster), roster.json</option>
+  </select>
+</p>
+
+<h2>2. Paste or load the document</h2>
+<p>
+  <label for="v-example">Load an example from the conformance fixtures:</label><br>
+  <select id="v-example"><option value="">Choose an example…</option></select>
+</p>
+<p>
+  <label for="v-file">Or open a file:</label><br>
+  <input type="file" id="v-file" accept=".json,application/json">
+</p>
+<p><label for="v-input" class="small">Document (JSON)</label>
+<textarea id="v-input" spellcheck="false" placeholder='{ "contract_version": "2", … }'></textarea></p>
+<p><button id="v-run" class="btn primary" type="button">Validate</button></p>
+
+<div id="v-result" aria-live="polite"></div>
+
+<h2>What a pass does not prove</h2>
+<div class="callout caution">
+  <p><strong>Passing the schemas is necessary, but it isn't conformance.</strong> The specification's Conformance section says that claiming conformance as a runtime or a connector takes both the fixture run <em>and</em> the operational checks prescribed for that role. A document validator can't see how a document was written, where it lives, or what the runtime did with it. Obligations outside any document check include:</p>
+  <ul>
+    <li>Sidecar attachment files existing as declared, with <code>size_bytes</code> and <code>sha256</code> matching the real bytes.</li>
+    <li>A <code>filename</code> is never treated as a path. <code>filename</code> and <code>media_type</code> are untrusted display strings, deliberately left unchecked beyond being non-empty.</li>
+    <li>Write ordering and atomicity (sidecars before the request, write-then-rename), and runtime-private staging outside the shared volume.</li>
+    <li>Path discipline on write and read: no following symlinks, pinned parent directories, create-exclusive writes, bounded reads.</li>
+    <li>Caps and allowlists: attachment types, sizes, quotas and recipients.</li>
+    <li>Enforcement by absence: a quarantined message produces no notice at all.</li>
+    <li>Connector tolerance of a read-only inbound tree, ingest-by-copy, and a single writer and a single drainer per namespace.</li>
+    <li>For the peer lane: who may write the peer tree, intake isolation, where signatures are verified, and at-most-once action.</li>
+  </ul>
+  <p>A green result also covers only the documents you check. Name every kind of document you emit, and show that one of each reached the validator.</p>
+</div>
+<p>More on conformance: <a href="implementers.html">For implementers</a>. The schemas, fixtures and the reference gate are in the <a href="https://github.com/proofpoint/amap-spec">amap-spec repository</a>, and the schemas this page checks against are in <a href="https://github.com/proofpoint/amap-spec/tree/main/schemas">schemas/</a>.</p>
+
+<script src="assets/validator-schemas.js"></script>
+<script src="assets/validator.js"></script>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-row">
+    <p>AMAP is an open specification, published under the Apache License 2.0. It was originated by Proofpoint and is open to every implementer.</p>
+    <ul class="footer-links"><li><a href="layers.html">MCP, A2A and AMAP</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="https://github.com/proofpoint/amap-spec">Specification on GitHub</a></li></ul>
+  </div>
+</footer>
+<script src="assets/site.js"></script>
+</body>
+</html>

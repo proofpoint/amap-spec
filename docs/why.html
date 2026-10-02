@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why AMAP · AMAP</title>
+<meta name="description" content="Every enterprise runs on email. AMAP lets agents take part in it, with trusted controls they can&#x27;t talk their way around.">
+<link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap header-row">
+    <a class="brand" href="index.html" aria-label="AMAP home">
+      <img src="assets/mark.svg" alt="" width="28" height="28">
+      <span class="brand-name">AMAP</span>
+      <span class="brand-sub">Agent Mailbox Access Protocol</span>
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <nav id="site-nav" class="site-nav" aria-label="Main">
+      <ul><li><a href="index.html">Home</a></li><li><a href="why.html" aria-current="page">Why AMAP</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="identity.html">Identity</a></li><li><a href="implementers.html">Implementers</a></li><li><a href="validator.html">Validator</a></li><li><a href="status.html">Status</a></li><li><a href="faq.html">FAQ</a></li><li><a href="get-involved.html">Get involved</a></li></ul>
+    </nav>
+  </div>
+</header>
+<main id="main" class="wrap">
+<p class="eyebrow">Why AMAP</p>
+<h1>Every enterprise, of any size, runs on email. Agents should be able to take part in it.</h1>
+<p class="lede">Email is the one channel every organisation already has, and the one that crosses organisational boundaries without prior arrangement. That makes it the natural place for agents to do real work. It is also where impersonation and pretexting already work against people.</p>
+
+<h2>The problem: give an agent a mailbox, and it inherits every pretext in it</h2>
+<p>Agents already work in email, mostly as personal assistants. Tools that let agents <em>send</em> mail are appearing, and they often put the mail credentials within the agent's reach.</p>
+<p>In email, authority is carried by text, and a pretext is also text. An agent that reads email meets every pretext a person meets. An agent that can also send with the organisation's credentials turns a successful pretext into an action, at machine speed, under a legitimate identity.</p>
+
+<figure class="diagram">
+  <p><span class="tag hyp">Illustrative</span> A routine supplier bank-detail change</p>
+  <div class="grid two">
+    <div class="card trust">
+      <h3>Legitimate</h3>
+      <ol class="steps">
+        <li>The supplier's accounts team writes: "Our remittance details have changed."</li>
+        <li>The buyer checks out of band.</li>
+        <li>Payment details are updated.</li>
+      </ol>
+    </div>
+    <div class="card warn">
+      <h3>Agent with a mailbox</h3>
+      <ol class="steps">
+        <li>A look-alike sender writes: "Urgent: use these new bank details today."</li>
+        <li>The agent acts on the text.</li>
+        <li>It confirms the change, from a legitimate address.</li>
+      </ol>
+      <p><strong>At machine speed: a new kind of insider.</strong></p>
+    </div>
+  </div>
+</figure>
+
+<div class="callout">
+  <p><strong>Before giving an agent a mailbox, you need controls it can't talk its way around.</strong></p>
+</div>
+
+<h2>What changes: decide what the agent sees, and what it sends, outside the agent</h2>
+<p>Assume the agent will sometimes be fooled, or compromised. Don't try to make it trustworthy. Limit what an untrusted agent can do, and make the limit structural, not behavioural.</p>
+
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Before: the agent holds the mailbox</th><th>After: trusted controls the agent can't bypass</th></tr></thead>
+  <tbody>
+    <tr><td>A look-alike "use these new bank details" message arrives.</td><td>The look-alike message is held back. The agent never sees it.</td></tr>
+    <tr><td>The agent is fooled.</td><td>If one gets through, for example from a genuinely compromised supplier account that screening cannot catch because the sender is real, the agent can still be fooled.</td></tr>
+    <tr><td>It confirms the change, as the organisation, to whoever it chooses.</td><td>It can ask to reply, but it can't send. An unfamiliar recipient means the reply waits for a person.<sup>1</sup></td></tr>
+  </tbody>
+</table>
+</div>
+<p class="small"><sup>1</sup> Assumes a policy that holds replies to unfamiliar recipients. AMAP fixes where that decision is made; the deployment decides what it is.</p>
+<div class="callout caution">
+  <p><strong>What the agent sees and what it sends are both decided outside it.</strong> AMAP governs the email channel. The agent's other tools, such as one that updates a vendor record, need their own isolation and safeguards.</p>
+</div>
+
+<h2>The value: one side can start today, and the other side changes nothing</h2>
+<p>AMAP adds nothing to the wire between organisations. A counterparty receives ordinary email, so it needs nothing but an email address. That includes the counterparties that will never deploy an agent.</p>
+
+<figure class="diagram">
+<svg viewBox="0 0 880 330" role="img" aria-labelledby="gate-t gate-d">
+  <title id="gate-t">Your organisation and another organisation, joined by ordinary email</title>
+  <desc id="gate-d">Inside your organisation, the agent sits in its sandbox and connects through AMAP to a trusted runtime drawn as a gate on the organisation's inside edge. Ordinary email connects the gate to the other organisation, which may be a person with an inbox, a person with an assistant, or its own agent. Required change: none.</desc>
+  <rect x="10" y="20" width="360" height="290" rx="6" class="d-bg s-trust" stroke-width="2" fill="none" stroke="#0f5c63"/>
+  <text x="28" y="48" class="d-trust" font-size="14" font-weight="700" fill="#0f5c63">YOUR ORGANISATION</text>
+  <rect x="34" y="120" width="150" height="90" rx="8" class="d-agent-bg s-agent" stroke-width="1.5" fill="#fbf1e1" stroke="#8a5a12"/>
+  <text x="109" y="160" text-anchor="middle" class="d-agent" font-size="18" font-weight="700" fill="#8a5a12">Agent</text>
+  <text x="109" y="184" text-anchor="middle" class="d-ink" font-size="13" fill="#1b2430">in its sandbox</text>
+  <line x1="186" y1="165" x2="262" y2="165" class="s-muted" stroke-width="2" stroke="#5b6573"/>
+  <text x="224" y="152" text-anchor="middle" class="d-ink" font-size="13" font-weight="700" fill="#1b2430">AMAP</text>
+  <rect x="264" y="60" width="106" height="250" class="d-trust" fill="#0f5c63"/>
+  <text x="317" y="160" text-anchor="middle" class="d-bg" font-size="14" font-weight="700" fill="#ffffff">TRUSTED</text>
+  <text x="317" y="180" text-anchor="middle" class="d-bg" font-size="14" font-weight="700" fill="#ffffff">RUNTIME</text>
+  <text x="317" y="212" text-anchor="middle" class="d-bg" font-size="11" fill="#ffffff">your policy,</text>
+  <text x="317" y="228" text-anchor="middle" class="d-bg" font-size="11" fill="#ffffff">your people</text>
+  <line x1="372" y1="165" x2="508" y2="165" class="s-trust" stroke-width="3" stroke="#0f5c63"/>
+  <text x="440" y="150" text-anchor="middle" class="d-trust" font-size="15" font-weight="700" fill="#0f5c63">email</text>
+  <text x="440" y="192" text-anchor="middle" class="d-muted" font-size="12" fill="#5b6573">ordinary email,</text>
+  <text x="440" y="208" text-anchor="middle" class="d-muted" font-size="12" fill="#5b6573">nothing added</text>
+  <rect x="510" y="20" width="360" height="290" rx="6" class="d-panel s-rule" stroke-width="1.5" fill="#f3f5f8" stroke="#d5dae1"/>
+  <text x="528" y="48" class="d-ink" font-size="14" font-weight="700" fill="#1b2430">THE OTHER ORGANISATION</text>
+  <text x="528" y="68" class="d-muted" font-size="12" fill="#5b6573">any size, its choice</text>
+  <rect x="528" y="86" width="322" height="44" rx="6" class="d-bg s-rule" stroke-width="1" fill="#ffffff" stroke="#d5dae1"/>
+  <text x="544" y="114" class="d-ink" font-size="14" fill="#1b2430">A person with an inbox</text>
+  <rect x="528" y="140" width="322" height="44" rx="6" class="d-bg s-rule" stroke-width="1" fill="#ffffff" stroke="#d5dae1"/>
+  <text x="544" y="168" class="d-ink" font-size="14" fill="#1b2430">A person with an assistant</text>
+  <rect x="528" y="194" width="322" height="44" rx="6" class="d-bg s-rule" stroke-width="1" fill="#ffffff" stroke="#d5dae1"/>
+  <text x="544" y="222" class="d-ink" font-size="14" fill="#1b2430">Their own agent, with AMAP or not</text>
+  <text x="528" y="280" class="d-ink" font-size="17" font-weight="700" fill="#1b2430">Required change: none</text>
+</svg>
+<figcaption>The gate on your organisation's edge is the trusted runtime, running your policy. AMAP is the link behind it, between the agent and the runtime. Nothing crosses to the other side but ordinary email.</figcaption>
+</figure>
+
+<div class="grid three">
+  <div class="card"><h3>No coordination needed</h3><p>You don't need a bilateral agreement, a shared platform or a new integration. Each side automates at its own pace.</p></div>
+  <div class="card"><h3>No trust inherited</h3><p>Their agent is just an external sender, and your policy decides. Authenticating its domain proves where it came from, not what it may commit anyone to.</p></div>
+  <div class="card"><h3>Honest about what's proven</h3><p><span class="tag spec">Specified</span> "No change required" is a property of the protocol. <span class="tag hyp">Hypothesis</span> The value in practice across independent organisations has not yet been tested.</p></div>
+</div>
+
+<div class="cta-row">
+  <a class="btn primary" href="how-it-works.html">How it works</a>
+  <a class="btn secondary" href="status.html">What exists today</a>
+</div>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-row">
+    <p>AMAP is an open specification, published under the Apache License 2.0. It was originated by Proofpoint and is open to every implementer.</p>
+    <ul class="footer-links"><li><a href="layers.html">MCP, A2A and AMAP</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="https://github.com/proofpoint/amap-spec">Specification on GitHub</a></li></ul>
+  </div>
+</footer>
+<script src="assets/site.js"></script>
+</body>
+</html>

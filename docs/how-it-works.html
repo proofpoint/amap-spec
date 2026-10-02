@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How it works · AMAP</title>
+<meta name="description" content="AMAP puts the authority where the agent can&#x27;t reach it: a trusted runtime holds the credentials and decides, and the agent can only ask.">
+<link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap header-row">
+    <a class="brand" href="index.html" aria-label="AMAP home">
+      <img src="assets/mark.svg" alt="" width="28" height="28">
+      <span class="brand-name">AMAP</span>
+      <span class="brand-sub">Agent Mailbox Access Protocol</span>
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <nav id="site-nav" class="site-nav" aria-label="Main">
+      <ul><li><a href="index.html">Home</a></li><li><a href="why.html">Why AMAP</a></li><li><a href="how-it-works.html" aria-current="page">How it works</a></li><li><a href="identity.html">Identity</a></li><li><a href="implementers.html">Implementers</a></li><li><a href="validator.html">Validator</a></li><li><a href="status.html">Status</a></li><li><a href="faq.html">FAQ</a></li><li><a href="get-involved.html">Get involved</a></li></ul>
+    </nav>
+  </div>
+</header>
+<main id="main" class="wrap">
+<p class="eyebrow">How it works</p>
+<h1>AMAP puts the authority where the agent can't reach it</h1>
+<p class="lede">AMAP, the Agent Mailbox Access Protocol, is an open specification: a wire contract between a trusted email runtime and a connector that sits beside an agent. The runtime holds the authority. The agent can only ask.</p>
+
+<h2>Three zones</h2>
+<figure class="diagram">
+<svg viewBox="0 0 960 380" role="img" aria-labelledby="zones-t zones-d">
+  <title id="zones-t">The three zones of an AMAP deployment</title>
+  <desc id="zones-d">On the left, email sits outside the trust boundary. In the middle, the trusted runtime holds mail credentials, sending identity, recipient policy and the audit log, and sends policy misses to a person. On the right, the agent side: an agent sandbox containing the connector, which offers MCP tools, and the agent. The AMAP interface, with inbound, outbound and results lanes, straddles the boundary between the runtime and the agent side.</desc>
+  <line x1="170" y1="40" x2="170" y2="360" class="s-ink" stroke-width="2" stroke-dasharray="7 6" stroke="#1b2430"/>
+  <line x1="480" y1="40" x2="480" y2="105" class="s-ink" stroke-width="2" stroke-dasharray="7 6" stroke="#1b2430"/>
+  <line x1="480" y1="310" x2="480" y2="360" class="s-ink" stroke-width="2" stroke-dasharray="7 6" stroke="#1b2430"/>
+  <text x="85" y="30" text-anchor="middle" class="d-muted" font-size="13" font-weight="700" fill="#5b6573">OUTSIDE</text>
+  <text x="310" y="30" text-anchor="middle" class="d-trust" font-size="13" font-weight="700" fill="#0f5c63">TRUSTED</text>
+  <text x="495" y="30" class="d-agent" font-size="13" font-weight="700" fill="#8a5a12">AGENT SIDE · no security property depends on it</text>
+  <rect x="15" y="150" width="130" height="100" rx="8" class="d-bg s-rule" stroke-width="1.5" fill="#ffffff" stroke="#d5dae1"/>
+  <text x="80" y="192" text-anchor="middle" class="d-ink" font-size="17" font-weight="700" fill="#1b2430">Email</text>
+  <text x="80" y="214" text-anchor="middle" class="d-muted" font-size="12" fill="#5b6573">standard protocols</text>
+  <line x1="145" y1="185" x2="200" y2="185" class="s-trust" stroke-width="2" stroke="#0f5c63"/>
+  <line x1="145" y1="215" x2="200" y2="215" class="s-trust" stroke-width="2" stroke="#0f5c63"/>
+  <rect x="200" y="105" width="220" height="205" class="d-trust-bg s-trust" stroke-width="2" fill="#e3f0f0" stroke="#0f5c63"/>
+  <text x="215" y="132" class="d-trust" font-size="16" font-weight="700" fill="#0f5c63">Trusted runtime</text>
+  <text x="215" y="160" class="d-ink" font-size="14" fill="#1b2430">• Mail credentials</text>
+  <text x="215" y="184" class="d-ink" font-size="14" fill="#1b2430">• Sending identity</text>
+  <text x="215" y="208" class="d-ink" font-size="14" fill="#1b2430">• Recipient policy</text>
+  <text x="215" y="232" class="d-ink" font-size="14" fill="#1b2430">• Screening</text>
+  <text x="215" y="256" class="d-ink" font-size="14" fill="#1b2430">• Audit log</text>
+  <line x1="310" y1="310" x2="310" y2="330" class="s-human" stroke-width="2" stroke="#5b3f86"/>
+  <rect x="215" y="330" width="190" height="40" rx="8" class="d-human-bg s-human" stroke-width="1.5" fill="#eee8f6" stroke="#5b3f86"/>
+  <text x="310" y="355" text-anchor="middle" class="d-human" font-size="13" font-weight="700" fill="#5b3f86">policy miss → a person decides</text>
+  <rect x="430" y="105" width="100" height="205" class="d-panel s-rule" stroke-width="1.5" fill="#f3f5f8" stroke="#d5dae1"/>
+  <text x="480" y="130" text-anchor="middle" class="d-ink" font-size="14" font-weight="700" fill="#1b2430">AMAP</text>
+  <text x="480" y="147" text-anchor="middle" class="d-muted" font-size="11" fill="#5b6573">interface</text>
+  <rect x="440" y="165" width="80" height="30" rx="5" class="d-bg s-rule" fill="#ffffff" stroke="#d5dae1"/><text x="480" y="185" text-anchor="middle" class="d-ink" font-size="12" font-weight="700" fill="#1b2430">inbound/</text>
+  <rect x="440" y="210" width="80" height="30" rx="5" class="d-bg s-rule" fill="#ffffff" stroke="#d5dae1"/><text x="480" y="230" text-anchor="middle" class="d-ink" font-size="12" font-weight="700" fill="#1b2430">outbound/</text>
+  <rect x="440" y="255" width="80" height="30" rx="5" class="d-bg s-rule" fill="#ffffff" stroke="#d5dae1"/><text x="480" y="275" text-anchor="middle" class="d-ink" font-size="12" font-weight="700" fill="#1b2430">results/</text>
+  <line x1="420" y1="180" x2="440" y2="180" class="s-trust" stroke-width="2" stroke="#0f5c63"/>
+  <line x1="420" y1="225" x2="440" y2="225" class="s-agent" stroke-width="2" stroke="#8a5a12"/>
+  <line x1="420" y1="270" x2="440" y2="270" class="s-trust" stroke-width="2" stroke="#0f5c63"/>
+  <rect x="555" y="80" width="390" height="250" class="d-bg s-agent" stroke-width="1.5" stroke-dasharray="6 5" fill="#ffffff" stroke="#8a5a12"/>
+  <text x="570" y="104" class="d-agent" font-size="13" font-weight="700" fill="#8a5a12">Agent sandbox <tspan class="d-muted" font-weight="400" fill="#5b6573">· reaches only its own namespace</tspan></text>
+  <rect x="575" y="130" width="160" height="170" class="d-agent-bg s-agent" stroke-width="1.5" fill="#fbf1e1" stroke="#8a5a12"/>
+  <text x="655" y="158" text-anchor="middle" class="d-agent" font-size="15" font-weight="700" fill="#8a5a12">Connector</text>
+  <text x="655" y="186" text-anchor="middle" class="d-ink" font-size="13" fill="#1b2430">MCP tools:</text>
+  <text x="655" y="206" text-anchor="middle" class="d-ink" font-size="13" fill="#1b2430">read inbox</text>
+  <text x="655" y="226" text-anchor="middle" class="d-ink" font-size="13" fill="#1b2430">submit request</text>
+  <text x="655" y="258" text-anchor="middle" class="d-muted" font-size="12" font-style="italic" fill="#5b6573">no send capability</text>
+  <rect x="790" y="170" width="130" height="90" rx="8" class="d-agent-bg s-agent" stroke-width="1.5" fill="#fbf1e1" stroke="#8a5a12"/>
+  <text x="855" y="221" text-anchor="middle" class="d-agent" font-size="17" font-weight="700" fill="#8a5a12">Agent</text>
+  <line x1="530" y1="215" x2="575" y2="215" class="s-muted" stroke-width="2" stroke="#5b6573"/>
+  <line x1="735" y1="215" x2="790" y2="215" class="s-muted" stroke-width="2" stroke="#5b6573"/>
+  <text x="495" y="352" class="d-trust" font-size="12" font-weight="700" font-style="italic" fill="#0f5c63">Credentials and send authority never cross this line</text>
+</svg>
+<figcaption>The runtime is the only trusted party, with an untrusted side on each flank. It guards in both directions: what reaches the agent, and what leaves.</figcaption>
+</figure>
+
+<div class="grid three">
+  <div class="card"><h3>Outside</h3><p>Email, over standard protocols. It sits outside the trust boundary. A production runtime would typically use IMAP and SMTP; the reference runtime is transport-free, the specification requires neither, and AMAP adds nothing to the wire between organisations.</p></div>
+  <div class="card trust"><h3>Trusted runtime</h3><p>It holds the mail credentials and the sending identity, screens what reaches the agent, evaluates recipient policy, writes a result for every request, and keeps an audit log the agent cannot write.</p></div>
+  <div class="card agent"><h3>Agent side</h3><p>The agent runs in a sandbox and reaches only its connector, which offers ordinary MCP tools. Its only outbound act is to drop an inert request. A file drop carries no capability.</p></div>
+</div>
+
+<div class="callout">
+  <p><span class="tag spec">Specified · § Architecture</span> "No security property may depend on the agent or connector behaving… A compromised agent or connector can at most write a well-formed request the runtime then refuses."</p>
+</div>
+
+<h2>The seam: a per-agent filesystem tree</h2>
+<p>The AMAP interface is a runtime-owned filesystem namespace for each agent. It straddles the boundary: the runtime writes into <code>inbound/</code> and <code>results/</code>, and the connector writes inert requests into <code>outbound/</code>. The runtime treats everything in the tree as untrusted input.</p>
+<p>Because the channel is a filesystem namespace rather than an API the agent could call, a request grants nothing on its own. The runtime decides whether anything is sent, to whom, and how. The connector offers the agent ordinary MCP tools, so AMAP sits <em>behind</em> MCP rather than competing with it.</p>
+
+<h2>Walkthrough: the bank-detail pretext</h2>
+<ol class="steps">
+  <li><strong>A look-alike sender's "use these new bank details" arrives</strong> from email, outside the trust boundary.</li>
+  <li><strong>Screening may hold it back.</strong> <span class="tag spec">§ Inbound</span> A message the runtime quarantines produces no notice at all, so the agent never learns it existed. How well messages are screened is the runtime's job; the specification does not grade it.</li>
+  <li><strong>If it gets through,</strong> the runtime delivers it into <code>inbound/</code> with a runtime-asserted attachment disposition and sender standing.</li>
+  <li><strong>The fooled agent asks to reply.</strong> Every submit request names its recipients (<code>to</code> is required). The agent can name anyone. It cannot reach the credentials or choose its sending identity.</li>
+  <li><strong>The runtime evaluates recipient policy</strong> over exactly the recipients it will transmit to, and it never adds or substitutes one (§ Submit Request). A recipient that policy permits is accepted without a human.</li>
+  <li><strong>A policy miss produces <code>queued_for_human</code></strong>: never a silent send, never a silent drop (§ Result). Under an allowlist, a look-alike sender is a new external contact, so a person sees the held reply and makes the out-of-band check.</li>
+</ol>
+
+<h2>The honest edges</h2>
+<div class="grid two">
+  <div class="card"><h3>Where, not what</h3><p>AMAP fixes <em>where</em> the decision is made; the deployment decides <em>what</em> it is. A policy that trusts whoever started a thread could let a reply to a look-alike sender through, because a look-alike domain can pass authentication for itself.</p></div>
+  <div class="card"><h3>Email only</h3><p>AMAP governs the agent's email authority. If the agent also holds a tool that can update a vendor record, that tool needs its own isolation and safeguards.</p></div>
+  <div class="card"><h3>Not a cure for prompt injection</h3><p>AMAP doesn't make delivered content safe, and it doesn't stop an agent being fooled. It limits what a fooled agent can do by email.</p></div>
+  <div class="card"><h3>What AMAP is not</h3><p>It is not a mail transport, not agent-to-agent RPC, and not a policy language. It fixes the vocabulary of the seam, never the computation behind it.</p></div>
+</div>
+
+<h2>Also specified</h2>
+<ul>
+  <li><strong>Attachment dispositions.</strong> Each attachment is labelled <code>clean</code>, <code>stripped</code>, <code>quarantined</code> or <code>unscanned</code>. This is the runtime's assertion, not a scanner verdict, and bytes are published only for <code>clean</code>.</li>
+  <li><strong>Exactly one result</strong> for every request the runtime consumes: <code>accepted</code>, <code>queued_for_human</code> or <code>rejected</code>.</li>
+  <li><strong>Filesystem discipline:</strong> atomic writes, refusing to follow symlinks, rejecting path traversal, stripping header injection, and a single writer and single drainer.</li>
+  <li><strong>Version refusal.</strong> A document with an unrecognised major version is refused, never guessed at. It fails closed.</li>
+  <li><strong>Direction decides openness.</strong> Documents written by the runtime are open to extension. Documents written by the agent are closed, so an unrecognised field is rejected visibly.</li>
+</ul>
+
+<div class="cta-row">
+  <a class="btn primary" href="implementers.html">For implementers</a>
+  <a class="btn secondary" href="identity.html">Identity and open questions</a>
+</div>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-row">
+    <p>AMAP is an open specification, published under the Apache License 2.0. It was originated by Proofpoint and is open to every implementer.</p>
+    <ul class="footer-links"><li><a href="layers.html">MCP, A2A and AMAP</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="https://github.com/proofpoint/amap-spec">Specification on GitHub</a></li></ul>
+  </div>
+</footer>
+<script src="assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!-- title: Status | description: What exists today, what doesn't yet, and what's next for AMAP: v3.1.0 DRAFT, an Internet-Draft ready for IETF submission, four public repositories. -->
+<p class="eyebrow">Status</p>
+<h1>What exists, and what does not yet</h1>
+<p class="lede">Enough to invite scrutiny, not enough to claim adoption.</p>
+
+<div class="grid four">
+  <div class="card trust"><h3>v3.1.0</h3><p>The AMAP specification, DRAFT, with wire <code>contract_version</code> "2". It has {{FIXTURES}} conformance fixtures and a validator that uses only the standard library.</p></div>
+  <div class="card trust"><h3>{{DOC_TYPES}}</h3><p>Document types, each with a published JSON Schema and fixtures that must pass and must fail.</p></div>
+  <div class="card trust"><h3>0</h3><p>Third-party dependencies in the Claude Code connector that runs beside the agent: small enough to audit.</p></div>
+  <div class="card trust"><h3>10 agents · 1 week</h3><p>Claude agents working together through AMAP, and finding real defects in the specification.</p></div>
+</div>
+
+<h2>Open, so it can be checked</h2>
+<p>All four repositories are public under the Apache License 2.0:</p>
+<ul>
+  <li><a href="https://github.com/proofpoint/amap-spec">amap-spec</a>: the specification, JSON Schemas, conformance fixtures, and the Internet-Draft rendering</li>
+  <li><a href="https://github.com/proofpoint/amap-router-local">amap-router-local</a>: the reference runtime</li>
+  <li><a href="https://github.com/proofpoint/amap-connector-claude">amap-connector-claude</a>: the Claude Code connector</li>
+  <li><a href="https://github.com/proofpoint/amap-deploy-sandy">amap-deploy-sandy</a>: a working deployment of the two on one host, with <a href="https://proofpoint.github.io/amap-deploy-sandy/">a walkthrough</a> that gets two agents talking</li>
+</ul>
+<p>Anyone can test any vendor's runtime or connector against the public fixtures, plus the operational checks the specification requires. Passing the fixtures alone isn't conformance (§ Conformance). See <a href="implementers.html">For implementers</a>.</p>
+
+<h2>Built with itself</h2>
+<ol class="steps">
+  <li><strong>Early AMAP carried the work of building AMAP.</strong> Agents developing the specification and the reference implementations coordinated through early versions of the protocol.</li>
+  <li><strong>The specification and its implementations matured together.</strong> The specification, the reference runtime and the Claude Code connector grew up side by side.</li>
+  <li><strong>Fleet week.</strong> Once the protocol and implementations could support it, ten sandboxed Claude agents, each owning a repository, worked together through AMAP for one week. They ran a conformance sweep, a security audit and a multi-repository release.</li>
+</ol>
+<p>The fleet found defects in the specification itself, not only in code:</p>
+<ul>
+  <li>Two clauses of the submit-request section collided: reply binding versus "never transmit to an unnamed address".</li>
+  <li>A validator ignored its arguments and reported green for the wrong reason.</li>
+  <li>Mutation testing showed that only 44 of 301 schema constraints were pinned by any fixture.</li>
+</ul>
+<p class="small">This is evidence of agent-to-agent use under one operator. It is not yet evidence of adoption across organisations.</p>
+
+<h2>Next</h2>
+<div class="grid three">
+  <div class="card"><h3>The IETF</h3><p>The AMAP Internet-Draft is ready for submission to the IETF. It has not yet been submitted, and AMAP is not an IETF standard.</p></div>
+  <div class="card"><h3>Partners</h3><p>We're looking for development and interop partners, starting with a first deployment across independent organisations. There isn't one yet.</p></div>
+  <div class="card"><h3>Agent platforms</h3><p>We're seeking collaboration across agent platforms, as more connectors mean a stronger test of the specification.</p></div>
+</div>
+
+<div class="cta-row">
+  <a class="btn primary" href="get-involved.html">Get involved</a>
+  <a class="btn secondary" href="https://github.com/proofpoint/amap-spec">Read the specification</a>
+</div>
