@@ -14,7 +14,7 @@
 # artifact, never the mechanism.
 REPO := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/..)
 
-NAME := draft-amap-00
+NAME := draft-rapp-amap-00
 SRC  := $(REPO)/draft/draft-amap.xml
 OUT  := $(REPO)/dist/$(NAME)
 
