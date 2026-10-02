@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FAQ · AMAP</title>
+<meta name="description" content="Common questions about AMAP: what it is and isn&#x27;t, what counterparties need, what it does and doesn&#x27;t protect against.">
+<link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap header-row">
+    <a class="brand" href="index.html" aria-label="AMAP home">
+      <img src="assets/mark.svg" alt="" width="28" height="28">
+      <span class="brand-name">AMAP</span>
+      <span class="brand-sub">Agent Mailbox Access Protocol</span>
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <nav id="site-nav" class="site-nav" aria-label="Main">
+      <ul><li><a href="index.html">Home</a></li><li><a href="ietf.html">At the IETF</a></li><li><a href="why.html">Why AMAP</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="identity.html">Identity</a></li><li><a href="implementers.html">Implementers</a></li><li><a href="validator.html">Validator</a></li><li><a href="status.html">Status</a></li><li><a href="faq.html" aria-current="page">FAQ</a></li><li><a href="get-involved.html">Get involved</a></li></ul>
+    </nav>
+  </div>
+</header>
+<main id="main" class="wrap">
+<p class="eyebrow">FAQ</p>
+<h1>Frequently asked questions</h1>
+
+<details open>
+  <summary>Is AMAP a new mail protocol?</summary>
+  <p>No. AMAP is not a mail transport, not agent-to-agent RPC, and not a policy language. It specifies the seam between an agent's connector and a trusted runtime that does the mailing. Between organisations there is only ordinary email, over standard protocols.</p>
+</details>
+<details>
+  <summary>Does my counterparty need AMAP?</summary>
+  <p>No. AMAP adds nothing to the wire, so a counterparty needs nothing but an email address. It can be a person with an inbox, a person with an assistant, or its own agent, with AMAP or without. One side can start today, and the other side changes nothing.</p>
+</details>
+<details>
+  <summary>Does AMAP stop prompt injection or business email compromise?</summary>
+  <p>No, and it doesn't claim to. It assumes the agent will sometimes be fooled and limits what a fooled agent can do by email. A trusted runtime can hold a pretext back before the agent sees it. If one gets through, the agent can only ask to reply, and the runtime decides. AMAP governs the email channel only. The agent's other tools need their own safeguards.</p>
+</details>
+<details>
+  <summary>Can't a bad actor sign messages too?</summary>
+  <p>Yes, just as with DKIM. A signature is a verifiable identifier to hang reputation on, not proof of legitimacy. Today AMAP's signed statements run only between configured peer runtimes. Extending verification to any recipient, and building reputation on it, is whitespace. See <a href="identity.html">Identity</a>.</p>
+</details>
+<details>
+  <summary>What does the agent actually see?</summary>
+  <p>Only what the runtime delivers into its <code>inbound/</code> tree. Each delivered message carries runtime-asserted labels, such as sender standing and attachment dispositions. A message the runtime quarantines produces no notice at all (§ Inbound). Attachment bytes are published only for attachments the runtime marks <code>clean</code>, and that label is the runtime's assertion, not a scanner verdict.</p>
+</details>
+<details>
+  <summary>Can the agent choose who it emails?</summary>
+  <p>It can <em>name</em> anyone, since every request names its recipients. It can't decide who actually receives anything. The runtime evaluates recipient policy over exactly the recipients it will transmit to, and it never adds or substitutes one (§ Submit Request).</p>
+</details>
+<details>
+  <summary>What happens on a policy miss?</summary>
+  <p>The request results in <code>queued_for_human</code>. It is never silently sent and never silently dropped (§ Result). A recipient that policy permits is accepted without a human, so a person is involved only for the exceptions.</p>
+</details>
+<details>
+  <summary>What if the runtime is compromised?</summary>
+  <p>Then the trust boundary has moved. The runtime is the one trusted party by design, so that's where hardening belongs, and it's a much smaller, more auditable target than a model. AMAP's invariant is that no security property depends on the agent or connector behaving.</p>
+</details>
+<details>
+  <summary>Why a filesystem, not an API?</summary>
+  <p>Because a file drop carries no capability. The agent's only outbound act is to write an inert request into a runtime-owned namespace. There is nothing for it to call and no credential to misuse. The runtime reads the request, validates it, applies policy and writes exactly one result.</p>
+</details>
+<details>
+  <summary>How does AMAP relate to MCP and A2A?</summary>
+  <p>They sit at different layers. In the Claude Code connector, the agent sees ordinary MCP tools, and AMAP is the specification behind them. A2A connects agent services directly. See <a href="layers.html">MCP, A2A and AMAP</a>.</p>
+</details>
+<details>
+  <summary>Can I use AMAP with my agent platform?</summary>
+  <p>Yes, if a connector exists for it or you write one. The Claude Code connector is public. A connector needs no credentials, and <a href="implementers.html">the fixtures</a> let you prove conformance without the other side present.</p>
+</details>
+<details>
+  <summary>Is AMAP an IETF standard?</summary>
+  <p>No. It is an early individual Internet-Draft, and it has not yet been submitted. See <a href="ietf.html">AMAP at the IETF</a>.</p>
+</details>
+<details>
+  <summary>Why bring it to the IETF?</summary>
+  <p>Because the problems it touches are interoperability problems. Agent platforms and mail infrastructure are built by different parties and need a common boundary, and mail from agents will need sender identity that recipients elsewhere can check. Neither works if one company decides it. We want review, collaborators, and an open process to own the result.</p>
+</details>
+<details>
+  <summary>AMAP is a local filesystem interface. Is that really Internet protocol work?</summary>
+  <p>It's a fair question, and we'd like the community's view. The boundary is where independently built components meet, its peer profile already carries signed statements between hosts, and agent sender identity in email is plainly IETF territory. It may turn out that the IETF piece is the cross-organisation identity, and the local boundary belongs in an applicability statement. See <a href="ietf.html">AMAP at the IETF</a>.</p>
+</details>
+<details>
+  <summary>Isn't this already fully designed?</summary>
+  <p>No. The draft has been through several internal revisions, because its reference implementations were built alongside it, but it is one team's thinking. We expect review to change it: its terminology, its versioning, and possibly its scope.</p>
+</details>
+<details>
+  <summary>Who controls AMAP, and is it free to use?</summary>
+  <p>The AMAP specification, schemas, fixtures and reference implementations are published under the Apache License 2.0. Proofpoint originated AMAP, and it is open to every implementer. No one needs a particular vendor's runtime to conform or to interoperate. Today changes are made in the public repository; if the IETF takes up the work, a working group will hold change control. See <a href="get-involved.html">Get involved</a>.</p>
+</details>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-row">
+    <p>AMAP is an open specification, published under the Apache License 2.0. It was originated by Proofpoint and is open to every implementer.</p>
+    <ul class="footer-links"><li><a href="layers.html">MCP, A2A and AMAP</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="https://github.com/proofpoint/amap-spec">Specification on GitHub</a></li></ul>
+  </div>
+</footer>
+<script src="assets/site.js"></script>
+</body>
+</html>

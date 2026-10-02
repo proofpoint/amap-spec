@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Glossary · AMAP</title>
+<meta name="description" content="The terms the AMAP specification uses, with where each is defined.">
+<link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap header-row">
+    <a class="brand" href="index.html" aria-label="AMAP home">
+      <img src="assets/mark.svg" alt="" width="28" height="28">
+      <span class="brand-name">AMAP</span>
+      <span class="brand-sub">Agent Mailbox Access Protocol</span>
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <nav id="site-nav" class="site-nav" aria-label="Main">
+      <ul><li><a href="index.html">Home</a></li><li><a href="ietf.html">At the IETF</a></li><li><a href="why.html">Why AMAP</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="identity.html">Identity</a></li><li><a href="implementers.html">Implementers</a></li><li><a href="validator.html">Validator</a></li><li><a href="status.html">Status</a></li><li><a href="faq.html">FAQ</a></li><li><a href="get-involved.html">Get involved</a></li></ul>
+    </nav>
+  </div>
+</header>
+<main id="main" class="wrap">
+<p class="eyebrow">Reference</p>
+<h1>Glossary</h1>
+<p class="lede">The terms used across this site and the AMAP specification. A reference such as "§ Inbound" names a section of <a href="https://github.com/proofpoint/amap-spec/tree/main/dist">the AMAP Internet-Draft</a> (v3.1.0 DRAFT), and "profile" means <a href="https://github.com/proofpoint/amap-spec/blob/main/spec/peer-origin.md"><code>spec/peer-origin.md</code></a>.</p>
+
+<dl class="glossary">
+  <dt id="agent">Agent</dt>
+  <dd>The AI agent on whose behalf mail is read and requested. <strong>Untrusted</strong>: it holds only what its connector surfaces, and reaches only the connector and its sandbox (§ Architecture).</dd>
+
+  <dt id="attestation">Attestation</dt>
+  <dd>An optional member of a result: the identity stamp the runtime applied to the outbound message. Its <code>form</code> is <code>self-stamp</code> or <code>verifiable</code>. A connector surfaces it but never verifies it (§ Result). It stamps sender identity; it does not mark a message as written by an AI.</dd>
+
+  <dt id="audit-log">Audit log</dt>
+  <dd><code>audit/log.jsonl</code>: an append-only, per-agent action log that only the runtime writes. The connector never writes it. The specification does not define its contents (§ Volume Layout).</dd>
+
+  <dt id="binding-record">Binding record</dt>
+  <dd><code>identity.json</code> at the volume root, naming which mailbox a volume is bound to. It is optional and <strong>informational, not authoritative</strong>: the agent can edit it, so it is never consulted for enforcement (§ Binding Record). Its schema is closed as an anti-secret-leak lint.</dd>
+
+  <dt id="conformance-class">Conformance class</dt>
+  <dd><em>Runtime</em> or <em>connector</em>, with a peer-origin sub-class of each. Claiming one requires both the fixture run and the prescribed operational check for that class (§ Conformance; profile §8).</dd>
+
+  <dt id="connector">Connector</dt>
+  <dd>The per-agent component on the agent side of the boundary. It holds nothing credentialed, reads what the runtime delivers, and writes requests into <code>outbound/</code> (§ Architecture). No security property may depend on it behaving.</dd>
+
+  <dt id="content-ref">content_ref</dt>
+  <dd>On an inbound attachment descriptor, the runtime's access grant to published bytes, in the form <code>&lt;notice_id&gt;.attachments/&lt;index&gt;</code>. It is present only for bytes the runtime asserts <code>clean</code>. A connector must never emit one outbound (§ Submit Request; § Inbound).</dd>
+
+  <dt id="contract-version">contract_version</dt>
+  <dd>The wire major version carried in every document, currently <code>"2"</code>. It is separate from the specification's own SemVer (v3.1.0). Read it before schema validation: a mismatched major is a version refusal and fails closed (§ Versioning and Conformance).</dd>
+
+  <dt id="deliver-notice">Deliver-notice</dt>
+  <dd>The runtime's pointer-plus-summary for one delivered mail message, at <code>inbound/notices/notice-&lt;id&gt;.json</code>, with <code>kind: "deliver"</code> (§ Inbound).</dd>
+
+  <dt id="directory">Directory</dt>
+  <dd><code>directory.json</code> at the namespace root: an optional, runtime-written projection of which peers an agent may address (§ Peer Directory). It never lists who may address the agent.</dd>
+
+  <dt id="disposition">Disposition</dt>
+  <dd>The runtime's assertion about an inbound attachment: <code>clean</code>, <code>stripped</code>, <code>quarantined</code> or <code>unscanned</code>. It is not a scanner verdict. A runtime that cannot decide must not assert <code>clean</code> (§ Inbound).</dd>
+
+  <dt id="drop-box">Drop-box</dt>
+  <dd>The <code>outbound/</code> directory where the connector writes submit-requests. A file drop carries no capability (§ Architecture; § Submit Request).</dd>
+
+  <dt id="enforcement-by-absence">Enforcement by absence</dt>
+  <dd>Quarantined or unverified mail produces no notice, and a withheld body is not spooled. The agent never sees it, and a read returns "not resolved", with no fallback fetch (§ Inbound).</dd>
+
+  <dt id="fixture">Fixture</dt>
+  <dd>A golden document under <code>fixtures/valid/</code> (must pass) or <code>fixtures/invalid/</code> (must fail): 89 in all. The schema is chosen by filename prefix. The fixtures stand in for the other side of the seam: a field with no fixture is one no implementer can prove they handle (§ Versioning and Conformance).</dd>
+
+  <dt id="fleet-roster">Fleet roster</dt>
+  <dd><code>roster.json</code>, written by the runtime where the deployment designates: the instances the runtime has admitted. Existence is not authorisation: being listed never means a request to that address will be accepted. It is never a source of the reader's own identity, and an unknown roster is not an empty fleet (§ Fleet Roster).</dd>
+  <dt id="inbound-message">Inbound message (spool)</dt>
+  <dd>The full delivered message, including <code>body_text</code> and the recipient list (<code>to</code>, <code>cc</code>), at <code>inbound/messages/notice-&lt;id&gt;.json</code>. The body is untrusted content (§ Inbound).</dd>
+
+  <dt id="lane">Lane</dt>
+  <dd>Another word for a tree: <em>mail</em> (<code>inbound/</code>) or <em>peer</em> (<code>peer/</code>).</dd>
+
+  <dt id="namespace">Namespace</dt>
+  <dd>The per-agent directory <code>&lt;agent-id&gt;/</code> that the runtime mounts into an agent's sandbox. The runtime assigns the id, and attribution is the namespace a file arrived in (§ Volume Layout).</dd>
+
+  <dt id="open-closed">Open and closed schemas</dt>
+  <dd>Runtime-authored documents are <em>open</em>: a consumer ignores members it does not recognise. The agent-authored submit-request is <em>closed</em>: an unrecognised member is <code>rejected</code>. The binding record is closed as a lint (§ Versioning and Conformance).</dd>
+
+  <dt id="origin-class">Origin class</dt>
+  <dd>What the runtime asserts about where a document came from, established solely by the tree it was read from and never by any member of the document (§ Volume Layout, tree rules; profile §2).</dd>
+
+  <dt id="outcome">Outcome</dt>
+  <dd>The authoritative verdict on a result: <code>accepted</code> (the provider accepted it for relay), <code>queued_for_human</code> or <code>rejected</code> (§ Result).</dd>
+
+  <dt id="peer">Peer</dt>
+  <dd>Another agent of the same principal, reached through the peer-origin profile's <code>peer/</code> tree. On a peer notice, <code>message.from</code> is a bare addr-spec asserted by the runtime (profile §3).</dd>
+
+  <dt id="provenance">Provenance</dt>
+  <dd>An optional, advisory label on a deliver-notice's message, such as <code>external</code> or <code>internal</code>. It is an open vocabulary and never grounds to drop a notice or derive origin class (§ Inbound).</dd>
+
+  <dt id="queued-for-human">queued_for_human</dt>
+  <dd>The outcome of any policy miss: allowlist, rate, DLP hold or halt. A person decides; there is never a silent send or a silent drop (§ Result).</dd>
+
+  <dt id="reason-code">reason_code</dt>
+  <dd>An optional, extensible marker on a result saying which policy path produced the outcome, such as <code>recipient_not_allowlisted</code> or <code>unsupported_contract_version</code>. A consumer must never infer the outcome from it (§ Result).</dd>
+
+  <dt id="result">Result</dt>
+  <dd>The runtime's verdict on one consumed submit-request, at <code>outbound/results/&lt;id&gt;.json</code>. There is exactly one per consumed request (§ Result).</dd>
+
+  <dt id="runtime">Runtime</dt>
+  <dd>The <strong>trusted</strong> party. It holds the mail credentials, each agent's identity and the policy, and it reaches the mail provider. All enforcement is on this side (§ Architecture). Implementations in this family call a runtime a <em>router</em>.</dd>
+
+  <dt id="sender-exposure">sender_exposure</dt>
+  <dd>On a peer notice, a runtime assertion of whether external mail was delivered to the sender over a window. Its absence means "not assessed", never "no exposure", and it must not drive routing (profile §6).</dd>
+
+  <dt id="sender-standing">sender_standing</dt>
+  <dd>The runtime's advisory summary of a sender, such as <code>known</code>, <code>agent-tier</code> or <code>first-contact</code>. It is an open vocabulary. Verified sender identity is only ever what the runtime summarises here and in <code>verdict</code>, never the <code>from</code> string (§ Inbound).</dd>
+
+  <dt id="submit-request">Submit-request</dt>
+  <dd>The connector's inert request, at <code>outbound/req-&lt;id&gt;.json</code>. <code>draft.to</code> is required. The runtime evaluates recipient policy over exactly the named recipients and never adds or substitutes one (§ Submit Request).</dd>
+
+  <dt id="tree">Tree</dt>
+  <dd>A runtime-owned inbound-class directory (<code>inbound/</code>, or <code>peer/</code> under the profile). Each tree is an origin class, with its own structurally enforced write authority (§ Volume Layout).</dd>
+
+  <dt id="version-refusal">Version refusal</dt>
+  <dd>Refusing a document whose <code>contract_version</code> major is absent, lower or higher. It fails closed and is a distinct outcome: logged-only inbound, and a <code>rejected</code> result outbound (§ Versioning and Conformance).</dd>
+
+  <dt id="wire-contract">Wire contract</dt>
+  <dd>What the AMAP specification defines: the exact documents, paths and obligations shared by a runtime and a connector. Neither side owns it, and each proves conformance against the fixtures rather than against the other.</dd>
+</dl>
+
+<p class="small">See also: <a href="implementers.html">For implementers</a> · <a href="layers.html">MCP, A2A and AMAP</a>.</p>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-row">
+    <p>AMAP is an open specification, published under the Apache License 2.0. It was originated by Proofpoint and is open to every implementer.</p>
+    <ul class="footer-links"><li><a href="layers.html">MCP, A2A and AMAP</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="https://github.com/proofpoint/amap-spec">Specification on GitHub</a></li></ul>
+  </div>
+</footer>
+<script src="assets/site.js"></script>
+</body>
+</html>

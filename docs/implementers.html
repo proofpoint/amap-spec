@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>For implementers · AMAP</title>
+<meta name="description" content="The AMAP specification at the wire level: the per-agent namespace, the seven documents and their schemas, versioning, conformance, and the reference implementations.">
+<link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap header-row">
+    <a class="brand" href="index.html" aria-label="AMAP home">
+      <img src="assets/mark.svg" alt="" width="28" height="28">
+      <span class="brand-name">AMAP</span>
+      <span class="brand-sub">Agent Mailbox Access Protocol</span>
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <nav id="site-nav" class="site-nav" aria-label="Main">
+      <ul><li><a href="index.html">Home</a></li><li><a href="ietf.html">At the IETF</a></li><li><a href="why.html">Why AMAP</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="identity.html">Identity</a></li><li><a href="implementers.html" aria-current="page">Implementers</a></li><li><a href="validator.html">Validator</a></li><li><a href="status.html">Status</a></li><li><a href="faq.html">FAQ</a></li><li><a href="get-involved.html">Get involved</a></li></ul>
+    </nav>
+  </div>
+</header>
+<main id="main" class="wrap">
+<p class="eyebrow">For implementers</p>
+<h1>The AMAP specification, at the wire level</h1>
+<p class="lede">AMAP defines a wire contract between a trusted runtime, which holds the mail credentials and applies policy, and an agent-side connector, which holds nothing credentialed. The two sides share one thing: a per-agent filesystem namespace. This page summarises what each side must do. The authority is the specification itself.</p>
+
+<div class="callout">
+  <p><strong>Source of truth.</strong> <a href="https://github.com/proofpoint/amap-spec/tree/main/dist">The AMAP Internet-Draft</a> (v3.1.0 DRAFT; its source is <a href="https://github.com/proofpoint/amap-spec/blob/main/draft/draft-amap.xml"><code>draft/draft-amap.xml</code></a>), the <a href="https://github.com/proofpoint/amap-spec/tree/main/schemas">schemas</a> and the <a href="https://github.com/proofpoint/amap-spec/tree/main/fixtures">fixtures</a> are the normative specification. The peer-origin profile is in <a href="https://github.com/proofpoint/amap-spec/blob/main/spec/peer-origin.md"><code>spec/peer-origin.md</code></a>. Where this page and the specification disagree, the specification wins. A reference such as "§ Inbound" names a section of the Internet-Draft. The older <code>spec/contract.md</code> is frozen history, not the specification.</p>
+</div>
+
+<h2>Three actors, one invariant</h2>
+<div class="grid three">
+  <div class="card trust">
+    <h3>Runtime <span class="tag spec">trusted</span></h3>
+    <p>Holds the mail-send credentials, each agent's identity and the policy, and keeps the record. Reaches the mail provider and the volume.</p>
+  </div>
+  <div class="card agent">
+    <h3>Connector <span class="tag open">agent-side</span></h3>
+    <p>One per agent. Holds nothing credentialed. Reaches only its own namespace on the volume and its agent's input and output.</p>
+  </div>
+  <div class="card agent">
+    <h3>Agent <span class="tag open">untrusted</span></h3>
+    <p>Holds only what the connector surfaces. Reaches the connector and its own sandbox.</p>
+  </div>
+</div>
+<p>The load-bearing invariant (§ Architecture): <strong>no security property may depend on the agent or connector behaving.</strong> Enforcement is entirely runtime-side. A compromised agent or connector can at most write a well-formed request that the runtime then refuses. That is why the channel is a runtime-owned filesystem namespace rather than an API the agent could call: a file drop carries no capability.</p>
+
+<h2>The per-agent namespace</h2>
+<p>The runtime owns the tree and mounts each agent's namespace into that agent's sandbox (§ Volume Layout). A connector can reach only its own <code>&lt;agent-id&gt;/</code>. The runtime assigns that id, and attribution is the namespace a file arrived in, never an <code>agent_id</code> field inside it.</p>
+
+<figure class="diagram">
+<svg viewBox="0 0 860 470" role="img" aria-labelledby="tree-title tree-desc">
+  <title id="tree-title">Per-agent namespace and who writes what</title>
+  <desc id="tree-desc">The agent-id directory contains outbound, written by the connector with results and processed written by the runtime; inbound and peer, both runtime-written and mountable read-only; audit, runtime-only; and an optional directory.json, runtime-written.</desc>
+  <rect x="10" y="10" width="840" height="450" rx="10" class="d-panel" fill="#f3f5f8"/>
+  <text x="30" y="42" class="d-ink" font-size="17" font-weight="700" fill="#1b2430">&lt;agent-id&gt;/</text>
+  <text x="170" y="42" class="d-muted" font-size="13" fill="#5b6573">runtime-assigned; attribution is the namespace, never a field</text>
+
+  <rect x="30" y="62" width="390" height="176" rx="8" class="d-agent-bg" fill="#fbf1e1"/>
+  <text x="46" y="88" class="d-agent" font-size="15" font-weight="700" fill="#8a5a12">outbound/</text>
+  <text x="46" y="114" class="d-ink" font-size="13" fill="#1b2430">req-&lt;id&gt;.json · req-&lt;id&gt;.attachments/</text>
+  <text x="60" y="132" class="d-agent" font-size="12" fill="#8a5a12">connector writes: the only outbound act</text>
+  <text x="46" y="160" class="d-ink" font-size="13" fill="#1b2430">results/&lt;id&gt;.json</text>
+  <text x="60" y="178" class="d-trust" font-size="12" fill="#0f5c63">runtime writes: one verdict per consumed request</text>
+  <text x="46" y="204" class="d-ink" font-size="13" fill="#1b2430">processed/ · ext/&lt;name&gt;/</text>
+  <text x="60" y="222" class="d-muted" font-size="12" fill="#5b6573">runtime archive · connector side channel (nothing security-relevant)</text>
+
+  <rect x="440" y="62" width="390" height="112" rx="8" class="d-trust-bg" fill="#e3f0f0"/>
+  <text x="456" y="88" class="d-trust" font-size="15" font-weight="700" fill="#0f5c63">inbound/</text>
+  <text x="530" y="88" class="d-muted" font-size="12" fill="#5b6573">origin class: mail</text>
+  <text x="456" y="114" class="d-ink" font-size="13" fill="#1b2430">notices/notice-&lt;id&gt;.json · &lt;notice-id&gt;.attachments/</text>
+  <text x="456" y="136" class="d-ink" font-size="13" fill="#1b2430">messages/notice-&lt;id&gt;.json · cursor.json</text>
+  <text x="456" y="160" class="d-trust" font-size="12" fill="#0f5c63">runtime writes; MAY be mounted read-only</text>
+
+  <rect x="440" y="186" width="390" height="92" rx="8" class="d-trust-bg" fill="#e3f0f0"/>
+  <text x="456" y="212" class="d-trust" font-size="15" font-weight="700" fill="#0f5c63">peer/</text>
+  <text x="510" y="212" class="d-muted" font-size="12" fill="#5b6573">origin class: same-principal peer (profile)</text>
+  <text x="456" y="238" class="d-ink" font-size="13" fill="#1b2430">same layout and sidecar rules as inbound/</text>
+  <text x="456" y="262" class="d-trust" font-size="12" fill="#0f5c63">runtime writes, by a separate write authority</text>
+
+  <rect x="30" y="254" width="390" height="92" rx="8" class="d-trust-bg" fill="#e3f0f0"/>
+  <text x="46" y="280" class="d-trust" font-size="15" font-weight="700" fill="#0f5c63">audit/</text>
+  <text x="46" y="306" class="d-ink" font-size="13" fill="#1b2430">log.jsonl</text>
+  <text x="60" y="326" class="d-trust" font-size="12" fill="#0f5c63">runtime only; append-only; never the connector</text>
+
+  <rect x="440" y="290" width="390" height="56" rx="8" class="d-trust-bg" fill="#e3f0f0"/>
+  <text x="456" y="316" class="d-ink" font-size="13" fill="#1b2430">directory.json</text>
+  <text x="456" y="334" class="d-trust" font-size="12" fill="#0f5c63">runtime writes; OPTIONAL; which peers this agent may address</text>
+
+  <rect x="30" y="368" width="14" height="14" rx="3" class="d-agent-bg s-agent" stroke-width="1.5" fill="#fbf1e1" stroke="#8a5a12"/>
+  <text x="52" y="380" class="d-ink" font-size="13" fill="#1b2430">written by the connector (agent side)</text>
+  <rect x="330" y="368" width="14" height="14" rx="3" class="d-trust-bg s-trust" stroke-width="1.5" fill="#e3f0f0" stroke="#0f5c63"/>
+  <text x="352" y="380" class="d-ink" font-size="13" fill="#1b2430">written by the runtime</text>
+  <text x="30" y="414" class="d-muted" font-size="13" fill="#5b6573">Every write is atomic (.tmp then rename). One connector writes outbound/ and one runtime drains it.</text>
+  <text x="30" y="436" class="d-muted" font-size="13" fill="#5b6573">Runtime-private staging lives outside the mounted volume, where the agent cannot reach it.</text>
+</svg>
+<figcaption>The per-agent tree from § Volume Layout, with the peer tree from the peer-origin profile §1. Colour shows who writes.</figcaption>
+</figure>
+
+<h3>Two lanes, two trees</h3>
+<p>Mail and same-principal peer traffic arrive in separate trees: <code>inbound/</code> for mail, and <code>peer/</code> under the peer-origin profile. <strong>The tree a document is read from is the runtime's sole assertion of its origin class.</strong> A connector derives the class from the tree and never from any member of the document, and <code>kind</code> must equal the tree name (§ Volume Layout, tree rules; peer-origin §2). The two schemas cross-lock:</p>
+<ul>
+  <li>a <code>kind: "peer"</code> document found under <code>inbound/</code> fails the deliver-notice schema;</li>
+  <li>a <code>kind: "deliver"</code> document found under <code>peer/</code> fails the peer-notice schema.</li>
+</ul>
+<p>Either way it is dropped. Write authority for each tree must be structurally enforced, never configuration the writer reads.</p>
+
+<h2>The documents</h2>
+<p>8 document types cross the seam. The rule for which are open and which are closed is <strong>direction, not taste</strong> (§ Versioning and Conformance, since v3.0.0):</p>
+<ul>
+  <li>Runtime-authored documents are <strong>open</strong>. A consumer must ignore members it does not recognise, although emitting an undefined member is still a producer non-conformance.</li>
+  <li>The agent-authored submit-request is <strong>closed</strong>, so an unrecognised member is a legible, per-request <code>rejected</code>, never a silent drop.</li>
+</ul>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Document</th><th>Where</th><th>Written by</th><th>Schema</th><th>Envelope</th></tr></thead>
+  <tbody>
+    <tr><td>Deliver-notice</td><td><code>inbound/notices/</code></td><td>Runtime</td><td><code>deliver-notice.schema.json</code></td><td>Open</td></tr>
+    <tr><td>Peer-notice</td><td><code>peer/notices/</code></td><td>Runtime</td><td><code>peer-notice.schema.json</code></td><td>Open</td></tr>
+    <tr><td>Inbound message (spooled body)</td><td><code>inbound/messages/</code></td><td>Runtime</td><td><code>inbound-message.schema.json</code></td><td>Open</td></tr>
+    <tr><td>Result</td><td><code>outbound/results/</code></td><td>Runtime</td><td><code>result.schema.json</code></td><td>Open</td></tr>
+    <tr><td>Peer directory</td><td><code>directory.json</code></td><td>Runtime</td><td><code>directory.schema.json</code></td><td>Open</td></tr>
+    <tr><td>Fleet roster</td><td><code>roster.json</code>, where the deployment designates</td><td>Runtime</td><td><code>roster.schema.json</code></td><td>Open</td></tr>
+    <tr><td>Submit-request</td><td><code>outbound/req-&lt;id&gt;.json</code></td><td>Connector</td><td><code>submit-request.schema.json</code></td><td><strong>Closed</strong>, at every level</td></tr>
+    <tr><td>Binding record</td><td><code>identity.json</code> (volume root)</td><td>Runtime or provisioner</td><td><code>binding-record.schema.json</code></td><td><strong>Closed</strong>, as an anti-secret-leak lint</td></tr>
+  </tbody>
+</table>
+</div>
+<p>The binding record is closed for a different reason from the submit-request. Its closure catches a credential written into the file by mistake: the <code>imap_password</code> fixture tests exactly that. It is not a compatibility surface. The record is also <strong>informational, not authoritative</strong>. The agent can edit it, so it is never consulted for enforcement (§ Binding Record).</p>
+<p>One trap to avoid: <code>to</code> is a property of the <em>spooled inbound message</em>, not of the deliver-notice's <code>message</code> object. Because the notice envelope is open, code that reads <code>message.to</code> off a notice will not be caught by the schema. The recipient list lives on the spool document (§ Inbound).</p>
+
+<h2>Outbound: the submit-request and its result</h2>
+<ul>
+  <li><strong>The agent's only outbound act is an inert request file.</strong> It carries no send capability; the runtime enforces policy before anything leaves (§ Submit Request).</li>
+  <li><strong><code>draft.to</code> is required.</strong> Each recipient is one bare addr-spec. The runtime must evaluate recipient policy over <em>exactly</em> the recipient set it will transmit to, and must not transmit to any address the request does not name (§ Submit Request). It never adds or substitutes a recipient.</li>
+  <li><strong>Identity is the runtime's.</strong> The runtime derives the message identity and From/Reply-To. The agent does not choose its sending identity (§ Submit Request).</li>
+  <li><strong>Header discipline.</strong> No agent-authored string may introduce a header boundary. CR, LF and NUL are rejected or stripped before composition (§ Submit Request).</li>
+  <li><strong>Exactly one result per consumed request</strong>, with <code>outcome</code> ∈ {<code>accepted</code>, <code>queued_for_human</code>, <code>rejected</code>} (§ Result).
+    <ul>
+      <li>Any policy miss (allowlist, rate, DLP hold, halt) is <code>queued_for_human</code>: never a silent send, never a silent drop.</li>
+      <li><code>accepted</code> means the provider accepted the message for relay, not that it was delivered.</li>
+      <li>A malformed request fails with <code>rejected</code>.</li>
+      <li><code>reason_code</code> explains which path fired. It is an extensible vocabulary, and a consumer must never infer the outcome from it.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2>Attachments and dispositions</h2>
+<p>An inbound attachment descriptor carries <code>disposition</code> ∈ {<code>clean</code>, <code>stripped</code>, <code>quarantined</code>, <code>unscanned</code>}. The disposition is <strong>the runtime's assertion, not a scanner verdict</strong>. How a runtime decides <code>clean</code> is runtime policy, but a runtime that cannot make the determination must not assert <code>clean</code> (§ Inbound).</p>
+<ul>
+  <li>Bytes are published only for <code>clean</code> descriptors, and only then may <code>content_ref</code> and <code>sha256</code> appear.</li>
+  <li><code>content_ref</code> must equal <code>&lt;notice_id&gt;.attachments/&lt;index&gt;</code> for the descriptor's own array position.</li>
+  <li>Sidecar blobs are named by 0-based ordinals. <code>filename</code> is display-only and never a path.</li>
+  <li>The declared <code>media_type</code> is display-only. The runtime sniffs the bytes, and the sniffed type governs policy.</li>
+</ul>
+
+<h2>Enforcement by absence</h2>
+<p>The runtime writes one notice per <em>delivered</em> message. Quarantined or unverified mail produces <strong>no notice at all</strong>: it is logged runtime-side and never seen by the agent (§ Inbound). A withheld body is simply not spooled, and a read against it returns "not resolved", with no fallback fetch.</p>
+
+<h2>Versioning</h2>
+<p>Two axes, not one:</p>
+<ul>
+  <li><strong>The specification's own version</strong> (currently v3.1.0 DRAFT) is SemVer for the document. Additive changes are MINOR, and a change that breaks an existing fixture is MAJOR.</li>
+  <li><strong>The wire <code>contract_version</code></strong> (currently <code>"2"</code>) is what goes in every document and what a consumer checks.</li>
+</ul>
+<p>Read <code>contract_version</code> <strong>before</strong> any schema validation, comparing majors as non-negative integers (§ Versioning and Conformance). An absent, lower or higher major is a <strong>version refusal</strong> that fails closed. It is a distinct, logged outcome, never folded into the malformed-document path. The refusal is asymmetric:</p>
+<ul>
+  <li><strong>Inbound:</strong> it is logged only.</li>
+  <li><strong>Outbound:</strong> a runtime refusing a submit-request answers with a <code>rejected</code> result and <code>reason_code: "unsupported_contract_version"</code>.</li>
+</ul>
+<p>Because runtime-authored documents are open, adding an optional member to them is genuinely additive (MINOR). Adding any member to the submit-request is MAJOR.</p>
+
+<h2>Filesystem obligations</h2>
+<p>Many obligations are about the filesystem rather than the documents (§ Volume Layout):</p>
+<ul>
+  <li>atomic writes;</li>
+  <li>a commit sentinel: sidecar bytes are written before <code>req-&lt;id&gt;.json</code>;</li>
+  <li>ingest-by-copy: the runtime validates and composes only from a private snapshot;</li>
+  <li>write-side path discipline, three conjunctive requirements: pinned parent chains, no-follow while building, and an <code>O_EXCL</code> final component;</li>
+  <li>read-side open discipline: no symlink following, non-blocking opens, regular-file checks on the open descriptor, and bounded reads;</li>
+  <li>single writer and single drainer per namespace;</li>
+  <li>connector tolerance of a read-only <code>inbound/</code> tree.</li>
+</ul>
+
+<h2>Conformance, and what a green gate does not prove</h2>
+<p>The specification's Conformance section defines two conformance classes, <strong>runtime</strong> and <strong>connector</strong>. The peer-origin profile adds a sub-class for each. <strong>Claiming either without the fixture run <em>and</em> the prescribed operational check for that class is not conformance.</strong></p>
+<p>Run the gate with the Python standard library only. It needs no network access and no counterpart:</p>
+<pre><code>python3 fixtures/validate.py
+# 89 fixtures checked, 0 unexpected.</code></pre>
+<p>Every <code>valid/</code> fixture must pass and every <code>invalid/</code> fixture must fail: 34 and 55 respectively. The schema is chosen by filename prefix, so a document you validate yourself needs its type chosen explicitly. The <a href="validator.html">in-browser validator</a> does that for you.</p>
+<div class="callout caution">
+  <p><strong>A green run does not prove the obligations a document validator cannot see.</strong> The NOT-CHECKED list in <code>fixtures/validate.py</code> is the authoritative inventory. It includes:</p>
+  <ul>
+    <li>sidecar existence, and <code>size_bytes</code>/<code>sha256</code> matching the real bytes;</li>
+    <li>the rule that a filename is never a path;</li>
+    <li>runtime-private staging;</li>
+    <li>write ordering and atomicity;</li>
+    <li>caps and allowlists;</li>
+    <li>enforcement by absence;</li>
+    <li>read-only-inbound tolerance;</li>
+    <li>ingest-by-copy;</li>
+    <li>both path disciplines;</li>
+    <li>single writer and single drainer.</li>
+  </ul>
+  <p>It also cannot tell you which document classes your producer never submitted. A conformance claim has to account for coverage as well as outcome.</p>
+</div>
+
+<h2>Reference implementations</h2>
+<div class="grid two">
+  <div class="card">
+    <h3><a href="https://github.com/proofpoint/amap-router-local">amap-router-local</a></h3>
+    <p>The reference runtime, with its own test suite. On top of the seam it adds recipient policy, the two lanes, the reply ledger and delivery-status notices. Implementations in this family call a conforming runtime a <em>router</em>; the specification itself says "runtime" (§ Architecture).</p>
+  </div>
+  <div class="card">
+    <h3><a href="https://github.com/proofpoint/amap-connector-claude">amap-connector-claude</a></h3>
+    <p>The Claude Code connector. It uses the Python standard library only, with zero third-party dependencies. It gives the agent ordinary MCP tools: a read-only inbox, and a submit tool that writes a gated request.</p>
+  </div>
+</div>
+
+<h2>How changes are made today</h2>
+<p>These rules apply while the work lives in this repository. If the IETF takes it up, a working group will hold change control.</p>
+<ol class="steps">
+  <li><strong>A capability change starts in the specification.</strong> It lands as the Internet-Draft's prose, <code>schemas/</code> and <code>fixtures/</code> in one change, before either side builds it. Neither a runtime nor a connector may invent a wire field locally.</li>
+  <li><strong>The fixtures go in the same change.</strong> A field with no fixture is a field no implementer can prove they handle.</li>
+  <li><strong>Additive means MINOR; breaking an existing fixture means MAJOR,</strong> and a MAJOR is taken deliberately by both sides. A version mismatch fails closed.</li>
+  <li><strong>Some edits travel the other way.</strong> The standards editor edits the Internet-Draft directly, and those edits are canonical. A change in meaning then moves into the schemas and fixtures.</li>
+</ol>
+<p>Read <a href="https://github.com/proofpoint/amap-spec/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> and <a href="https://github.com/proofpoint/amap-spec/blob/main/WORKFLOWS.md">WORKFLOWS.md</a> before opening a pull request. Report security problems in the specification privately, as described in <a href="https://github.com/proofpoint/amap-spec/blob/main/SECURITY.md">SECURITY.md</a>.</p>
+
+<hr>
+<p class="small">See also: <a href="validator.html">validator</a> · <a href="layers.html">MCP, A2A and AMAP</a> · <a href="glossary.html">glossary</a>.</p>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-row">
+    <p>AMAP is an open specification, published under the Apache License 2.0. It was originated by Proofpoint and is open to every implementer.</p>
+    <ul class="footer-links"><li><a href="layers.html">MCP, A2A and AMAP</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="https://github.com/proofpoint/amap-spec">Specification on GitHub</a></li></ul>
+  </div>
+</footer>
+<script src="assets/site.js"></script>
+</body>
+</html>
