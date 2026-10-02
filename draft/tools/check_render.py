@@ -2,7 +2,7 @@
 """check_render.py — post-build gate for the rendered Internet-Draft XML.
 
 Proves that what actually lands in the draft XML (draft/draft-amap.xml, the
-canonical source, and its copy dist/draft-amap-00.xml) still equals a
+canonical source, and its copy dist/draft-rapp-amap-00.xml) still equals a
 real file on disk, byte for byte (modulo RFC 8792 folding and a trailing
 newline). Run after every build; `make -C draft check` wires it in.
 
@@ -141,8 +141,8 @@ def check_roster(xml_text: str) -> list[str]:
 
 def check_docname(root: ET.Element) -> list[str]:
     docname = root.get("docName", "")
-    if docname != "draft-amap-00":
-        return [f"rfc/@docName is {docname!r}, expected 'draft-amap-00'"]
+    if docname != "draft-rapp-amap-00":
+        return [f"rfc/@docName is {docname!r}, expected 'draft-rapp-amap-00'"]
     return []
 
 
@@ -221,7 +221,7 @@ def check_no_broken_references(xml_text: str) -> list[str]:
 
 def main(argv: list[str]) -> int:
     if len(argv) != 2:
-        print(f"usage: {argv[0]} dist/draft-amap-00.xml", file=sys.stderr)
+        print(f"usage: {argv[0]} dist/draft-rapp-amap-00.xml", file=sys.stderr)
         return 2
     xml_path = Path(argv[1])
     xml_text = xml_path.read_text(encoding="utf-8")

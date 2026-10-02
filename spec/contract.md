@@ -2,7 +2,7 @@
 
 > **FROZEN, 2026-09-24. Superseded by [`draft/draft-amap.xml`](../draft/draft-amap.xml).**
 > The Internet-Draft is now the canonical normative prose. It is hand-edited by
-> the standards editor and rendered to `dist/draft-amap-00.txt`. Together with
+> the standards editor and rendered to `dist/draft-rapp-amap-00.txt`. Together with
 > `schemas/` and `fixtures/`, it is the contract. This file is kept unchanged
 > below as the record of the text the draft was reconciled against, and because
 > the schema descriptions and `fixtures/validate.py` still cite its section
@@ -52,7 +52,7 @@ This is the IDL both sides depend on; it is owned by neither.
 > required versus optional.
 
 > **Authority.** This file, together with `schemas/` and `fixtures/`, is the
-> normative contract. `dist/draft-amap-00.xml` is a
+> normative contract. `dist/draft-rapp-amap-00.xml` is a
 > standalone rendering generated from it; where the two disagree, this file
 > and the fixture gate (`fixtures/validate.py`) govern, and the rendering is
 > regenerated from this file — never patched independently.

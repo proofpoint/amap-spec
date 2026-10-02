@@ -34,7 +34,10 @@ language** — README's "What AMAP is not" says this normatively; keep it true.
   CLEAR (operator-confirmed 2026-09-24): `ipr="trust200902"` (settled
   2026-09-21, the full BCP 78 grant), `submissionType="independent"`, and an
   email for each author. The draft is **ready for submission and has not been
-  submitted.** Any future change to those values, to the author list, or to a
+  submitted.** **PENDING (2026-10-02):** the editor's review set
+  `submissionType="IETF"` and `category="std"`; those await the owner's
+  confirmation with counsel (`draft/README.md`, "Counsel gates"). Do not
+  submit, and do not change them either way, until that is recorded. Any future change to those values, to the author list, or to a
   BCP 79 disclosure is a rights statement, not an editorial choice: do not
   make one on your own initiative. The history is in `draft/README.md` under
   "Counsel gates". Note the draft ASSERTS it is submitted under BCP 78/79,
