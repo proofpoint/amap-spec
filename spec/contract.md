@@ -54,7 +54,7 @@ This is the IDL both sides depend on; it is owned by neither.
 > required versus optional.
 
 > **Authority.** This file, together with `schemas/` and `fixtures/`, is the
-> normative contract. `dist/draft-rapp-amap-00.xml` is a
+> normative contract. `dist/draft-amap-00.xml` is a
 > standalone rendering generated from it; where the two disagree, this file
 > and the fixture gate (`fixtures/validate.py`) govern, and the rendering is
 > regenerated from this file — never patched independently.
