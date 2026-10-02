@@ -46,6 +46,7 @@ def counts():
 
 NAV = [
     ("index.html", "Home"),
+    ("ietf.html", "At the IETF"),
     ("why.html", "Why AMAP"),
     ("how-it-works.html", "How it works"),
     ("identity.html", "Identity"),

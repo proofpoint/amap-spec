@@ -1,11 +1,11 @@
-<!-- title: AMAP | description: AMAP, the Agent Mailbox Access Protocol, is an open specification that lets agents take part in email while the authority to send stays with trusted controls. -->
+<!-- title: AMAP | description: AMAP, the Agent Mailbox Access Protocol, is an early Internet-Draft for how agents can take part in email while the authority to send stays with trusted controls. It is being brought to the IETF for review and collaboration. -->
 <section class="hero">
   <p class="eyebrow">Agent Mailbox Access Protocol</p>
-  <h1>Let agents take part in email, with trusted controls.</h1>
-  <p class="lede">Every enterprise, of any size, runs on email. AMAP is an open specification that lets an agent read, draft and ask to send, while the credentials, the sending identity and the decision about who receives anything stay outside the agent.</p>
+  <h1>Agents are joining the workflows that run on email.</h1>
+  <p class="lede">Email is the backbone of how organisations work together, and agents will need to take part in it. AMAP is an early Internet-Draft that proposes how: an agent can read, draft and ask to send, while the credentials, the sending identity and the decision about who receives anything stay outside the agent. We're bringing it to the IETF for review, and to find collaborators.</p>
   <div class="cta-row">
-    <a class="btn primary" href="how-it-works.html">How it works</a>
-    <a class="btn secondary" href="https://github.com/proofpoint/amap-spec">Read the specification</a>
+    <a class="btn primary" href="ietf.html">AMAP at the IETF</a>
+    <a class="btn secondary" href="how-it-works.html">How it works</a>
   </div>
 </section>
 
@@ -45,7 +45,7 @@
   <figcaption id="gate-caption">The trusted runtime is the gate on your organisation's edge. AMAP is the link between it and the agent, inside your organisation. Nothing crosses to the other side but ordinary email.</figcaption>
 </figure>
 
-<h2>What AMAP gives you</h2>
+<h2>What AMAP proposes</h2>
 <div class="grid four">
   <div class="card trust">
     <h3>Containment, not trust</h3>
@@ -53,11 +53,11 @@
   </div>
   <div class="card human">
     <h3>A person on a policy miss</h3>
-    <p>The runtime checks every recipient against your policy. When a request falls outside it, a person decides. Nothing is sent or dropped silently.</p>
+    <p>The runtime checks every recipient against the organisation's policy. When a request falls outside it, a person decides. Nothing is sent or dropped silently.</p>
   </div>
   <div class="card">
     <h3>One side can start today</h3>
-    <p>AMAP adds nothing to the mail between organisations. Your counterparties keep using email exactly as they do now.</p>
+    <p>AMAP adds nothing to the mail between organisations. Counterparties keep using email exactly as they do now.</p>
   </div>
   <div class="card">
     <h3>Open and checkable</h3>
@@ -65,23 +65,23 @@
   </div>
 </div>
 
-<h2>Who it's for</h2>
+<h2>Who we'd like to hear from</h2>
 <div class="grid two">
   <div class="card">
+    <h3>Standards and identity communities</h3>
+    <p>AMAP can verify which agent sent a message within a deployment. Who that agent is, what it may commit to, and how a recipient elsewhere can check, has to come from the wider ecosystem. <a href="ietf.html">AMAP at the IETF</a> · <a href="identity.html">Identity and open questions</a></p>
+  </div>
+  <div class="card">
     <h3>Security and governance teams</h3>
-    <p>See what the design guarantees, what it leaves to your policy, and what it doesn't cover. <a href="why.html">Why AMAP</a> · <a href="how-it-works.html">How it works</a></p>
+    <p>See what the design guarantees, what it leaves to local policy, and what it doesn't cover. <a href="why.html">Why AMAP</a> · <a href="how-it-works.html">How it works</a></p>
   </div>
   <div class="card">
     <h3>Agent-platform builders</h3>
-    <p>Give your agents email through a connector with no send capability of its own, behind ordinary MCP tools. <a href="implementers.html">For implementers</a> · <a href="layers.html">MCP, A2A and AMAP</a></p>
+    <p>Give agents email through a connector with no send capability of its own, behind ordinary MCP tools. <a href="implementers.html">For implementers</a> · <a href="layers.html">MCP, A2A and AMAP</a></p>
   </div>
   <div class="card">
     <h3>Runtime and mail-infrastructure implementers</h3>
     <p>Build a trusted runtime that holds the credentials and enforces the policy, and prove it against the fixtures. <a href="implementers.html">The specification</a> · <a href="validator.html">Validator</a></p>
-  </div>
-  <div class="card">
-    <h3>Standards and identity communities</h3>
-    <p>AMAP can verify which agent sent a message. Who that agent is, and what it may commit to, has to come from the wider ecosystem. <a href="identity.html">Identity and open questions</a></p>
   </div>
 </div>
 
@@ -93,8 +93,8 @@
 </ol>
 
 <div class="callout">
-  <p><span class="tag open">Status</span> The AMAP specification is at v3.1.0 (draft). The AMAP Internet-Draft is ready for submission to the IETF and has not yet been submitted. There is no deployment across independent organisations yet, and we're looking for development and interop partners. <a href="status.html">Full status</a></p>
+  <p><span class="tag open">Status</span> AMAP is an early individual Internet-Draft. It has not yet been submitted to the IETF, and nothing in it is settled. There is no deployment across independent organisations yet, and we're looking for reviewers, implementers and interop partners. <a href="status.html">Full status</a></p>
 </div>
 
 <h2>Who is behind AMAP</h2>
-<p>AMAP was originated by Proofpoint and is published as an open specification under the Apache License 2.0. The specification, its schemas and fixtures, and the reference implementations are public. No one needs a particular vendor's runtime to conform or to interoperate. <a href="get-involved.html">Get involved</a></p>
+<p>AMAP was originated by Proofpoint and is published as an open specification under the Apache License 2.0. The specification, its schemas and fixtures, and the reference implementations are public, and no one needs a particular vendor's runtime to conform or to interoperate. We're bringing it to the IETF so that its future is decided in an open process, not by its originator. <a href="get-involved.html">Get involved</a></p>

@@ -19,7 +19,7 @@
     </a>
     <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
     <nav id="site-nav" class="site-nav" aria-label="Main">
-      <ul><li><a href="index.html">Home</a></li><li><a href="why.html">Why AMAP</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="identity.html">Identity</a></li><li><a href="implementers.html">Implementers</a></li><li><a href="validator.html">Validator</a></li><li><a href="status.html">Status</a></li><li><a href="faq.html" aria-current="page">FAQ</a></li><li><a href="get-involved.html">Get involved</a></li></ul>
+      <ul><li><a href="index.html">Home</a></li><li><a href="ietf.html">At the IETF</a></li><li><a href="why.html">Why AMAP</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="identity.html">Identity</a></li><li><a href="implementers.html">Implementers</a></li><li><a href="validator.html">Validator</a></li><li><a href="status.html">Status</a></li><li><a href="faq.html" aria-current="page">FAQ</a></li><li><a href="get-involved.html">Get involved</a></li></ul>
     </nav>
   </div>
 </header>
@@ -73,11 +73,23 @@
 </details>
 <details>
   <summary>Is AMAP an IETF standard?</summary>
-  <p>No. The AMAP Internet-Draft is ready for submission to the IETF, but it has not been submitted. The specification is v3.1.0 DRAFT. See <a href="status.html">Status</a>.</p>
+  <p>No. It is an early individual Internet-Draft, and it has not yet been submitted. See <a href="ietf.html">AMAP at the IETF</a>.</p>
+</details>
+<details>
+  <summary>Why bring it to the IETF?</summary>
+  <p>Because the problems it touches are interoperability problems. Agent platforms and mail infrastructure are built by different parties and need a common boundary, and mail from agents will need sender identity that recipients elsewhere can check. Neither works if one company decides it. We want review, collaborators, and an open process to own the result.</p>
+</details>
+<details>
+  <summary>AMAP is a local filesystem interface. Is that really Internet protocol work?</summary>
+  <p>It's a fair question, and we'd like the community's view. The boundary is where independently built components meet, its peer profile already carries signed statements between hosts, and agent sender identity in email is plainly IETF territory. It may turn out that the IETF piece is the cross-organisation identity, and the local boundary belongs in an applicability statement. See <a href="ietf.html">AMAP at the IETF</a>.</p>
+</details>
+<details>
+  <summary>Isn't this already fully designed?</summary>
+  <p>No. The draft has been through several internal revisions, because its reference implementations were built alongside it, but it is one team's thinking. We expect review to change it: its terminology, its versioning, and possibly its scope.</p>
 </details>
 <details>
   <summary>Who controls AMAP, and is it free to use?</summary>
-  <p>The AMAP specification, schemas, fixtures and reference implementations are published under the Apache License 2.0. Proofpoint originated AMAP, and it is open to every implementer. No one needs a particular vendor's runtime to conform or to interoperate. Changes land in the public specification first. See <a href="get-involved.html">Get involved</a>.</p>
+  <p>The AMAP specification, schemas, fixtures and reference implementations are published under the Apache License 2.0. Proofpoint originated AMAP, and it is open to every implementer. No one needs a particular vendor's runtime to conform or to interoperate. Today changes are made in the public repository; if the IETF takes up the work, a working group will hold change control. See <a href="get-involved.html">Get involved</a>.</p>
 </details>
 </main>
 <footer class="site-footer">

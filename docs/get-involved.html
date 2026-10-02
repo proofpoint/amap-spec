@@ -19,7 +19,7 @@
     </a>
     <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
     <nav id="site-nav" class="site-nav" aria-label="Main">
-      <ul><li><a href="index.html">Home</a></li><li><a href="why.html">Why AMAP</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="identity.html">Identity</a></li><li><a href="implementers.html">Implementers</a></li><li><a href="validator.html">Validator</a></li><li><a href="status.html">Status</a></li><li><a href="faq.html">FAQ</a></li><li><a href="get-involved.html" aria-current="page">Get involved</a></li></ul>
+      <ul><li><a href="index.html">Home</a></li><li><a href="ietf.html">At the IETF</a></li><li><a href="why.html">Why AMAP</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="identity.html">Identity</a></li><li><a href="implementers.html">Implementers</a></li><li><a href="validator.html">Validator</a></li><li><a href="status.html">Status</a></li><li><a href="faq.html">FAQ</a></li><li><a href="get-involved.html" aria-current="page">Get involved</a></li></ul>
     </nav>
   </div>
 </header>
@@ -36,7 +36,8 @@
   <div class="card"><h3><a href="https://github.com/proofpoint/amap-deploy-sandy">amap-deploy-sandy</a></h3><p>A working deployment of the reference runtime and connector on one host. Its <a href="https://proofpoint.github.io/amap-deploy-sandy/">walkthrough</a> gets two agents talking, then breaks each guarantee on purpose.</p></div>
 </div>
 
-<h2>How changes land</h2>
+<h2>How changes are made today</h2>
+<p>Until the IETF takes up the work, changes are proposed as pull requests to <a href="https://github.com/proofpoint/amap-spec">amap-spec</a>, and the rules below keep the two sides of the boundary in step. If a working group forms, change control moves to it, and these repositories will follow its decisions.</p>
 <ol class="steps">
   <li><strong>Specification first.</strong> A capability change lands as specification, schemas and fixtures together, before either side builds it. No implementation invents a wire field locally.</li>
   <li><strong>Fixtures in the same change.</strong> A field with no fixture is a field no implementer can prove they handle.</li>
@@ -56,7 +57,7 @@
 
 <h2>Discussion</h2>
 <div class="callout caution">
-  <p><strong>Mailing list: coming soon.</strong> Until it's announced, please use the <a href="https://github.com/proofpoint/amap-spec/issues">amap-spec issues</a> for questions and discussion.</p>
+  <p><strong>An IETF mailing list is planned</strong> for discussion ahead of a possible BoF. It will be announced on <a href="ietf.html">AMAP at the IETF</a>. Until then, please use the <a href="https://github.com/proofpoint/amap-spec/issues">amap-spec issues</a> for questions and discussion.</p>
 </div>
 
 <h2>Who is behind AMAP</h2>
