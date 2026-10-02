@@ -1,5 +1,6 @@
 # coverage.toml — the classification of every normative sentence in the
-# protocol sections (3-10 and the peer directory) of draft/draft-amap.xml.
+# protocol sections of draft/draft-amap.xml (Architecture through Versioning
+# and Conformance, including the Peer Directory and the Fleet Roster).
 # Enforced by draft/tools/check_coverage.py, which documents the classes.
 #
 # The entries marked `baseline = true` are the migration baseline: the 128
@@ -988,3 +989,11 @@ section = "sec-roster"
 class = "operational"
 note = "What an agent is told, and by whom, is presentation behaviour of the connector or deployment, checked operationally. Reworded 2026-09-24 so the duty falls on whatever points the agent at the roster, not only a connector tool."
 text = "Whatever points an Agent at the roster, whether a Connector that surfaces it or a deployment that tells the Agent where to read it, MUST convey that membership is neither authorisation nor a prediction of acceptance, that the roster is not the Agent's identity and its own entry is not a peer, and that an absent or stale roster means unknown."
+
+[[sentence]]
+id = "c71c1487ada2"
+section = "sec-10-2"
+class = "fixture"
+fixtures = ["valid/directory-minimal.json", "invalid/directory-missing-mail-to.json", "invalid/directory-version-1.json"]
+note = "Restored 2026-09-24: this row was in the frozen spec/contract.md section 8 table and was lost when the draft was reconciled, because the prose check saw only RFC 2119 sentences and a table row carries none."
+text = "(the artifact itself is OPTIONAL — ); if present: router, written_at, delegate_to, mail_to"

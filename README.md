@@ -12,7 +12,7 @@ people and versioned independently.
 
 **Current version: 3.1.0 (DRAFT)** (wire `contract_version` `"2"` - the contract's
 own SemVer and the wire major track different things as of 3.0.0; see
-the draft's Versioning and Conformance section, 11).
+the draft's Versioning and Conformance section).
 Conformance gate: **89 fixtures**, 0 unexpected.
 
 ## Motivation
@@ -164,14 +164,14 @@ Two rules govern change:
   nor a connector may invent a wire field locally.
 - **Additive changes imply a minor bump; breaking a fixture implies a major
   bump**, taken deliberately by both sides. A version mismatch fails closed; it never
-  silently mis-parses. As of 3.0.0 this splits into two axes - see the draft's section 11:
+  silently mis-parses. As of 3.0.0 this splits into two axes - see the draft's Versioning and Conformance section:
   the *wire* major (`contract_version`) tracks envelope-shape compatibility,
   while the contract's own SemVer tracks the fuller set of obligations on
   both sides.
 
 Some obligations are behavioral rather than wire-shaped - for example, that a
 connector must not require write access to the inbound tree. Those sit outside
-the fixture gate by construction, and the draft's Conformance section (11.3)
+the fixture gate by construction, and the draft's Conformance section
 names the operational check for each. `fixtures/validate.py`'s docstring lists what a green run does *not* prove.
 
 ## Status

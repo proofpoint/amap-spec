@@ -10,24 +10,26 @@
 > and into `schemas/` and `fixtures/` if the shape or the acceptance rules move
 > (`WORKFLOWS.md`).
 >
-> Where each section went, by the draft's rendered numbering:
+> Where each section went, by the draft's section names (rendered numbers
+> shift as sections are added, so they are not used here):
 >
-> | This file | Draft |
+> | This file | Draft section |
 > |---|---|
-> | §1 Actors and the invariant | §3 Architecture and Trust Model (3.1 Actors, 3.2 The load-bearing invariant) |
-> | §2 Directory layout; Deletion rights | §4 Volume Layout (4.1 Obligations, 4.2 Deletion rights) |
-> | §3 Outbound: submit request | §5 Outbound: Submit Request |
-> | §4 Outbound: result | §6 Outbound: Result |
-> | §5 Inbound: deliver-notice | §7 Inbound: Deliver Notice and Inbound Message |
-> | §6 Task correlation | §8 Task Correlation |
-> | §7 Versioning and conformance; §7.1 Conformance classes | §11 Versioning and Conformance (11.1 Versioning, 11.3 Conformance); the version history is the draft's Change Log |
-> | §8 Required vs. optional | §11.2 Required versus optional |
-> | §9 Binding record | §9 Binding Record |
-> | §10 Peer directory | §10 The Peer Directory; schema in Appendix G |
-> | Appendix A ("handled" signal) | Appendix J |
+> | §1 Actors and the invariant | Architecture and Trust Model (Actors; The load-bearing invariant) |
+> | §2 Directory layout; Deletion rights | Volume Layout (Obligations; Deletion rights) |
+> | §3 Outbound: submit request | Outbound: Submit Request |
+> | §4 Outbound: result | Outbound: Result |
+> | §5 Inbound: deliver-notice | Inbound: Deliver Notice and Inbound Message |
+> | §6 Task correlation | Task Correlation |
+> | §7 Versioning and conformance; §7.1 Conformance classes | Versioning and Conformance (Versioning; Conformance); the version history is the draft's Change Log |
+> | §8 Required vs. optional | Versioning and Conformance: Required versus optional |
+> | §9 Binding record | Binding Record |
+> | §10 Peer directory | The Peer Directory, and the Peer-Directory Schema appendix |
+> | Appendix A ("handled" signal) | the appendix "A Deferred Seam-Visible 'Handled' Signal" |
 >
 > The peer-origin profile, `spec/peer-origin.md`, is **not** frozen. It is
-> v3.1.0 DRAFT, the draft deliberately carries only its schema (Appendix F),
+> v3.1.0 DRAFT, the draft deliberately carries only its schema (the Peer-Notice
+> Schema appendix),
 > and it stays the canonical prose for the peer lane until it leaves DRAFT.
 >
 > Reconciliation before freezing (2026-09-24): every obligation in this file
