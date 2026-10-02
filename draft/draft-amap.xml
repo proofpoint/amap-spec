@@ -5,23 +5,32 @@
   <!ENTITY nbhy   "&#8209;">
   <!ENTITY wj     "&#8288;">
 ]>
-<rfc xmlns:xi="http://www.w3.org/2001/XInclude" ipr="trust200902" docName="draft-amap-00" category="info" submissionType="independent" tocInclude="true" sortRefs="true" symRefs="true" version="3">
+<rfc 
+	xmlns:xi="http://www.w3.org/2001/XInclude" 
+	ipr="trust200902" 
+	docName="draft-rapp-amap-00" 
+	category="std" 
+	submissionType="IETF" 
+	tocInclude="true" 
+	sortRefs="true" 
+	symRefs="true" 
+	version="3">
   <front>
     <title abbrev="AMAP">The Agent Mailbox Access Protocol (AMAP)</title>
-    <seriesInfo name="Internet-Draft" value="draft-amap-00"/>
+    <seriesInfo name="Internet-Draft" value="draft-rapp-amap-00"/>
     <author initials="D." surname="Rapp" fullname="Daniel Rapp">
       <organization>Proofpoint, Inc.</organization>
       <address>
         <email>drapp@proofpoint.com</email>
       </address>
     </author>
-    <author initials="T." surname="Adams" fullname="Trent Adams">
+    <author initials="T." surname="Adams" fullname="J. Trent Adams">
       <organization>Proofpoint, Inc.</organization>
       <address>
         <email>tadams@proofpoint.com</email>
       </address>
     </author>
-    <date year="2026" month="September" day="16"/>
+    <date year="2026" month="September" day="26"/>
     <abstract>
 
 <t>The Agent Mailbox Access Protocol (AMAP) is a wire contract, carried over a
@@ -31,63 +40,23 @@ and receive email through a runtime that does not trust it: every outbound
 message begins as an inert request file that the runtime copies into private
 staging, validates independently, and applies policy to before anything is
 transmitted, and every inbound message is authenticated and screened by the
-runtime before a notice describing it appears in the agent's namespace. This
-document specifies the directory layout and its filesystem obligations —
+runtime before a notice describing it appears in the agent's namespace. </t>
+
+<t>This document specifies the directory layout and its filesystem obligations —
 ownership, write and delete rights, and the path, symlink, and concurrency
 discipline a runtime observes; the JSON message shapes for submit requests,
 results, deliver notices, spooled message bodies, and an optional binding
 record; the correlation and versioning rules, including a direction-aware
-unknown-member tolerance rule; and two conformance classes. AMAP is
-deliberately not a mail protocol: it neither defines nor replaces SMTP, IMAP,
-or provider-side infrastructure, and composes with them rather than
-displacing them. Its single design center is that no security property
+unknown-member tolerance rule; and two conformance classes. </t>
+
+<t>AMAP is deliberately not a mail protocol: it neither defines nor replaces 
+SMTP, IMAP, or provider-side infrastructure, and composes with them rather 
+than displacing them. Its single design center is that no security property
 depends on the agent — or on the connector speaking for it — behaving
 correctly.</t>
-      <t><strong>Naming.</strong> This protocol was called AMP ("Agent Mailbox Protocol") until
-2026-09-15. It was renamed because AMP collides with the IETF DTN working
-group's adopted <tt>draft-ietf-dtn-amp</tt>. The filename of this draft is unchanged
-at this document version; the schema identifiers moved with the name (Change
-Log, 3.1.0).</t>
-      <!-- NOT `note_Status_of_This_Memo`. That heading is RESERVED: with a real `ipr`
-     value xml2rfc generates the true "Status of This Memo" itself, and a note
-     of the same name renders BESIDE it. The two then contradict each other on
-     precisely the question the IPR value exists to answer — the generated text
-     says the draft "is submitted in full conformance with the provisions of
-     BCP 78 and BCP 79", ours says it is not a standard and nothing has been
-     submitted. Under `ipr: none` no boilerplate was generated and the collision
-     could not appear, so this was invisible until the IPR value was settled. -->
-
-
 
     </abstract>
-    <note>
-      <name>About This Draft</name>
 
-<t>This document is an initial draft, distributed for review and comment. It is
-<strong>not</strong> a standard, and no assurance is given that it will become one. It may
-be updated, replaced, or rendered obsolete by later documents at any time, and
-it is inappropriate to cite this draft as a stable reference.</t>
-      <t>This draft describes Agent Mailbox Access Protocol wire major version <tt>2</tt>,
-document version 3.1.0 (DRAFT). As of document version 3.0.0 these two numbers
-deliberately track different things, and are allowed to diverge: the wire
-major tracks whole-document acceptance compatibility, while the document
-version tracks the fuller set of obligations placed on implementations.
-<xref target="sec-10-1"/> states the rule and the reasoning. Document version 3.1.0 is
-marked DRAFT: it is an additive minor revision of 3.0.0 (<xref target="sec-10-1"/>, Change
-Log). The peer-origin profile it introduces is present in this document as its
-schema and conformance fixtures (<xref target="app-f"/>, <xref target="app-h"/>); the profile's prose
-is a companion document (<tt>spec/peer-origin.md</tt>, v3.1.0 DRAFT), and nothing in
-this document's body specifies the <tt>peer/</tt> tree beyond what that schema and
-those fixtures pin.</t>
-      <t><strong>Change control.</strong> A capability change to this protocol — a new field, a new
-message kind, or a change to an existing obligation — is a change to <em>this
-document and to its conformance fixture suite</em> (<xref target="app-g"/>, <xref target="app-h"/>), made
-<strong>before</strong> any implementation adopts it. No implementation introduces a
-wire-visible change unilaterally: a change that is not reflected here and in
-the fixtures is not part of the protocol.</t>
-      <t>This document and the accompanying schemas and conformance fixtures are
-published under the Apache License 2.0.</t>
-    </note>
   </front>
   <middle>
 
@@ -239,14 +208,23 @@ wire-verifiable fact, this document says so plainly (<xref target="sec-11-14"/>)
 "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this
 document are to be interpreted as described in BCP 14 <xref target="RFC2119"/> <xref target="RFC8174"/>
 when, and only when, they appear in all capitals, as shown here.</t>
-      <t>Every message defined by this document is a JSON text as defined by
-<xref target="RFC8259"/>, encoded in UTF-8 <xref target="RFC3629"/>. The schemas in <xref target="app-a"/> through
-<xref target="app-e"/> are written in the JSON Schema 2020-12 dialect
-<xref target="JSON-SCHEMA-2020-12"/>.</t>
-      <t>Sections and subsections explicitly marked <em>(informative)</em> or
-<em>(non-normative)</em> carry no requirements; <xref target="sec-3-4"/>, <xref target="app-i"/>, and the
-Change Log are the only such parts of this document.</t>
-      <t><strong>Terminology.</strong></t>
+
+	      <t>Every message defined by this document is a JSON text as defined by
+	<xref target="RFC8259"/>, encoded in UTF-8 <xref target="RFC3629"/>. The schemas in <xref target="app-a"/> through
+	<xref target="app-e"/> are written in the JSON Schema 2020-12 dialect
+	<xref target="JSON-SCHEMA-2020-12"/>.</t>
+	      <t>Sections and subsections explicitly marked <em>(informative)</em> or
+	<em>(non-normative)</em> carry no requirements; <xref target="sec-3-4"/>, <xref target="app-i"/>, and the
+	Change Log are the only such parts of this document.</t>
+
+      <t>Where this document says an artifact is <em>dropped</em>, it means the consumer MUST
+NOT surface the artificat to its Agent and MUST NOT act on it. Where it says a consumer
+<em>fails closed</em>, it means the consumer refuses to process the artifact rather
+than proceeding on a partial or guessed interpretation.</t>
+
+    <section anchor="terminology">
+      <name>Terminology</name>
+
       <ul spacing="normal">
         <li>
           <t><strong>Agent</strong> — the untrusted process whose email capability this protocol
@@ -254,6 +232,12 @@ mediates. It holds no credential, has no send path of its own, and reaches
 the protocol only through its Connector. Nothing in this document places a
 requirement on the Agent, because no security property may depend on it.</t>
         </li>
+
+        <li>
+          <t><strong>Binding Record</strong> — the optional, informational artifact at the Volume
+root naming which mailbox the Volume is bound to (<xref target="sec-9"/>).</t>
+        </li>
+
         <li>
           <t><strong>Connector</strong> — the per-Agent component that speaks the Agent-side half of
 this contract: it writes Submit Requests, reads Results and Notices, and
@@ -263,12 +247,73 @@ document it is treated as untrusted, and the requirements placed on it are
 well-formedness and non-crashing obligations, never obligations another
 party's safety rests on.</t>
         </li>
+
+        <li>
+          <t><strong>Descriptor</strong> — one entry in an <tt>attachments[]</tt> array, describing an
+attachment (its display filename, media type, size, and — depending on
+direction — digest, Disposition, or content reference). A Descriptor is
+metadata; it is never a path.</t>
+        </li>
+
+        <li>
+          <t><strong>Disposition</strong> — the Runtime's assertion about an inbound attachment's
+handling: <tt>clean</tt>, <tt>stripped</tt>, <tt>quarantined</tt>, or <tt>unscanned</tt> (<xref target="sec-7-2"/>).</t>
+        </li>
+
+        <li>
+          <t><strong>Inbound Message</strong> — the Runtime-authored artifact carrying a delivered
+message's body text and headers, spooled under a Notice's identifier and
+fetched on demand (<xref target="sec-7-3"/>).</t>
+        </li>
+
+        <li>
+          <t><strong>Namespace</strong> — the per-Agent subtree <tt>&lt;volume-root&gt;/&lt;agent-id&gt;/</tt>, mounted
+into that Agent's sandbox. It is the unit of isolation and the sole
+authority for attributing an artifact to an Agent.</t>
+        </li>
+
+        <li>
+          <t><strong>Notice</strong> (Deliver Notice) — the Runtime-authored artifact announcing that
+a message was delivered to the Agent's mailbox (<xref target="sec-7"/>). It is a
+pointer and summary, not the message.</t>
+        </li>
+
+        <li>
+          <t><strong>Ordinal</strong> — the integer naming a Sidecar blob. It equals the index of the
+corresponding Descriptor in its array, and is the sole binding authority
+between a Descriptor and its bytes.</t>
+        </li>
+
+        <li>
+          <t><strong>Result</strong> — the Runtime-authored verdict for one consumed Submit Request
+(<xref target="sec-6"/>).</t>
+        </li>
+
         <li>
           <t><strong>Runtime</strong> — the trusted, credentialed, Agent-agnostic component that
 speaks the other half: it holds mail credentials, owns each Agent's
 identity, makes every policy decision, and is the only party that
 transmits or receives mail.</t>
         </li>
+
+        <li>
+          <t><strong>Sidecar</strong> — attachment bytes stored beside a Submit Request or a Notice,
+in a directory named after that artifact, with each blob named by a
+0-based ordinal.</t>
+        </li>
+
+        <li>
+          <t><strong>Staging</strong> — Runtime-private storage outside the Volume, unreachable from
+any Agent's mount, into which the Runtime copies Agent-authored bytes
+before acting on them (<xref target="sec-4-1"/>).</t>
+        </li>
+
+        <li>
+          <t><strong>Submit Request</strong> — the Connector-authored artifact requesting that a
+message be sent (<xref target="sec-5"/>). It is inert: it carries no capability and
+effects nothing by existing.</t>
+        </li>
+
         <li>
           <t><strong>Volume</strong> — the runtime-owned filesystem tree carrying this protocol,
 containing one Namespace per Agent plus an optional Binding Record at its
@@ -276,64 +321,12 @@ root. Its mount path is a deployment choice; this document writes
 <tt>&lt;volume-root&gt;/</tt> for it and nothing in the protocol derives from its name.
 No implementation may depend on that name or any other.</t>
         </li>
-        <li>
-          <t><strong>Namespace</strong> — the per-Agent subtree <tt>&lt;volume-root&gt;/&lt;agent-id&gt;/</tt>, mounted
-into that Agent's sandbox. It is the unit of isolation and the sole
-authority for attributing an artifact to an Agent.</t>
-        </li>
-        <li>
-          <t><strong>Submit Request</strong> — the Connector-authored artifact requesting that a
-message be sent (<xref target="sec-5"/>). It is inert: it carries no capability and
-effects nothing by existing.</t>
-        </li>
-        <li>
-          <t><strong>Result</strong> — the Runtime-authored verdict for one consumed Submit Request
-(<xref target="sec-6"/>).</t>
-        </li>
-        <li>
-          <t><strong>Notice</strong> (Deliver Notice) — the Runtime-authored artifact announcing that
-a message was delivered to the Agent's mailbox (<xref target="sec-7"/>). It is a
-pointer and summary, not the message.</t>
-        </li>
-        <li>
-          <t><strong>Inbound Message</strong> — the Runtime-authored artifact carrying a delivered
-message's body text and headers, spooled under a Notice's identifier and
-fetched on demand (<xref target="sec-7-3"/>).</t>
-        </li>
-        <li>
-          <t><strong>Binding Record</strong> — the optional, informational artifact at the Volume
-root naming which mailbox the Volume is bound to (<xref target="sec-9"/>).</t>
-        </li>
-        <li>
-          <t><strong>Sidecar</strong> — attachment bytes stored beside a Submit Request or a Notice,
-in a directory named after that artifact, with each blob named by a
-0-based ordinal.</t>
-        </li>
-        <li>
-          <t><strong>Ordinal</strong> — the integer naming a Sidecar blob. It equals the index of the
-corresponding Descriptor in its array, and is the sole binding authority
-between a Descriptor and its bytes.</t>
-        </li>
-        <li>
-          <t><strong>Descriptor</strong> — one entry in an <tt>attachments[]</tt> array, describing an
-attachment (its display filename, media type, size, and — depending on
-direction — digest, Disposition, or content reference). A Descriptor is
-metadata; it is never a path.</t>
-        </li>
-        <li>
-          <t><strong>Disposition</strong> — the Runtime's assertion about an inbound attachment's
-handling: <tt>clean</tt>, <tt>stripped</tt>, <tt>quarantined</tt>, or <tt>unscanned</tt> (<xref target="sec-7-2"/>).</t>
-        </li>
-        <li>
-          <t><strong>Staging</strong> — Runtime-private storage outside the Volume, unreachable from
-any Agent's mount, into which the Runtime copies Agent-authored bytes
-before acting on them (<xref target="sec-4-1"/>).</t>
-        </li>
+
       </ul>
-      <t>Where this document says an artifact is <em>dropped</em>, it means the consumer does
-not surface it to its Agent and does not act on it; where it says a consumer
-<em>fails closed</em>, it means the consumer refuses to process the artifact rather
-than proceeding on a partial or guessed interpretation.</t>
+
+
+</section>
+
     </section>
     <section anchor="sec-3">
       <name>Architecture and Trust Model</name>
@@ -850,11 +843,10 @@ before anything leaves.</t>
 as a JSON text <xref target="RFC8259"/>. Its Sidecar bytes, if any, are written first,
 into <tt>req-&lt;id&gt;.attachments/</tt>, one blob per Descriptor, named by that
 Descriptor's 0-based array index (<xref target="sec-4-1"/>, commit sentinel).</t>
+<t><strong>NOTE:</strong> '\' line wrapping per <xref target="RFC8792" format="default"/></t>
       <figure anchor="ex-submit-request">
         <name>draft/examples/submit-request.json (illustrative — not a fixture)</name>
         <sourcecode type="json" name="submit-request.json"><![CDATA[
-NOTE: '\' line wrapping per RFC 8792
-
 {
   "contract_version": "2",
   "req_id": "00000001",
@@ -2434,6 +2426,9 @@ assertion means.</t>
       <name>References</name>
       <references anchor="sec-normative-references">
         <name>Normative References</name>
+
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.8792.xml"/>
+
         <reference anchor="RFC2119">
           <front>
             <title>Key words for use in RFCs to Indicate Requirement Levels</title>
