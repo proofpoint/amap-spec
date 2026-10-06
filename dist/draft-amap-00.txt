@@ -5122,7 +5122,9 @@ Internet-Draft                    AMAP                    September 2026
       Connector's repository, package, or deployment, and opaque to the
       Runtime that reads it; the wording it replaced ("a Connector or
       deployment name") permitted a repository name to leak into a wire-
-      visible path.  The first id is claude-code.  One normative
+      visible path.  The reference Claude Code Connector chose claude-
+      code as its id; ids are chosen by each Connector, and this
+      document neither lists nor registers them.  One normative
       clarification sits beside it: an outcome written there is a claim
       by the receiving side, never proof of delivery or of non-delivery,
       and the Runtime's own delivery record is authoritative over it
@@ -5144,8 +5146,6 @@ Internet-Draft                    AMAP                    September 2026
       rendering a snapshot onto an Agent-writable mount that goes stale
       whenever the fleet changes.  It is advisory and never
       authoritative, and a Runtime never reads it back as authorisation,
-      which is what stops it decaying into an allowlist the Agent can
-      see.  The Namespace root gains a Runtime-owned posture for
 
 
 
@@ -5154,6 +5154,8 @@ Rapp & Adams              Expires 20 March 2027                [Page 92]
 Internet-Draft                    AMAP                    September 2026
 
 
+      which is what stops it decaying into an allowlist the Agent can
+      see.  The Namespace root gains a Runtime-owned posture for
       Runtime-written files: the file sits beside the lanes rather than
       inside one, because it spans both.  Additive: a new optional
       artifact, a new schema and seven fixtures (4 valid, 3 invalid); no
@@ -5200,8 +5202,6 @@ Internet-Draft                    AMAP                    September 2026
       level.  Consequence: adding an optional member to a Runtime-
       authored artifact is now genuinely additive; adding any member to
       the submit-request is a major change.
-
-
 
 
 

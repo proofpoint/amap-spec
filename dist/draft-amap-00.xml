@@ -4393,8 +4393,9 @@ on it (<xref target="sec-4-1"/>). <tt>&lt;name&gt;</tt> is pinned as a stable Co
 chosen once, unchanged by any rename of the Connector's repository,
 package, or deployment, and opaque to the Runtime that reads it; the
 wording it replaced ("a Connector or deployment name") permitted a
-repository name to leak into a wire-visible path. The first id is
-<tt>claude-code</tt>. One normative clarification sits beside it: an outcome
+repository name to leak into a wire-visible path. The reference Claude
+Code Connector chose <tt>claude-code</tt> as its id; ids are chosen by each
+Connector, and this document neither lists nor registers them. One normative clarification sits beside it: an outcome
 written there is a claim by the receiving side, never proof of delivery
 or of non-delivery, and the Runtime's own delivery record is
 authoritative over it (<xref target="sec-11-15"/>). There is deliberately no inbound
