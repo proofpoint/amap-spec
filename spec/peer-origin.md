@@ -179,7 +179,12 @@ safety property the runtime relies on. Core's §1 invariant is untouched.
 pins for `draft.to` — same grammar, same exclusions, no display name. Local
 part = the agent's name within its runtime; domain = the runtime's authority.
 Same-host deployments with no mail MAY use a non-routable domain; cross-host
-requires a routable one, because cross-host peer traffic is mail (§5). Where
+requires a routable one, because cross-host peer traffic is mail (§5).
+Routable means deliverable by the mail system that carries the deployment's
+peer traffic; it need not be resolvable in the public DNS, because peer keys
+are configured, not looked up (§5). A peer domain MUST belong to exactly one
+runtime among those configured as peers, so a deployment that may peer
+across organisations should use domains it owns. Where
 an agent has a bound mailbox (`identity.json`'s `address`) the deployment
 SHOULD use it, so an agent has one identity on both lanes.
 

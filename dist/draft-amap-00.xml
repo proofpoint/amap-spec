@@ -244,8 +244,8 @@ when, and only when, they appear in all capitals, as shown here.</t>
 <xref target="app-e"/> are written in the JSON Schema 2020-12 dialect
 <xref target="JSON-SCHEMA-2020-12"/>.</t>
       <t>Sections and subsections explicitly marked <em>(informative)</em> or
-<em>(non-normative)</em> carry no requirements; <xref target="sec-3-4"/>, <xref target="app-i"/>, and the
-Change Log are the only such parts of this document.</t>
+<em>(non-normative)</em> carry no requirements; <xref target="sec-3-4"/>, <xref target="sec-3-5"/>, <xref target="app-i"/>,
+and the Change Log are the only such parts of this document.</t>
       <t><strong>Terminology.</strong></t>
       <ul spacing="normal">
         <li>
@@ -504,6 +504,47 @@ merged Agent Communication Protocol and unrelated to AMAP.</t>
 preparing this document for publication at a later date is advised to
 re-verify them rather than relying on this text.</t>
       </section>
+      <section anchor="sec-3-5">
+        <name>Runtimes Built from Several Components (Informative)</name>
+        <t><em>This subsection is informative. It contains no requirements.</em></t>
+        <t>The Runtime is defined by its role, not as a single process. A Runtime may
+be built from several trusted components: for example, one that drains Agent
+Namespaces and applies policy, and another that holds the mail credentials
+and talks to the provider. Every obligation this document places on the
+Runtime binds the composite as seen from the Agent's Namespace. How the
+components divide the work, and how they communicate, is Runtime mechanism
+and out of scope. They may communicate by any means, for example SMTP
+<xref target="RFC5321"/> between hosts or LMTP <xref target="RFC2033"/> within one; this document
+specifies only the Agent boundary.</t>
+        <t>Some existing obligations are easy to lose when the work is divided:</t>
+        <ul spacing="normal">
+          <li>
+            <t>exactly one Result per consumed request, including when an inner
+component fails or never answers (<xref target="sec-6-1"/>);</t>
+          </li>
+          <li>
+            <t><tt>accepted</tt> only once the provider has accepted the message for relay
+(<xref target="sec-6-1"/>);</t>
+          </li>
+          <li>
+            <t>the recipient set handed to the provider is exactly the set on which
+recipient policy was evaluated (<xref target="sec-5"/>);</t>
+          </li>
+          <li>
+            <t>nothing quarantined or unverified becomes a Notice (<xref target="sec-7"/>), and
+<tt>clean</tt> is asserted only for bytes the publishing component has verified,
+with every <tt>content_ref</tt> bound to the Notice it sits in (<xref target="sec-7-2"/>);</t>
+          </li>
+          <li>
+            <t>attribution is carried between components by Runtime configuration,
+never by anything the Agent wrote (<xref target="sec-4-1"/>); and</t>
+          </li>
+          <li>
+            <t>only the component facing the Agent's Namespace writes the Agent's
+lanes.</t>
+          </li>
+        </ul>
+      </section>
     </section>
     <section anchor="sec-4">
       <name>Volume Layout</name>
@@ -554,7 +595,12 @@ self-declared. Attribution is <em>the Namespace a file arrived in</em>, never an
 <tt>agent_id</tt> member inside the file; that member is a cross-check only, never
 the source of truth. A Runtime MUST reject a Submit Request whose
 <tt>agent_id</tt>, when present, does not match the Namespace it was found in, and
-MUST NOT use that member to attribute the request.</t>
+MUST NOT use that member to attribute the request. A Runtime MUST know the
+<tt>&lt;agent-id&gt;</tt> of every Namespace it serves: from its own configuration
+or, where its own layout carries it, from the Namespace's path, and never
+from anything the Agent writes. A Runtime that cannot name the Namespace in
+which it found a Submit Request MUST reject that request rather than accept
+its <tt>agent_id</tt> unchecked.</t>
         <t><strong>Isolation is structural.</strong> A Connector scoped to <tt>&lt;agent-id&gt;/</tt> cannot read
 another Agent's drafts or Notices.</t>
         <t><strong>All writes are atomic.</strong> Every artifact in the tree above is published by
@@ -760,7 +806,12 @@ read by out-of-band agreement. <strong><tt>&lt;name&gt;</tt> is a stable Connect
 Connector chooses it once, and it MUST NOT change when the Connector's
 repository, package, or deployment is renamed or moved. A Runtime that reads
 the directory MUST treat <tt>&lt;name&gt;</tt> as opaque — it is an identifier, never a
-name to be parsed, resolved, or matched against a repository or path.</strong> This
+name to be parsed, resolved, or matched against a repository or path.</strong>
+Because it is also a path segment in an Agent-writable tree, <tt>&lt;name&gt;</tt> MUST
+be a single path segment of 1 to 64 characters drawn from lowercase ASCII
+letters, digits, hyphen and underscore, beginning with a letter or digit, so
+that it names the same directory on case-sensitive and case-insensitive
+filesystems alike. This
 document specifies no shape for anything under it; it lies outside the
 <tt>req-</tt> prefix the Runtime scans, and nothing security-relevant may be built
 on it. Its first use is a Connector's per-Notice <strong>outcome</strong> file, written
@@ -836,6 +887,20 @@ conformant behavior looks like.</t>
               <td align="left">Runtime or provisioner</td>
               <td align="left">Runtime or provisioner</td>
               <td align="left">Consumers already tolerate its absence (<xref target="sec-9"/>).</td>
+            </tr>
+            <tr>
+              <td align="left">
+                <tt>outbound/ext/&lt;name&gt;/</tt></td>
+              <td align="left">Connector</td>
+              <td align="left">Connector, at will; Runtime, only what its out-of-band agreement says it consumes (an outcome it has read, for example)</td>
+              <td align="left">A Connector-owned side channel (<xref target="sec-4-1"/>). A Runtime never deletes the directory itself or anything else under it, and an operator reset is not consumption.</td>
+            </tr>
+            <tr>
+              <td align="left">
+                <tt>directory.json</tt></td>
+              <td align="left">Runtime</td>
+              <td align="left">Runtime</td>
+              <td align="left">Advisory and Runtime-published (<xref target="sec-directory"/>). It is never read back as authorisation, so deleting or replacing it carries no state.</td>
             </tr>
           </tbody>
         </table>
@@ -1225,7 +1290,10 @@ the schema to a character set that is safe as a path component and as a
           <li>
             <t><strong><tt>message.id</tt></strong> is the provider's message identifier. It is <strong>external
 and not character-set-safe</strong>, and MUST NOT be used as a path component
-anywhere (<xref target="sec-4-1"/>).</t>
+anywhere (<xref target="sec-4-1"/>). It is the mail store's identifier for the
+message (an IMAP UID, for example), not the <xref target="RFC5322"/> Message-ID; an
+Agent replies to a delivered message by naming its notice identifier in
+<tt>in_reply_to</tt> (<xref target="sec-5"/>).</t>
           </li>
           <li>
             <t><strong><tt>message.from</tt> is attacker-controlled display data.</strong> Its display-name
@@ -2423,6 +2491,18 @@ extension space, because an inbound tree is a Runtime assertion about
 origin (<xref target="sec-7-1"/>) and a Connector cannot know what a vendor-named
 assertion means.</t>
       </section>
+      <section anchor="sec-11-16">
+        <name>Special-use domain names</name>
+        <t>Deployments commonly give Agents addresses under names that are not part of
+the public DNS: special-use domain names listed in the registry established
+by <xref target="RFC6761"/> (such as <tt>.test</tt>, <tt>.local</tt>, <tt>.home.arpa</tt> and <tt>.onion</tt>),
+and names reserved for private use, such as <tt>.internal</tt>. A Runtime MUST NOT
+hand mail addressed to such a name to a mail system outside the deployment,
+whatever its recipient policy allows: doing so leaks fleet-internal
+addresses, and the mail they carry, onto the public Internet. A deployment's
+own mail system that is authoritative for such a name may carry it, and is
+then responsible for never relaying it onward.</t>
+      </section>
     </section>
     <section anchor="sec-12">
       <name>IANA Considerations</name>
@@ -2576,6 +2656,34 @@ assertion means.</t>
       </references>
       <references anchor="sec-informative-references">
         <name>Informative References</name>
+        <reference anchor="RFC2033" target="https://www.rfc-editor.org/info/rfc2033">
+          <front>
+            <title>Local Mail Transfer Protocol</title>
+            <author fullname="J. Myers" initials="J." surname="Myers"/>
+            <date month="October" year="1996"/>
+          </front>
+          <seriesInfo name="RFC" value="2033"/>
+          <seriesInfo name="DOI" value="10.17487/RFC2033"/>
+        </reference>
+        <reference anchor="RFC5321" target="https://www.rfc-editor.org/info/rfc5321">
+          <front>
+            <title>Simple Mail Transfer Protocol</title>
+            <author fullname="J. Klensin" initials="J." surname="Klensin"/>
+            <date month="October" year="2008"/>
+          </front>
+          <seriesInfo name="RFC" value="5321"/>
+          <seriesInfo name="DOI" value="10.17487/RFC5321"/>
+        </reference>
+        <reference anchor="RFC6761" target="https://www.rfc-editor.org/info/rfc6761">
+          <front>
+            <title>Special-Use Domain Names</title>
+            <author fullname="S. Cheshire" initials="S." surname="Cheshire"/>
+            <author fullname="M. Krochmal" initials="M." surname="Krochmal"/>
+            <date month="February" year="2013"/>
+          </front>
+          <seriesInfo name="RFC" value="6761"/>
+          <seriesInfo name="DOI" value="10.17487/RFC6761"/>
+        </reference>
         <reference anchor="MCP" target="https://modelcontextprotocol.io/specification/2025-11-25">
           <front>
             <title>Model Context Protocol specification, revision 2025-11-25</title>
@@ -4426,6 +4534,21 @@ and the wire <tt>contract_version</tt> stays <tt>"2"</tt>.</t>
             <t><em>Restored 2026-10-05.</em> This entry was in the versioning record this
 document was reconciled against and was lost in the reconciliation, along
 with its fixtures from the count below.</t>
+          </li>
+          <li>
+            <t><strong>Clarifications from implementation</strong> (proposed, 2026-10-07). Questions
+from Runtime implementers reconciling against this document, each answered
+from the existing text and then stated: a Runtime knows the <tt>&lt;agent-id&gt;</tt>
+of every Namespace it serves and rejects a request from a Namespace it cannot
+name (<xref target="sec-4-1"/>); <tt>outbound/ext/&lt;name&gt;/</tt>'s id is a lowercase
+single path segment (<xref target="sec-4-1"/>); a Runtime may be built from several
+trusted components, and its obligations bind the composite (<xref target="sec-3-5"/>,
+informative); the Deletion rights table gains rows for <tt>outbound/ext/&lt;name&gt;/</tt>
+and <tt>directory.json</tt> (<xref target="sec-4-2"/>); <tt>message.id</tt> is the mail store's
+identifier, not the Message-ID (<xref target="sec-7"/>); and a Runtime does not hand mail
+for special-use or private-use domain names to a mail system outside the
+deployment (<xref target="sec-11-16"/>). The companion peer-origin profile clarifies
+what a routable peer domain is. No schema or fixture changes.</t>
           </li>
           <li>
             <t><strong>Fixtures: 75 total (27 valid, 48 invalid), up from 58.</strong> 16 <tt>peer-*</tt>

@@ -988,3 +988,24 @@ section = "sec-roster"
 class = "operational"
 note = "What an agent is told, and by whom, is presentation behaviour of the connector or deployment, checked operationally. Reworded 2026-09-24 so the duty falls on whatever points the agent at the roster, not only a connector tool."
 text = "Whatever points an Agent at the roster, whether a Connector that surfaces it or a deployment that tells the Agent where to read it, MUST convey that membership is neither authorisation nor a prediction of acceptance, that the roster is not the Agent's identity and its own entry is not a peer, and that an absent or stale roster means unknown."
+
+[[sentence]]
+id = "28a8d8a68ed5"
+section = "sec-4-1"
+class = "operational"
+note = "Proposed 2026-10-07. Where a Runtime gets each Namespace's name is configuration and layout, invisible to a document validator. Check: start the Runtime without a name source and confirm it refuses to start or rejects requests."
+text = "A Runtime MUST know the <agent-id> of every Namespace it serves: from its own configuration or, where its own layout carries it, from the Namespace's path, and never from anything the Agent writes."
+
+[[sentence]]
+id = "ace0041a313e"
+section = "sec-4-1"
+class = "operational"
+note = "Proposed 2026-10-07. Runtime behaviour on a request it cannot attribute: no document shows it. Check: place a request carrying agent_id where the Runtime has no name for the Namespace and confirm a rejected Result."
+text = "A Runtime that cannot name the Namespace in which it found a Submit Request MUST reject that request rather than accept its agent_id unchecked."
+
+[[sentence]]
+id = "9eda82711925"
+section = "sec-4-1"
+class = "operational"
+note = "Proposed 2026-10-07. A directory name, not a document member, so no schema or fixture can pin it. Check: the Connector's chosen id matches ^[a-z0-9][a-z0-9_-]{0,63}$."
+text = "Because it is also a path segment in an Agent-writable tree, <name> MUST be a single path segment of 1 to 64 characters drawn from lowercase ASCII letters, digits, hyphen and underscore, beginning with a letter or digit, so that it names the same directory on case-sensitive and case-insensitive filesystems alike."
