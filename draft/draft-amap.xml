@@ -4536,6 +4536,21 @@ document was reconciled against and was lost in the reconciliation, along
 with its fixtures from the count below.</t>
           </li>
           <li>
+            <t><strong>Clarifications from implementation</strong> (proposed, 2026-10-07). Questions
+from Runtime implementers reconciling against this document, each answered
+from the existing text and then stated: a Runtime knows the <tt>&lt;agent-id&gt;</tt>
+of every Namespace it serves and rejects a request from a Namespace it cannot
+name (<xref target="sec-4-1"/>); <tt>outbound/ext/&lt;name&gt;/</tt>'s id is a lowercase
+single path segment (<xref target="sec-4-1"/>); a Runtime may be built from several
+trusted components, and its obligations bind the composite (<xref target="sec-3-5"/>,
+informative); the Deletion rights table gains rows for <tt>outbound/ext/&lt;name&gt;/</tt>
+and <tt>directory.json</tt> (<xref target="sec-4-2"/>); <tt>message.id</tt> is the mail store's
+identifier, not the Message-ID (<xref target="sec-7"/>); and a Runtime does not hand mail
+for special-use or private-use domain names to a mail system outside the
+deployment (<xref target="sec-11-16"/>). The companion peer-origin profile clarifies
+what a routable peer domain is. No schema or fixture changes.</t>
+          </li>
+          <li>
             <t><strong>Fixtures: 75 total (27 valid, 48 invalid), up from 58.</strong> 16 <tt>peer-*</tt>
 fixtures were added (6 valid, 10 invalid), covering a minimal notice, a
 reply, the exposure stamp asserted both ways, a clean attachment

@@ -216,8 +216,8 @@ Internet-Draft                    AMAP                    September 2026
      3.1.0 (DRAFT) — the protocol is AMAP; the outbound extension
              space; the peer-origin profile's schema . . . . . . . .  92
      3.0.0 — direction-aware tolerance, and six closed safety
-             holes . . . . . . . . . . . . . . . . . . . . . . . . .  94
-     2.3.0 — inbound byte access in force  . . . . . . . . . . . . .  96
+             holes . . . . . . . . . . . . . . . . . . . . . . . . .  95
+     2.3.0 — inbound byte access in force  . . . . . . . . . . . . .  97
 
 
 
@@ -227,8 +227,8 @@ Internet-Draft                    AMAP                    September 2026
 
 
      2.2.0 — deletion rights, read-only inbound  . . . . . . . . . .  97
-     2.1.0 — the body spool, and three optional Result members . . .  97
-     2.0.0 — attachments, and contract_version required  . . . . . .  97
+     2.1.0 — the body spool, and three optional Result members . . .  98
+     2.0.0 — attachments, and contract_version required  . . . . . .  98
      Fixture identifier normalization  . . . . . . . . . . . . . . .  98
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  98
 
@@ -5222,6 +5222,22 @@ Internet-Draft                    AMAP                    September 2026
       this document was reconciled against and was lost in the
       reconciliation, along with its fixtures from the count below.
 
+   *  *Clarifications from implementation* (proposed, 2026-10-07).
+      Questions from Runtime implementers reconciling against this
+      document, each answered from the existing text and then stated: a
+      Runtime knows the <agent-id> of every Namespace it serves and
+      rejects a request from a Namespace it cannot name (Section 4.1);
+      outbound/ext/<name>/'s id is a lowercase single path segment
+      (Section 4.1); a Runtime may be built from several trusted
+      components, and its obligations bind the composite (Section 3.5,
+      informative); the Deletion rights table gains rows for outbound/
+      ext/<name>/ and directory.json (Section 4.2); message.id is the
+      mail store's identifier, not the Message-ID (Section 7); and a
+      Runtime does not hand mail for special-use or private-use domain
+      names to a mail system outside the deployment (Section 13.16).
+      The companion peer-origin profile clarifies what a routable peer
+      domain is.  No schema or fixture changes.
+
    *  *Fixtures: 75 total (27 valid, 48 invalid), up from 58.* 16 peer-*
       fixtures were added (6 valid, 10 invalid), covering a minimal
       notice, a reply, the exposure stamp asserted both ways, a clean
@@ -5242,6 +5258,14 @@ Internet-Draft                    AMAP                    September 2026
       Directory.  With them and the fleet roster's seven, version 3.1.0
       has 89 fixtures (34 valid, 55 invalid).
 
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 94]
+
+Internet-Draft                    AMAP                    September 2026
+
+
 3.0.0 — direction-aware tolerance, and six closed safety holes
 
    A *major document bump*; the wire major stays "2".  Section 12.1
@@ -5259,13 +5283,6 @@ Internet-Draft                    AMAP                    September 2026
       authored artifact is now genuinely additive; adding any member to
       the submit-request is a major change.
 
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 94]
-
-Internet-Draft                    AMAP                    September 2026
-
-
    *  *...and for values.* The enum constraint was removed from
       message.sender_standing and message.provenance, the two explicitly
       advisory vocabularies, and a consumer must tolerate an
@@ -5282,6 +5299,28 @@ Internet-Draft                    AMAP                    September 2026
       attachment filename and media_type, draft.reply_to_message_id,
       in_reply_to, agent_id, and ts — including the two members composed
       directly into headers, which earlier schema coverage missed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 95]
+
+Internet-Draft                    AMAP                    September 2026
+
 
    *  *Path discipline, write- and read-side both.* The write-side rule
       became *conjunctive* (Section 4.1), and a new read-side rule
@@ -5314,14 +5353,6 @@ Internet-Draft                    AMAP                    September 2026
       nothing, and a stray claim of a second, message-specific Sidecar
       directory was corrected to match the layout tree.
 
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 95]
-
-Internet-Draft                    AMAP                    September 2026
-
-
    *  *Corrections shipped with this version*, rather than a tidied
       history: (i) the write rule described in an earlier revision as
       "strengthened" had in fact been weakened — the exclusive-create
@@ -5339,6 +5370,14 @@ Internet-Draft                    AMAP                    September 2026
       unknown-member notice fixture moved from the invalid set to the
       valid set and was extended with an unrecognized member inside
       message; valid unknown-member fixtures were added for result and
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 96]
+
+Internet-Draft                    AMAP                    September 2026
+
+
       inbound-message; the withheld-body invalid fixture was deleted,
       having become schema-valid under the relaxed envelope (its name
       always over-claimed what additionalProperties alone tested); the
@@ -5371,13 +5410,6 @@ Internet-Draft                    AMAP                    September 2026
    shape major 2 already carried.  Nothing was tightened, and there is
    still no outbound content_ref.
 
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 96]
-
-Internet-Draft                    AMAP                    September 2026
-
-
 2.2.0 — deletion rights, read-only inbound
 
    A *permissive minor bump*: no wire member, no schema change, no
@@ -5392,6 +5424,15 @@ Internet-Draft                    AMAP                    September 2026
    also pinned three previously implicit reason_code rules: setting one
    on every Result became a keyworded SHOULD, and a consumer must
    tolerate an unrecognized code and must not infer outcome from it.
+
+
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 97]
+
+Internet-Draft                    AMAP                    September 2026
+
 
 2.1.0 — the body spool, and three optional Result members
 
@@ -5426,14 +5467,6 @@ Internet-Draft                    AMAP                    September 2026
    version signal, rather than an unknown-member rejection, is what
    makes that refusal legible.
 
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 97]
-
-Internet-Draft                    AMAP                    September 2026
-
-
 Fixture identifier normalization
 
    Across these versions the fixture suite's identities were normalized
@@ -5448,6 +5481,13 @@ Authors' Addresses
    Daniel Rapp
    Proofpoint, Inc.
    Email: drapp@proofpoint.com
+
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 98]
+
+Internet-Draft                    AMAP                    September 2026
 
 
    Trent Adams
@@ -5485,4 +5525,20 @@ Authors' Addresses
 
 
 
-Rapp & Adams              Expires 20 March 2027                [Page 98]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 99]
