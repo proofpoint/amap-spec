@@ -1140,36 +1140,36 @@ Internet-Draft                    AMAP                    September 2026
    nothing about what conformant behavior looks like.
 
    +=======================+===========+===========+===================+
-   | Artifact              |Written by |May be     | Basis             |
+   | Artifact              |Written by |May be     |Basis              |
    |                       |           |deleted by |                   |
    +=======================+===========+===========+===================+
-   | outbound/             |Connector  |Runtime    | Consumption —     |
-   | req-<id>.json         |           |           | the move to       |
-   | (pending) and         |           |           | processed/, or    |
-   | req-<id>.attachments/ |           |           | deletion once     |
-   |                       |           |           | the Result is     |
-   |                       |           |           | written.  The     |
-   |                       |           |           | Connector MUST    |
-   |                       |           |           | NOT delete or     |
-   |                       |           |           | rewrite a         |
-   |                       |           |           | published         |
-   |                       |           |           | request; the      |
-   |                       |           |           | JSON file's       |
-   |                       |           |           | presence is the   |
-   |                       |           |           | commit signal,    |
-   |                       |           |           | and un-           |
-   |                       |           |           | publishing is     |
-   |                       |           |           | unspecified.      |
+   | outbound/             |Connector  |Runtime    |Consumption — the  |
+   | req-<id>.json         |           |           |move to            |
+   | (pending) and         |           |           |processed/, or     |
+   | req-<id>.attachments/ |           |           |deletion once the  |
+   |                       |           |           |Result is written. |
+   |                       |           |           |The Connector MUST |
+   |                       |           |           |NOT delete or      |
+   |                       |           |           |rewrite a          |
+   |                       |           |           |published request; |
+   |                       |           |           |the JSON file's    |
+   |                       |           |           |presence is the    |
+   |                       |           |           |commit signal, and |
+   |                       |           |           |un-publishing is   |
+   |                       |           |           |unspecified.       |
    +-----------------------+-----------+-----------+-------------------+
-   | outbound/processed/   |Runtime    |Runtime at | The Runtime's     |
-   | req-<id>.json         |           |will;      | own archive.      |
-   |                       |           |Connector  | *Caveat:*         |
-   |                       |           |after      | Section 5.1       |
-   |                       |           |reading the| derives req_id    |
-   |                       |           |matching   | from              |
-   |                       |           |Result     | max(pending,      |
-   |                       |           |           | processed,        |
-   |                       |           |           | results) + 1, so  |
+   | outbound/processed/   |Runtime    |Runtime at |The Runtime's own  |
+   | req-<id>.json         |           |will;      |archive. *Caveat:* |
+   |                       |           |Connector  |Section 5.1        |
+   |                       |           |after      |derives req_id     |
+   |                       |           |reading the|from max(pending,  |
+   |                       |           |matching   |processed,         |
+   |                       |           |Result     |results) + 1, so a |
+   |                       |           |           |Connector that     |
+   |                       |           |           |deletes here (or   |
+   |                       |           |           |in results/) MUST  |
+   |                       |           |           |preserve req_id    |
+   |                       |           |           |monotonicity by    |
 
 
 
@@ -1178,54 +1178,54 @@ Rapp & Adams              Expires 20 March 2027                [Page 21]
 Internet-Draft                    AMAP                    September 2026
 
 
-   |                       |           |           | a Connector that  |
-   |                       |           |           | deletes here (or  |
-   |                       |           |           | in results/)      |
-   |                       |           |           | MUST preserve     |
-   |                       |           |           | req_id            |
-   |                       |           |           | monotonicity by   |
-   |                       |           |           | other durable     |
-   |                       |           |           | means, such as    |
-   |                       |           |           | its own counter.  |
-   |                       |           |           | Correspondingly,  |
-   |                       |           |           | a Runtime MUST    |
-   |                       |           |           | NOT rely on       |
-   |                       |           |           | processed/        |
-   |                       |           |           | contents as       |
-   |                       |           |           | durable state     |
-   |                       |           |           | (for              |
-   |                       |           |           | deduplication,    |
-   |                       |           |           | say) — the        |
-   |                       |           |           | Connector may     |
-   |                       |           |           | delete there,     |
-   |                       |           |           | and the           |
-   |                       |           |           | Runtime's own     |
-   |                       |           |           | record lives      |
-   |                       |           |           | outside this      |
-   |                       |           |           | protocol.         |
+   |                       |           |           |other durable      |
+   |                       |           |           |means, such as its |
+   |                       |           |           |own counter.       |
+   |                       |           |           |Correspondingly, a |
+   |                       |           |           |Runtime MUST NOT   |
+   |                       |           |           |rely on processed/ |
+   |                       |           |           |contents as        |
+   |                       |           |           |durable state (for |
+   |                       |           |           |deduplication,     |
+   |                       |           |           |say) — the         |
+   |                       |           |           |Connector may      |
+   |                       |           |           |delete there, and  |
+   |                       |           |           |the Runtime's own  |
+   |                       |           |           |record lives       |
+   |                       |           |           |outside this       |
+   |                       |           |           |protocol.          |
    +-----------------------+-----------+-----------+-------------------+
-   | outbound/             |Runtime    |Connector, | No signal in      |
-   | results/<id>.json     |           |once read; | this protocol     |
-   |                       |           |Runtime by | tells the         |
-   |                       |           |retention  | Runtime that a    |
-   |                       |           |           | Connector has     |
-   |                       |           |           | read a verdict,   |
-   |                       |           |           | so Runtime-side   |
-   |                       |           |           | deletion SHOULD   |
-   |                       |           |           | be age-based and  |
-   |                       |           |           | generous: a       |
-   |                       |           |           | Result deleted    |
-   |                       |           |           | before it is      |
-   |                       |           |           | read is a lost    |
-   |                       |           |           | verdict.          |
+   | outbound/             |Runtime    |Connector, |No signal in this  |
+   | results/<id>.json     |           |once read; |protocol tells the |
+   |                       |           |Runtime by |Runtime that a     |
+   |                       |           |retention  |Connector has read |
+   |                       |           |           |a verdict, so      |
+   |                       |           |           |Runtime-side       |
+   |                       |           |           |deletion SHOULD be |
+   |                       |           |           |age-based and      |
+   |                       |           |           |generous: a Result |
+   |                       |           |           |deleted before it  |
+   |                       |           |           |is read is a lost  |
+   |                       |           |           |verdict.           |
    +-----------------------+-----------+-----------+-------------------+
-   | inbound/notices/      |Runtime    |Runtime    | Runtime           |
-   | notice-<id>.json,     |           |only.      | retention         |
-   | inbound/messages/     |           |Where a    | policy.  Absent   |
-   | notice-<id>.json, and |           |deployment | a seam-visible    |
-   | their .attachments/   |           |leaves     | consumption       |
-   | Sidecar directories   |           |inbound    | signal            |
-   |                       |           |writable,  | (Appendix K),     |
+   | inbound/notices/      |Runtime    |Runtime    |Runtime retention  |
+   | notice-<id>.json,     |           |only.      |policy.  Absent a  |
+   | inbound/messages/     |           |Where a    |seam-visible       |
+   | notice-<id>.json, and |           |deployment |consumption signal |
+   | their .attachments/   |           |leaves     |(Appendix K),      |
+   | Sidecar directories   |           |inbound    |retention MUST be  |
+   |                       |           |writable,  |conservative and   |
+   |                       |           |the        |age-based.  A      |
+   |                       |           |Connector  |Connector already  |
+   |                       |           |MAY move or|tolerates the      |
+   |                       |           |delete per |disappearance of   |
+   |                       |           |the        |these artifacts: a |
+   |                       |           |optional   |read against a     |
+   |                       |           |processed/ |missing one        |
+   |                       |           |convention,|returns "not       |
+   |                       |           |but MUST   |resolved"          |
+   |                       |           |NOT depend |(Section 7.3).     |
+   |                       |           |on the     |                   |
 
 
 
@@ -1234,29 +1234,40 @@ Rapp & Adams              Expires 20 March 2027                [Page 22]
 Internet-Draft                    AMAP                    September 2026
 
 
-   |                       |           |the        | retention MUST    |
-   |                       |           |Connector  | be conservative   |
-   |                       |           |MAY move or| and age-based.    |
-   |                       |           |delete per | A Connector       |
-   |                       |           |the        | already           |
-   |                       |           |optional   | tolerates the     |
-   |                       |           |processed/ | disappearance of  |
-   |                       |           |convention,| these artifacts:  |
-   |                       |           |but MUST   | a read against a  |
-   |                       |           |NOT depend | missing one       |
-   |                       |           |on the     | returns "not      |
-   |                       |           |ability.   | resolved"         |
-   |                       |           |           | (Section 7.3).    |
+   |                       |           |ability.   |                   |
    +-----------------------+-----------+-----------+-------------------+
-   | inbound/cursor.json   |Runtime    |Runtime    | Internal state.   |
+   | inbound/cursor.json   |Runtime    |Runtime    |Internal state.    |
    +-----------------------+-----------+-----------+-------------------+
-   | audit/log.jsonl       |Runtime    |Runtime    | Never the         |
-   |                       |           |(rotation) | Connector.        |
+   | audit/log.jsonl       |Runtime    |Runtime    |Never the          |
+   |                       |           |(rotation) |Connector.         |
    +-----------------------+-----------+-----------+-------------------+
-   | identity.json         |Runtime or |Runtime or | Consumers         |
-   |                       |provisioner|provisioner| already tolerate  |
-   |                       |           |           | its absence       |
-   |                       |           |           | (Section 9).      |
+   | identity.json         |Runtime or |Runtime or |Consumers already  |
+   |                       |provisioner|provisioner|tolerate its       |
+   |                       |           |           |absence            |
+   |                       |           |           |(Section 9).       |
+   +-----------------------+-----------+-----------+-------------------+
+   | outbound/ext/<name>/  |Connector  |Connector, |A Connector-owned  |
+   |                       |           |at will;   |side channel       |
+   |                       |           |Runtime,   |(Section 4.1).  A  |
+   |                       |           |only what  |Runtime never      |
+   |                       |           |its out-of-|deletes the        |
+   |                       |           |band       |directory itself   |
+   |                       |           |agreement  |or anything else   |
+   |                       |           |says it    |under it, and an   |
+   |                       |           |consumes   |operator reset is  |
+   |                       |           |(an outcome|not consumption.   |
+   |                       |           |it has     |                   |
+   |                       |           |read, for  |                   |
+   |                       |           |example)   |                   |
+   +-----------------------+-----------+-----------+-------------------+
+   | directory.json        |Runtime    |Runtime    |Advisory and       |
+   |                       |           |           |Runtime-published  |
+   |                       |           |           |(Section 10).  It  |
+   |                       |           |           |is never read back |
+   |                       |           |           |as authorisation,  |
+   |                       |           |           |so deleting or     |
+   |                       |           |           |replacing it       |
+   |                       |           |           |carries no state.  |
    +-----------------------+-----------+-----------+-------------------+
 
                                   Table 2
@@ -1266,17 +1277,6 @@ Internet-Draft                    AMAP                    September 2026
    An Agent's only outbound action is dropping an inert request file
    into its Namespace.  The file carries no send capability; the Runtime
    enforces policy before anything leaves.
-
-   A Submit Request is written to <volume-root>/<agent-id>/outbound/
-   req-<id>.json as a JSON text [RFC8259].  Its Sidecar bytes, if any,
-   are written first, into req-<id>.attachments/, one blob per
-   Descriptor, named by that Descriptor's 0-based array index
-   (Section 4.1, commit sentinel).
-
-
-
-
-
 
 
 
@@ -1289,6 +1289,12 @@ Rapp & Adams              Expires 20 March 2027                [Page 23]
 
 Internet-Draft                    AMAP                    September 2026
 
+
+   A Submit Request is written to <volume-root>/<agent-id>/outbound/
+   req-<id>.json as a JSON text [RFC8259].  Its Sidecar bytes, if any,
+   are written first, into req-<id>.attachments/, one blob per
+   Descriptor, named by that Descriptor's 0-based array index
+   (Section 4.1, commit sentinel).
 
    NOTE: '\' line wrapping per RFC 8792
 
@@ -1331,12 +1337,6 @@ Internet-Draft                    AMAP                    September 2026
       string "2" at this document version.  A Runtime MUST check it
       before schema validation and MUST fail closed on an absent, lower,
       or higher major (Section 12.1).
-
-
-
-
-
-
 
 
 

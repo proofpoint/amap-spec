@@ -888,6 +888,20 @@ conformant behavior looks like.</t>
               <td align="left">Runtime or provisioner</td>
               <td align="left">Consumers already tolerate its absence (<xref target="sec-9"/>).</td>
             </tr>
+            <tr>
+              <td align="left">
+                <tt>outbound/ext/&lt;name&gt;/</tt></td>
+              <td align="left">Connector</td>
+              <td align="left">Connector, at will; Runtime, only what its out-of-band agreement says it consumes (an outcome it has read, for example)</td>
+              <td align="left">A Connector-owned side channel (<xref target="sec-4-1"/>). A Runtime never deletes the directory itself or anything else under it, and an operator reset is not consumption.</td>
+            </tr>
+            <tr>
+              <td align="left">
+                <tt>directory.json</tt></td>
+              <td align="left">Runtime</td>
+              <td align="left">Runtime</td>
+              <td align="left">Advisory and Runtime-published (<xref target="sec-directory"/>). It is never read back as authorisation, so deleting or replacing it carries no state.</td>
+            </tr>
           </tbody>
         </table>
       </section>
