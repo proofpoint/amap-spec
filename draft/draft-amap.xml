@@ -2491,6 +2491,18 @@ extension space, because an inbound tree is a Runtime assertion about
 origin (<xref target="sec-7-1"/>) and a Connector cannot know what a vendor-named
 assertion means.</t>
       </section>
+      <section anchor="sec-11-16">
+        <name>Special-use domain names</name>
+        <t>Deployments commonly give Agents addresses under names that are not part of
+the public DNS: special-use domain names listed in the registry established
+by <xref target="RFC6761"/> (such as <tt>.test</tt>, <tt>.local</tt>, <tt>.home.arpa</tt> and <tt>.onion</tt>),
+and names reserved for private use, such as <tt>.internal</tt>. A Runtime MUST NOT
+hand mail addressed to such a name to a mail system outside the deployment,
+whatever its recipient policy allows: doing so leaks fleet-internal
+addresses, and the mail they carry, onto the public Internet. A deployment's
+own mail system that is authoritative for such a name may carry it, and is
+then responsible for never relaying it onward.</t>
+      </section>
     </section>
     <section anchor="sec-12">
       <name>IANA Considerations</name>
@@ -2661,6 +2673,16 @@ assertion means.</t>
           </front>
           <seriesInfo name="RFC" value="5321"/>
           <seriesInfo name="DOI" value="10.17487/RFC5321"/>
+        </reference>
+        <reference anchor="RFC6761" target="https://www.rfc-editor.org/info/rfc6761">
+          <front>
+            <title>Special-Use Domain Names</title>
+            <author fullname="S. Cheshire" initials="S." surname="Cheshire"/>
+            <author fullname="M. Krochmal" initials="M." surname="Krochmal"/>
+            <date month="February" year="2013"/>
+          </front>
+          <seriesInfo name="RFC" value="6761"/>
+          <seriesInfo name="DOI" value="10.17487/RFC6761"/>
         </reference>
         <reference anchor="MCP" target="https://modelcontextprotocol.io/specification/2025-11-25">
           <front>
