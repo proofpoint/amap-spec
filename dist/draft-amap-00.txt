@@ -774,10 +774,10 @@ Internet-Draft                    AMAP                    September 2026
    check only, never the source of truth.  A Runtime MUST reject a
    Submit Request whose agent_id, when present, does not match the
    Namespace it was found in, and MUST NOT use that member to attribute
-   the request.
-
-   *Isolation is structural.* A Connector scoped to <agent-id>/ cannot
-   read another Agent's drafts or Notices.
+   the request.  A Runtime MUST know the <agent-id> of every Namespace
+   it serves: from its own configuration or, where its own layout
+   carries it, from the Namespace's path, and never from anything the
+   Agent writes.  A Runtime that cannot name the Namespace in which it
 
 
 
@@ -785,6 +785,12 @@ Rapp & Adams              Expires 20 March 2027                [Page 14]
 
 Internet-Draft                    AMAP                    September 2026
 
+
+   found a Submit Request MUST reject that request rather than accept
+   its agent_id unchecked.
+
+   *Isolation is structural.* A Connector scoped to <agent-id>/ cannot
+   read another Agent's drafts or Notices.
 
    *All writes are atomic.* Every artifact in the tree above is
    published by writing a .tmp sibling and then renaming it into place
@@ -828,12 +834,6 @@ Internet-Draft                    AMAP                    September 2026
       Agent can swap a parent directory for a symlink in between.
       Applying a no-follow flag to the _final_ path component alone does
       not close this gap — it constrains only the last component, not a
-      swapped parent — and rename and directory-creation calls have no
-      no-follow equivalent at all, so a bare "writes do not follow
-      symlinks" requirement is not sufficient on its own.
-
-
-
 
 
 
@@ -841,6 +841,10 @@ Rapp & Adams              Expires 20 March 2027                [Page 15]
 
 Internet-Draft                    AMAP                    September 2026
 
+
+      swapped parent — and rename and directory-creation calls have no
+      no-follow equivalent at all, so a bare "writes do not follow
+      symlinks" requirement is not sufficient on its own.
 
    *  *(b) No-follow while building the chain.* Each directory component
       that goes into that parent chain MUST itself have been opened with
@@ -868,6 +872,32 @@ Internet-Draft                    AMAP                    September 2026
          additionally be created with O_EXCL (O_WRONLY|O_CREAT|O_EXCL,
          never O_TRUNC in place of O_EXCL), failing closed on EEXIST.
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 16]
+
+Internet-Draft                    AMAP                    September 2026
+
+
       -  *An append-mode or directory-creating write that has no .tmp
          sibling* — audit/log.jsonl is the case this document names —
          cannot use O_EXCL, because the target legitimately already
@@ -888,15 +918,6 @@ Internet-Draft                    AMAP                    September 2026
          an existing log at all; requiring nothing there would leave the
          one write this document names that has no .tmp sibling
          unprotected.
-
-
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 16]
-
-Internet-Draft                    AMAP                    September 2026
-
 
       Requirement (c) is needed in both of its branches because an Agent
       can pre-plant a symlink at a filename the Runtime is about to
@@ -925,6 +946,14 @@ Internet-Draft                    AMAP                    September 2026
    opened object is a regular file through the open descriptor (fstat
    and an S_ISREG test — never a pre-open stat, which is a race), SHOULD
    refuse a file whose link count exceeds 1, and MUST enforce a
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 17]
+
+Internet-Draft                    AMAP                    September 2026
+
+
    deployment-configured per-file size cap (a bounded read) and a per-
    request Sidecar count cap.  The too_large value in the Result
    vocabulary (Section 6.1) presumes that cap: enforcing one is an
@@ -940,19 +969,6 @@ Internet-Draft                    AMAP                    September 2026
    assigned 0-based ordinals equal to the Descriptor's array index,
    which is the sole binding authority.  Nothing else names a blob; a
    Descriptor's filename is display-only and is never a path.
-
-
-
-
-
-
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 17]
-
-Internet-Draft                    AMAP                    September 2026
-
 
    *Commit sentinel.* All Sidecar bytes are written — .tmp sibling, then
    rename — *before* req-<id>.json; the JSON file's presence is the only
@@ -984,6 +1000,16 @@ Internet-Draft                    AMAP                    September 2026
    that depends on its content.  Verify-then-use against a live Agent-
    writable path is a race, not a check.
 
+
+
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 18]
+
+Internet-Draft                    AMAP                    September 2026
+
+
    This obligation is what makes the Connector's "MUST NOT delete or
    rewrite a published request" (Section 4.2) a pure well-formedness
    rule: a Runtime MAY treat an observed post-publish change as
@@ -1002,14 +1028,6 @@ Internet-Draft                    AMAP                    September 2026
    *Tree rules.* Every Runtime-owned inbound-class tree is an *origin
    class*: a consumer derives the class of a document from the tree it
    was read from, and never from any member of the document. notice_id
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 18]
-
-Internet-Draft                    AMAP                    September 2026
-
-
    uniqueness is per tree, and where a tree has more than one writer
    each MUST mint so that cross-writer collision is negligible — at
    least 128 bits of entropy under the identifier character set, or a
@@ -1040,6 +1058,14 @@ Internet-Draft                    AMAP                    September 2026
    paths under outbound/ not enumerated in the layout tree — which MUST
    NOT use the req- prefix, reserved for Submit Requests and their
    Sidecars, so that a Runtime's scan of the drop-box never encounters
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 19]
+
+Internet-Draft                    AMAP                    September 2026
+
+
    Connector-private state.  Either way, the Runtime neither reads nor
    relies on it.  A seam-visible consumption signal is deliberately not
    specified at this document version; Appendix K records the reasoning.
@@ -1058,14 +1084,6 @@ Internet-Draft                    AMAP                    September 2026
    receiving Agent's own uid and therefore forgeable by construction.
    An outcome is a statement by the receiving side about what it did
    with a Notice; a party MUST NOT treat an outcome as proof of delivery
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 19]
-
-Internet-Draft                    AMAP                    September 2026
-
-
    or of non-delivery, and the Runtime's own delivery record is
    authoritative over it (Section 13.15).  There is deliberately no
    inbound extension space: an inbound tree is a Runtime assertion about
@@ -1096,6 +1114,14 @@ Internet-Draft                    AMAP                    September 2026
    |                       |           |           | request; the      |
    |                       |           |           | JSON file's       |
    |                       |           |           | presence is the   |
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 20]
+
+Internet-Draft                    AMAP                    September 2026
+
+
    |                       |           |           | commit signal,    |
    |                       |           |           | and un-           |
    |                       |           |           | publishing is     |
@@ -1114,14 +1140,6 @@ Internet-Draft                    AMAP                    September 2026
    |                       |           |           | deletes here (or  |
    |                       |           |           | in results/)      |
    |                       |           |           | MUST preserve     |
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 20]
-
-Internet-Draft                    AMAP                    September 2026
-
-
    |                       |           |           | req_id            |
    |                       |           |           | monotonicity by   |
    |                       |           |           | other durable     |
@@ -1152,6 +1170,14 @@ Internet-Draft                    AMAP                    September 2026
    |                       |           |           | read a verdict,   |
    |                       |           |           | so Runtime-side   |
    |                       |           |           | deletion SHOULD   |
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 21]
+
+Internet-Draft                    AMAP                    September 2026
+
+
    |                       |           |           | be age-based and  |
    |                       |           |           | generous: a       |
    |                       |           |           | Result deleted    |
@@ -1170,14 +1196,6 @@ Internet-Draft                    AMAP                    September 2026
    |                       |           |Connector  | be conservative   |
    |                       |           |MAY move or| and age-based.    |
    |                       |           |delete per | A Connector       |
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 21]
-
-Internet-Draft                    AMAP                    September 2026
-
-
    |                       |           |the        | already           |
    |                       |           |optional   | tolerates the     |
    |                       |           |processed/ | disappearance of  |
@@ -1207,24 +1225,6 @@ Internet-Draft                    AMAP                    September 2026
    into its Namespace.  The file carries no send capability; the Runtime
    enforces policy before anything leaves.
 
-   A Submit Request is written to <volume-root>/<agent-id>/outbound/
-   req-<id>.json as a JSON text [RFC8259].  Its Sidecar bytes, if any,
-   are written first, into req-<id>.attachments/, one blob per
-   Descriptor, named by that Descriptor's 0-based array index
-   (Section 4.1, commit sentinel).
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1233,6 +1233,12 @@ Rapp & Adams              Expires 20 March 2027                [Page 22]
 
 Internet-Draft                    AMAP                    September 2026
 
+
+   A Submit Request is written to <volume-root>/<agent-id>/outbound/
+   req-<id>.json as a JSON text [RFC8259].  Its Sidecar bytes, if any,
+   are written first, into req-<id>.attachments/, one blob per
+   Descriptor, named by that Descriptor's 0-based array index
+   (Section 4.1, commit sentinel).
 
    NOTE: '\' line wrapping per RFC 8792
 
@@ -1275,12 +1281,6 @@ Internet-Draft                    AMAP                    September 2026
       string "2" at this document version.  A Runtime MUST check it
       before schema validation and MUST fail closed on an absent, lower,
       or higher major (Section 12.1).
-
-
-
-
-
-
 
 
 

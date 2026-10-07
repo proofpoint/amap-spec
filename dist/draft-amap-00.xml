@@ -554,7 +554,12 @@ self-declared. Attribution is <em>the Namespace a file arrived in</em>, never an
 <tt>agent_id</tt> member inside the file; that member is a cross-check only, never
 the source of truth. A Runtime MUST reject a Submit Request whose
 <tt>agent_id</tt>, when present, does not match the Namespace it was found in, and
-MUST NOT use that member to attribute the request.</t>
+MUST NOT use that member to attribute the request. A Runtime MUST know the
+<tt>&lt;agent-id&gt;</tt> of every Namespace it serves: from its own configuration
+or, where its own layout carries it, from the Namespace's path, and never
+from anything the Agent writes. A Runtime that cannot name the Namespace in
+which it found a Submit Request MUST reject that request rather than accept
+its <tt>agent_id</tt> unchecked.</t>
         <t><strong>Isolation is structural.</strong> A Connector scoped to <tt>&lt;agent-id&gt;/</tt> cannot read
 another Agent's drafts or Notices.</t>
         <t><strong>All writes are atomic.</strong> Every artifact in the tree above is published by
