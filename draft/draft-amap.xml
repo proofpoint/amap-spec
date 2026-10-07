@@ -244,8 +244,8 @@ when, and only when, they appear in all capitals, as shown here.</t>
 <xref target="app-e"/> are written in the JSON Schema 2020-12 dialect
 <xref target="JSON-SCHEMA-2020-12"/>.</t>
       <t>Sections and subsections explicitly marked <em>(informative)</em> or
-<em>(non-normative)</em> carry no requirements; <xref target="sec-3-4"/>, <xref target="app-i"/>, and the
-Change Log are the only such parts of this document.</t>
+<em>(non-normative)</em> carry no requirements; <xref target="sec-3-4"/>, <xref target="sec-3-5"/>, <xref target="app-i"/>,
+and the Change Log are the only such parts of this document.</t>
       <t><strong>Terminology.</strong></t>
       <ul spacing="normal">
         <li>
@@ -503,6 +503,47 @@ merged Agent Communication Protocol and unrelated to AMAP.</t>
         <t>The citation facts in this subsection were verified in July 2026. A reviewer
 preparing this document for publication at a later date is advised to
 re-verify them rather than relying on this text.</t>
+      </section>
+      <section anchor="sec-3-5">
+        <name>Runtimes Built from Several Components (Informative)</name>
+        <t><em>This subsection is informative. It contains no requirements.</em></t>
+        <t>The Runtime is defined by its role, not as a single process. A Runtime may
+be built from several trusted components: for example, one that drains Agent
+Namespaces and applies policy, and another that holds the mail credentials
+and talks to the provider. Every obligation this document places on the
+Runtime binds the composite as seen from the Agent's Namespace. How the
+components divide the work, and how they communicate, is Runtime mechanism
+and out of scope. They may communicate by any means, for example SMTP
+<xref target="RFC5321"/> between hosts or LMTP <xref target="RFC2033"/> within one; this document
+specifies only the Agent boundary.</t>
+        <t>Some existing obligations are easy to lose when the work is divided:</t>
+        <ul spacing="normal">
+          <li>
+            <t>exactly one Result per consumed request, including when an inner
+component fails or never answers (<xref target="sec-6-1"/>);</t>
+          </li>
+          <li>
+            <t><tt>accepted</tt> only once the provider has accepted the message for relay
+(<xref target="sec-6-1"/>);</t>
+          </li>
+          <li>
+            <t>the recipient set handed to the provider is exactly the set on which
+recipient policy was evaluated (<xref target="sec-5"/>);</t>
+          </li>
+          <li>
+            <t>nothing quarantined or unverified becomes a Notice (<xref target="sec-7"/>), and
+<tt>clean</tt> is asserted only for bytes the publishing component has verified,
+with every <tt>content_ref</tt> bound to the Notice it sits in (<xref target="sec-7-2"/>);</t>
+          </li>
+          <li>
+            <t>attribution is carried between components by Runtime configuration,
+never by anything the Agent wrote (<xref target="sec-4-1"/>); and</t>
+          </li>
+          <li>
+            <t>only the component facing the Agent's Namespace writes the Agent's
+lanes.</t>
+          </li>
+        </ul>
       </section>
     </section>
     <section anchor="sec-4">
@@ -2586,6 +2627,24 @@ assertion means.</t>
       </references>
       <references anchor="sec-informative-references">
         <name>Informative References</name>
+        <reference anchor="RFC2033" target="https://www.rfc-editor.org/info/rfc2033">
+          <front>
+            <title>Local Mail Transfer Protocol</title>
+            <author fullname="J. Myers" initials="J." surname="Myers"/>
+            <date month="October" year="1996"/>
+          </front>
+          <seriesInfo name="RFC" value="2033"/>
+          <seriesInfo name="DOI" value="10.17487/RFC2033"/>
+        </reference>
+        <reference anchor="RFC5321" target="https://www.rfc-editor.org/info/rfc5321">
+          <front>
+            <title>Simple Mail Transfer Protocol</title>
+            <author fullname="J. Klensin" initials="J." surname="Klensin"/>
+            <date month="October" year="2008"/>
+          </front>
+          <seriesInfo name="RFC" value="5321"/>
+          <seriesInfo name="DOI" value="10.17487/RFC5321"/>
+        </reference>
         <reference anchor="MCP" target="https://modelcontextprotocol.io/specification/2025-11-25">
           <front>
             <title>Model Context Protocol specification, revision 2025-11-25</title>
