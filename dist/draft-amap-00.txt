@@ -1748,7 +1748,10 @@ Internet-Draft                    AMAP                    September 2026
 
    *  *message.id* is the provider's message identifier.  It is
       *external and not character-set-safe*, and MUST NOT be used as a
-      path component anywhere (Section 4.1).
+      path component anywhere (Section 4.1).  It is the mail store's
+      identifier for the message (an IMAP UID, for example), not the
+      [RFC5322] Message-ID; an Agent replies to a delivered message by
+      naming its notice identifier in in_reply_to (Section 5).
 
    *  *message.from is attacker-controlled display data.* Its display-
       name half is chosen freely by the sender —
@@ -1781,9 +1784,6 @@ Internet-Draft                    AMAP                    September 2026
       and they MUST be satisfiable by a literal string the Connector
       carries, requiring no lookup or computation when a body is
       presented.
-
-
-
 
 
 

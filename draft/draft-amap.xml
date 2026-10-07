@@ -1290,7 +1290,10 @@ the schema to a character set that is safe as a path component and as a
           <li>
             <t><strong><tt>message.id</tt></strong> is the provider's message identifier. It is <strong>external
 and not character-set-safe</strong>, and MUST NOT be used as a path component
-anywhere (<xref target="sec-4-1"/>).</t>
+anywhere (<xref target="sec-4-1"/>). It is the mail store's identifier for the
+message (an IMAP UID, for example), not the <xref target="RFC5322"/> Message-ID; an
+Agent replies to a delivered message by naming its notice identifier in
+<tt>in_reply_to</tt> (<xref target="sec-5"/>).</t>
           </li>
           <li>
             <t><strong><tt>message.from</tt> is attacker-controlled display data.</strong> Its display-name
