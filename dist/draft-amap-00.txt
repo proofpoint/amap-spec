@@ -138,9 +138,9 @@ Table of Contents
    4.  Volume Layout . . . . . . . . . . . . . . . . . . . . . . . .  13
      4.1.  Obligations . . . . . . . . . . . . . . . . . . . . . . .  14
      4.2.  Deletion rights . . . . . . . . . . . . . . . . . . . . .  20
-   5.  Outbound: Submit Request  . . . . . . . . . . . . . . . . . .  22
-     5.1.  Field semantics and obligations . . . . . . . . . . . . .  23
-   6.  Outbound: Result  . . . . . . . . . . . . . . . . . . . . . .  25
+   5.  Outbound: Submit Request  . . . . . . . . . . . . . . . . . .  23
+     5.1.  Field semantics and obligations . . . . . . . . . . . . .  24
+   6.  Outbound: Result  . . . . . . . . . . . . . . . . . . . . . .  26
      6.1.  Field semantics and obligations . . . . . . . . . . . . .  26
    7.  Inbound: Deliver Notice and Inbound Message . . . . . . . . .  28
      7.1.  Field semantics and obligations . . . . . . . . . . . . .  29
@@ -1077,18 +1077,22 @@ Internet-Draft                    AMAP                    September 2026
    when the Connector's repository, package, or deployment is renamed or
    moved.  A Runtime that reads the directory MUST treat <name> as
    opaque — it is an identifier, never a name to be parsed, resolved, or
-   matched against a repository or path.* This document specifies no
-   shape for anything under it; it lies outside the req- prefix the
-   Runtime scans, and nothing security-relevant may be built on it.  Its
-   first use is a Connector's per-Notice *outcome* file, written by the
-   receiving Agent's own uid and therefore forgeable by construction.
-   An outcome is a statement by the receiving side about what it did
-   with a Notice; a party MUST NOT treat an outcome as proof of delivery
-   or of non-delivery, and the Runtime's own delivery record is
-   authoritative over it (Section 13.15).  There is deliberately no
-   inbound extension space: an inbound tree is a Runtime assertion about
-   origin, and a Connector cannot know what a vendor-named assertion
-   means.
+   matched against a repository or path.* Because it is also a path
+   segment in an Agent-writable tree, <name> MUST be a single path
+   segment of 1 to 64 characters drawn from lowercase ASCII letters,
+   digits, hyphen and underscore, beginning with a letter or digit, so
+   that it names the same directory on case-sensitive and case-
+   insensitive filesystems alike.  This document specifies no shape for
+   anything under it; it lies outside the req- prefix the Runtime scans,
+   and nothing security-relevant may be built on it.  Its first use is a
+   Connector's per-Notice *outcome* file, written by the receiving
+   Agent's own uid and therefore forgeable by construction.  An outcome
+   is a statement by the receiving side about what it did with a Notice;
+   a party MUST NOT treat an outcome as proof of delivery or of non-
+   delivery, and the Runtime's own delivery record is authoritative over
+   it (Section 13.15).  There is deliberately no inbound extension
+   space: an inbound tree is a Runtime assertion about origin, and a
+   Connector cannot know what a vendor-named assertion means.
 
 4.2.  Deletion rights
 
@@ -1110,10 +1114,6 @@ Internet-Draft                    AMAP                    September 2026
    |                       |           |           | Connector MUST    |
    |                       |           |           | NOT delete or     |
    |                       |           |           | rewrite a         |
-   |                       |           |           | published         |
-   |                       |           |           | request; the      |
-   |                       |           |           | JSON file's       |
-   |                       |           |           | presence is the   |
 
 
 
@@ -1122,6 +1122,10 @@ Rapp & Adams              Expires 20 March 2027                [Page 20]
 Internet-Draft                    AMAP                    September 2026
 
 
+   |                       |           |           | published         |
+   |                       |           |           | request; the      |
+   |                       |           |           | JSON file's       |
+   |                       |           |           | presence is the   |
    |                       |           |           | commit signal,    |
    |                       |           |           | and un-           |
    |                       |           |           | publishing is     |
@@ -1166,10 +1170,6 @@ Internet-Draft                    AMAP                    September 2026
    | results/<id>.json     |           |once read; | this protocol     |
    |                       |           |Runtime by | tells the         |
    |                       |           |retention  | Runtime that a    |
-   |                       |           |           | Connector has     |
-   |                       |           |           | read a verdict,   |
-   |                       |           |           | so Runtime-side   |
-   |                       |           |           | deletion SHOULD   |
 
 
 
@@ -1178,6 +1178,10 @@ Rapp & Adams              Expires 20 March 2027                [Page 21]
 Internet-Draft                    AMAP                    September 2026
 
 
+   |                       |           |           | Connector has     |
+   |                       |           |           | read a verdict,   |
+   |                       |           |           | so Runtime-side   |
+   |                       |           |           | deletion SHOULD   |
    |                       |           |           | be age-based and  |
    |                       |           |           | generous: a       |
    |                       |           |           | Result deleted    |
@@ -1219,11 +1223,7 @@ Internet-Draft                    AMAP                    September 2026
 
                                   Table 2
 
-5.  Outbound: Submit Request
 
-   An Agent's only outbound action is dropping an inert request file
-   into its Namespace.  The file carries no send capability; the Runtime
-   enforces policy before anything leaves.
 
 
 
@@ -1233,6 +1233,12 @@ Rapp & Adams              Expires 20 March 2027                [Page 22]
 
 Internet-Draft                    AMAP                    September 2026
 
+
+5.  Outbound: Submit Request
+
+   An Agent's only outbound action is dropping an inert request file
+   into its Namespace.  The file carries no send capability; the Runtime
+   enforces policy before anything leaves.
 
    A Submit Request is written to <volume-root>/<agent-id>/outbound/
    req-<id>.json as a JSON text [RFC8259].  Its Sidecar bytes, if any,
@@ -1275,12 +1281,6 @@ Internet-Draft                    AMAP                    September 2026
    explains why this direction is closed while the Runtime-authored
    artifacts are open.
 
-5.1.  Field semantics and obligations
-
-   *  *contract_version* (REQUIRED) is the wire major version, the
-      string "2" at this document version.  A Runtime MUST check it
-      before schema validation and MUST fail closed on an absent, lower,
-      or higher major (Section 12.1).
 
 
 
@@ -1289,6 +1289,13 @@ Rapp & Adams              Expires 20 March 2027                [Page 23]
 
 Internet-Draft                    AMAP                    September 2026
 
+
+5.1.  Field semantics and obligations
+
+   *  *contract_version* (REQUIRED) is the wire major version, the
+      string "2" at this document version.  A Runtime MUST check it
+      before schema validation and MUST fail closed on an absent, lower,
+      or higher major (Section 12.1).
 
    *  *req_id* (REQUIRED) is *monotonic per Namespace* and MUST NOT be
       reused across the drop-box's life; derive it from max(pending,
@@ -1331,13 +1338,6 @@ Internet-Draft                    AMAP                    September 2026
       recipient is an exfiltration surface that the Runtime, not the
       Connector, must close.
 
-   *  *Recipient syntax and header-injection discipline.* Each draft.to
-      and draft.cc element is exactly one bare addr-spec: no display
-      name, address list, quoted local part, comment, IP literal, or
-      folding whitespace.  The schema pins the pattern.  This profile is
-      deliberately narrower than [RFC5322], because those excluded forms
-      are exactly what makes allowlist evaluation non-mechanical;
-      internationalized (EAI/SMTPUTF8) addresses are out of scope at
 
 
 
@@ -1346,6 +1346,13 @@ Rapp & Adams              Expires 20 March 2027                [Page 24]
 Internet-Draft                    AMAP                    September 2026
 
 
+   *  *Recipient syntax and header-injection discipline.* Each draft.to
+      and draft.cc element is exactly one bare addr-spec: no display
+      name, address list, quoted local part, comment, IP literal, or
+      folding whitespace.  The schema pins the pattern.  This profile is
+      deliberately narrower than [RFC5322], because those excluded forms
+      are exactly what makes allowlist evaluation non-mechanical;
+      internationalized (EAI/SMTPUTF8) addresses are out of scope at
       this version and may be added later.  A Runtime MUST reject — with
       a top-level rejected Result — a request whose recipient entries do
       not parse under this profile, MUST evaluate recipient policy over
@@ -1383,6 +1390,18 @@ Internet-Draft                    AMAP                    September 2026
       it. attachments: [] is valid and is equivalent to the member being
       absent; the Sidecar directory MUST then be absent.
 
+
+
+
+
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 25]
+
+Internet-Draft                    AMAP                    September 2026
+
+
       sha256 here is an integrity and deduplication aid, *not an
       outbound trust boundary*: the Agent controls both the bytes and
       the hash, so a mismatch catches corruption, never a hostile Agent.
@@ -1393,14 +1412,6 @@ Internet-Draft                    AMAP                    September 2026
 
    A Result is the Runtime's verdict for one consumed Submit Request,
    written to <volume-root>/<agent-id>/outbound/results/<id>.json.
-
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 25]
-
-Internet-Draft                    AMAP                    September 2026
-
 
    {
      "contract_version": "2",
@@ -1439,6 +1450,14 @@ Internet-Draft                    AMAP                    September 2026
       and no signal in this protocol distinguishes "not yet" from
       "never."
 
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 26]
+
+Internet-Draft                    AMAP                    September 2026
+
+
    *  *outcome* (REQUIRED) is one of accepted, queued_for_human, or
       rejected.  This is a *closed vocabulary*: it gates which
       processing path a document takes, so a consumer cannot safely
@@ -1448,15 +1467,6 @@ Internet-Draft                    AMAP                    September 2026
    *  *Any policy miss — allowlist, rate limit, DLP hold, halt — MUST
       produce queued_for_human.* Never a silent send; never a silent
       drop.
-
-
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 26]
-
-Internet-Draft                    AMAP                    September 2026
-
 
    *  *accepted* means the provider accepted the message for relay.
       Downstream delivery or quarantine is out of the Runtime's hands
@@ -1494,6 +1504,16 @@ Internet-Draft                    AMAP                    September 2026
    *  *job_id* (OPTIONAL, nullable) is a provider-side job identifier,
       opaque to this protocol.
 
+
+
+
+
+
+Rapp & Adams              Expires 20 March 2027                [Page 27]
+
+Internet-Draft                    AMAP                    September 2026
+
+
    *  *attestation* (OPTIONAL) is the identity stamp the Runtime applied
       to the outbound message.  Its form is self-stamp or verifiable,
       distinguishing a stamp a stranger cannot verify from one that can
@@ -1506,14 +1526,6 @@ Internet-Draft                    AMAP                    September 2026
       equal the entry's own position in the array* — contiguous, unique,
       and covering 0 through n-1 exactly once.  Array position is the
       binding authority for attachments in both directions
-
-
-
-Rapp & Adams              Expires 20 March 2027                [Page 27]
-
-Internet-Draft                    AMAP                    September 2026
-
-
       (Section 4.1).  This constraint is not expressible in JSON Schema
       and is enforced by the conformance gate as a named post-check
       rather than by the schema (Appendix J).
@@ -1534,18 +1546,6 @@ Internet-Draft                    AMAP                    September 2026
    Runtime-side and is never seen by the Agent.  The Notice is a
    _pointer and summary_; the body is fetched on demand from a separate
    spooled artifact (Section 7.3) and is *untrusted content*.
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

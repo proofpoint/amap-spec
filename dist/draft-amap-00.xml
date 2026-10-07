@@ -765,7 +765,12 @@ read by out-of-band agreement. <strong><tt>&lt;name&gt;</tt> is a stable Connect
 Connector chooses it once, and it MUST NOT change when the Connector's
 repository, package, or deployment is renamed or moved. A Runtime that reads
 the directory MUST treat <tt>&lt;name&gt;</tt> as opaque — it is an identifier, never a
-name to be parsed, resolved, or matched against a repository or path.</strong> This
+name to be parsed, resolved, or matched against a repository or path.</strong>
+Because it is also a path segment in an Agent-writable tree, <tt>&lt;name&gt;</tt> MUST
+be a single path segment of 1 to 64 characters drawn from lowercase ASCII
+letters, digits, hyphen and underscore, beginning with a letter or digit, so
+that it names the same directory on case-sensitive and case-insensitive
+filesystems alike. This
 document specifies no shape for anything under it; it lies outside the
 <tt>req-</tt> prefix the Runtime scans, and nothing security-relevant may be built
 on it. Its first use is a Connector's per-Notice <strong>outcome</strong> file, written

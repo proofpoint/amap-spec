@@ -1002,3 +1002,10 @@ section = "sec-4-1"
 class = "operational"
 note = "Proposed 2026-10-07. Runtime behaviour on a request it cannot attribute: no document shows it. Check: place a request carrying agent_id where the Runtime has no name for the Namespace and confirm a rejected Result."
 text = "A Runtime that cannot name the Namespace in which it found a Submit Request MUST reject that request rather than accept its agent_id unchecked."
+
+[[sentence]]
+id = "9eda82711925"
+section = "sec-4-1"
+class = "operational"
+note = "Proposed 2026-10-07. A directory name, not a document member, so no schema or fixture can pin it. Check: the Connector's chosen id matches ^[a-z0-9][a-z0-9_-]{0,63}$."
+text = "Because it is also a path segment in an Agent-writable tree, <name> MUST be a single path segment of 1 to 64 characters drawn from lowercase ASCII letters, digits, hyphen and underscore, beginning with a letter or digit, so that it names the same directory on case-sensitive and case-insensitive filesystems alike."
