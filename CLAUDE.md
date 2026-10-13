@@ -10,7 +10,11 @@ conformance against the fixtures here rather than against each other.
 are about to write code that *does* something with mail, you are in the wrong
 repo. What lives here is the Internet-Draft (`draft/draft-amap.xml`, the
 canonical prose), `schemas/`, `fixtures/`, the `dist/` renderings, the frozen
-`spec/contract.md`, and the peer-origin profile `spec/peer-origin.md`.
+`spec/contract.md`, the peer-origin profile `spec/peer-origin.md`, and the
+explainer website: source in `site/`, generated into `docs/` (GitHub Pages
+serves `docs/` from `main`). **Never edit `docs/` by hand**; run
+`python3 site/build_site.py`, and `--check` to prove they agree. The site
+follows the publication posture below: it names only what is public.
 
 **It is not a mail transport, not agent-to-agent RPC, and not a policy
 language** — README's "What AMAP is not" says this normatively; keep it true.

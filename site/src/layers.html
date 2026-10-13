@@ -1,0 +1,66 @@
+<!-- title: MCP, A2A and AMAP | description: How AMAP relates to the Model Context Protocol and Agent2Agent: three protocols at different layers, compared fairly. -->
+<p class="eyebrow">Layering</p>
+<h1>MCP, A2A and AMAP sit at different layers</h1>
+<p class="lede">AMAP is not an alternative to MCP or A2A. Each connects different things, and each is good at different things. This is a layering summary, not a verdict. Check the details against each protocol's own documentation before relying on them.</p>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th></th><th>Connects</th><th>Good at</th><th>Where send authority lives</th><th>What the other side needs</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">MCP</th>
+      <td>A model to tools and context</td>
+      <td>Giving agents capabilities through a common tool interface</td>
+      <td>With the tool server, and whatever credentials it holds</td>
+      <td>Not a cross-organisation protocol</td>
+    </tr>
+    <tr>
+      <th scope="row">A2A</th>
+      <td>Agent services to each other</td>
+      <td>Task lifecycles, progress reporting, streaming and conversation between agent services</td>
+      <td>Within each service and its agreed authentication</td>
+      <td>A reachable, compatible agent service and an agreed authentication arrangement</td>
+    </tr>
+    <tr>
+      <th scope="row">AMAP</th>
+      <td>An agent's connector to its email runtime</td>
+      <td>Keeping email authority outside the agent</td>
+      <td>In the trusted runtime only</td>
+      <td>An email address</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2>MCP</h2>
+<p>MCP connects a model to tools and context. Where authority lives depends on the tool server and the credentials it holds: MCP itself does not decide that.</p>
+<p>AMAP can sit behind MCP. In the Claude Code connector, for example, the agent sees ordinary MCP tools: a read-only inbox, and a submit tool that writes a gated request. AMAP is the specification behind those tools, which is why they carry no send capability. The two are complementary.</p>
+
+<h2>A2A</h2>
+<p>A2A connects agent services directly. It has real strengths:</p>
+<ul>
+  <li>explicit task lifecycles;</li>
+  <li>progress reporting;</li>
+  <li>streaming;</li>
+  <li>conversational interaction between agent services.</li>
+</ul>
+<p>It does not require the same vendor, cloud or directory on both sides, and managed platforms can supply much of the plumbing. Credential isolation, policy enforcement and human approval can be built around A2A as well as around email.</p>
+<p>Either way, cross-organisation automation still needs agreement on:</p>
+<ul>
+  <li>business authorisation;</li>
+  <li>data governance;</li>
+  <li>failure handling;</li>
+  <li>revocation.</li>
+</ul>
+
+<h2>AMAP</h2>
+<p>AMAP defines the boundary between an agent's connector and its trusted email runtime. It adds nothing to the wire between organisations: the other side sees ordinary email. So an organisation can deploy an agent under AMAP without its counterparties changing anything, whether each counterparty is a person with an inbox or an agent of its own.</p>
+
+<div class="callout caution">
+  <p><span class="tag hyp">Hypothesis</span> For relationships that already run on email, AMAP may reduce the <em>coordination</em> needed to automate safely, not only the code. This is a hypothesis to test, not a finding. Services that are intentionally integrated may well be better served by direct agent-to-agent protocols.</p>
+</div>
+
+<p>For how AMAP relates to IETF work, such as DKIM, DMARC and WIMSE, see <a href="ietf.html#related">AMAP at the IETF</a>.</p>
+<p class="small">See also: <a href="how-it-works.html">How it works</a> · <a href="implementers.html">For implementers</a> · <a href="glossary.html">Glossary</a>.</p>
