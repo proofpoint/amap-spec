@@ -1,0 +1,51 @@
+{
+  "description": "Two control notices with different ids about the SAME issued message: the issuing agent gets at most one failure notice per message, so the second is dropped. (A dropped/duplicate report proves a prior reservation exists, whose disposition may have been placement; it does not prove the task failed.)",
+  "receiver": "receiver-host-a.json",
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <SXOjV7K2UW6rWCqbkcaN0Q@host-c.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Control",
+            " k=test3; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MyIsImtpbmQiOiJjb250cm9sIiwiaWQiOiJTWE9qVjdLMlVXNnJXQ3Fia2NhTjBRIiwiZnJvbSI6ImFtYXAucm91dGVyQGhvc3QtYy5mbGVldC5leGFtcGxlIiwidG8iOiJhbWFwLnJvdXRlckBob3N0LWEuZmxlZXQuZXhhbXBsZSIsInRzIjoiMjAyNi0xMC0wOVQxNToxMDowNVoiLCJhYm91dCI6IjRmMGM5YTJlN2IxZDRjODNhNmU1ZjJiOWQwYzE3ZTQ4Iiwib3V0Y29tZSI6InJlZnVzZWQiLCJjYXVzZSI6Im5vX2VkZ2UifQ; b=j7xpzvswzR8Tg9BZW708ZILIz4ny_ppkGx0J1zhfh6Z0iXve98o4LIUMH3XhaA91M7xTCrut2aJY2g7gT-pOBA"
+          ]
+        ],
+        "body": null,
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "control",
+        "notify": {
+          "agent": "planner@host-a.fleet.example",
+          "about": "4f0c9a2e7b1d4c83a6e5f2b9d0c17e48",
+          "outcome": "refused",
+          "cause": "no_edge"
+        }
+      }
+    },
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <FwoDGdHvJS12VLiXYK9spg@host-c.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Control",
+            " k=test3; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MyIsImtpbmQiOiJjb250cm9sIiwiaWQiOiJGd29ER2RIdkpTMTJWTGlYWUs5c3BnIiwiZnJvbSI6ImFtYXAucm91dGVyQGhvc3QtYy5mbGVldC5leGFtcGxlIiwidG8iOiJhbWFwLnJvdXRlckBob3N0LWEuZmxlZXQuZXhhbXBsZSIsInRzIjoiMjAyNi0xMC0wOVQxNToxMDowNVoiLCJhYm91dCI6IjRmMGM5YTJlN2IxZDRjODNhNmU1ZjJiOWQwYzE3ZTQ4Iiwib3V0Y29tZSI6ImRyb3BwZWQiLCJjYXVzZSI6ImR1cGxpY2F0ZSJ9; b=72qqcYhQZ6PQ82TcxxrRVSle_dGu9urBycO0QzdF4tzPzGer3DX3iBZ-FJQsPDa8csMAax7-mRn2_jyRItQ0CQ"
+          ]
+        ],
+        "body": null,
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "drop",
+        "cause": "duplicate_about"
+      }
+    }
+  ]
+}

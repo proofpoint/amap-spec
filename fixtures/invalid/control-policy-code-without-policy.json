@@ -1,0 +1,13 @@
+{
+  "v": 1,
+  "key_id": "test3",
+  "kind": "control",
+  "id": "Zm9vYmFyYmF6cXV4MTIzNDU2",
+  "from": "amap.router@host-c.fleet.example",
+  "to": "amap.router@host-a.fleet.example",
+  "ts": "2026-10-09T15:10:05Z",
+  "about": "4f0c9a2e7b1d4c83a6e5f2b9d0c17e48",
+  "outcome": "refused",
+  "cause": "no_edge",
+  "policy_code": "quarantined"
+}

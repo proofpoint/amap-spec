@@ -1,0 +1,28 @@
+{
+  "description": "multipart/alternative inside mixed: the first non-attachment text/plain leaf, depth-first, is the body; the text/html leaf is an attachment (so a sender that signed only gate.log fails the attachment count, as intended).",
+  "eml": "alternative-inside-mixed.eml",
+  "candidate": {
+    "fields": [
+      [
+        "Message-ID",
+        "<cbbuCOCVIoYbYAAgLR_hGA@host-a.fleet.example>"
+      ],
+      [
+        "AMAP-Peer-Statement",
+        "k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyI\r\n iwiaWQiOiJjYmJ1Q09DVklvWWJZQUFnTFJfaEdBIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W119; b=BPGWfYDTElgMOnDb2KQkSRjU8P-jgBGvWjR491NRmlXxjLZeYxLbA6pEFGvyJfzPvLjkd4VckhV8ugKz5HBGBw"
+      ]
+    ],
+    "body": {
+      "charset": "utf-8",
+      "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+    },
+    "attachments": [
+      {
+        "octets_b64": "PHA+UGxlYXNlIHJ1biB0aGUgc3VpdGUuPC9wPgo="
+      },
+      {
+        "octets_b64": "Y29uZm9ybWFuY2Ugc3VpdGU6IGFsbCBjaGVja3MgcGFzc2VkCg=="
+      }
+    ]
+  }
+}

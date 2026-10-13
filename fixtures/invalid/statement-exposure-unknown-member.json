@@ -1,0 +1,19 @@
+{
+  "v": 1,
+  "key_id": "test1",
+  "kind": "peer",
+  "id": "4f0c9a2e7b1d4c83a6e5f2b9d0c17e48",
+  "from": "planner@host-a.fleet.example",
+  "to": "builder@host-c.fleet.example",
+  "ts": "2026-10-09T15:00:00Z",
+  "subject": "Run the conformance suite",
+  "body_sha256": "5d8741a3ffbcebf497b16768823b335b0fc2aac0e6e1ddbc0f84acf205572d98",
+  "attachments": [],
+  "sender_exposure": {
+    "asserted_by": "amap.router@host-a.fleet.example",
+    "external_mail_delivered": false,
+    "window_start": "2026-10-08T15:00:00Z",
+    "window_end": "2026-10-09T15:00:00Z",
+    "score": 0
+  }
+}

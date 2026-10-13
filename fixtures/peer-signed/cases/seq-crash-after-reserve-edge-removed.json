@@ -1,0 +1,79 @@
+{
+  "description": "An undecided reservation is decided at recovery under the configuration in force THEN: the edge planner -> builder was removed while the receiver was down, so a task that would have been placed is refused.",
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <lvG5mUb7FONqLDKAlupiaQ@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiJsdkc1bVViN0ZPTnFMREtBbHVwaWFRIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W119; b=dAGxVGkW7KF7cPH40oEalxyMV4-ONJJArpgJ7dwVpLCoMZi8GXvEZODzb70OkfQ__QICkq2rBxgcst7sr5oBBA"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "crash": "after_reserve",
+      "expect": {
+        "outcome": "crashed"
+      }
+    },
+    {
+      "event": "set_edges",
+      "edges": [
+        [
+          "planner@host-b.fleet.example",
+          "builder@host-c.fleet.example"
+        ]
+      ],
+      "expect": {}
+    },
+    {
+      "event": "recover",
+      "expect": {
+        "recovered": [
+          {
+            "id": "lvG5mUb7FONqLDKAlupiaQ",
+            "outcome": "refuse",
+            "cause": "no_edge",
+            "control": {
+              "outcome": "refused",
+              "cause": "no_edge",
+              "to": "amap.router@host-a.fleet.example",
+              "about": "lvG5mUb7FONqLDKAlupiaQ"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <lvG5mUb7FONqLDKAlupiaQ@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiJsdkc1bVViN0ZPTnFMREtBbHVwaWFRIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W119; b=dAGxVGkW7KF7cPH40oEalxyMV4-ONJJArpgJ7dwVpLCoMZi8GXvEZODzb70OkfQ__QICkq2rBxgcst7sr5oBBA"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "drop",
+        "cause": "duplicate"
+      }
+    }
+  ]
+}

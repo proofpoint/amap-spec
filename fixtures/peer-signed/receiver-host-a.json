@@ -1,0 +1,61 @@
+{
+  "description": "A second receiving runtime, host-a.fleet.example, used by the control-notice cases (§5.8): it issued peer messages to agents on host-c and receives host-c's signed control notices about them. In THIS file the test3 key is host-c's (keys are configuration, and this receiver does not peer with host-b). Shape not normative; RFC 8032 test keys, never deploy.",
+  "now": "2026-10-09T15:12:00Z",
+  "windows": {
+    "ts_past_s": 3600,
+    "ts_future_s": 300,
+    "retain_s": 3600
+  },
+  "self": {
+    "runtime": "amap.router@host-a.fleet.example",
+    "domains": [
+      "host-a.fleet.example"
+    ]
+  },
+  "hosted": [
+    "planner@host-a.fleet.example",
+    "reviewer@host-a.fleet.example"
+  ],
+  "peers": [
+    {
+      "name": "host-c",
+      "runtime": "amap.router@host-c.fleet.example",
+      "domains": [
+        "host-c.fleet.example"
+      ],
+      "keys": [
+        {
+          "key_id": "test3",
+          "public_key": "fc51cd8e6218a1a38da47ed00230f0580816ed13ba3303ac5deb911548908025"
+        }
+      ]
+    }
+  ],
+  "edges": [
+    [
+      "builder@host-c.fleet.example",
+      "planner@host-a.fleet.example"
+    ]
+  ],
+  "ledger": [
+    {
+      "id": "4f0c9a2e7b1d4c83a6e5f2b9d0c17e48",
+      "direction": "issued",
+      "local": "planner@host-a.fleet.example",
+      "remote": "builder@host-c.fleet.example",
+      "expires": "2026-10-10T15:00:00Z"
+    },
+    {
+      "id": "SXNzdWVkVG9Ib3N0QjAwMDAw",
+      "direction": "issued",
+      "local": "planner@host-a.fleet.example",
+      "remote": "builder@host-b.fleet.example",
+      "expires": "2026-10-10T15:00:00Z"
+    }
+  ],
+  "mail_notice_ids": [],
+  "store": {
+    "records": [],
+    "floor": null
+  }
+}

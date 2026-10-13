@@ -1,0 +1,25 @@
+{
+  "description": "A text/plain leaf with disposition attachment is never the body; the next text/plain leaf is, even though it comes second. It is 7bit, so the CRLF before the closing boundary belongs to the boundary (RFC 2046 §5.1.1) and the octets lack a final line break: one reason a sender SHOULD use base64.",
+  "eml": "attachment-text-first.eml",
+  "candidate": {
+    "fields": [
+      [
+        "Message-ID",
+        "<cbbuCOCVIoYbYAAgLR_hGA@host-a.fleet.example>"
+      ],
+      [
+        "AMAP-Peer-Statement",
+        "k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyI\r\n iwiaWQiOiJjYmJ1Q09DVklvWWJZQUFnTFJfaEdBIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W119; b=BPGWfYDTElgMOnDb2KQkSRjU8P-jgBGvWjR491NRmlXxjLZeYxLbA6pEFGvyJfzPvLjkd4VckhV8ugKz5HBGBw"
+      ]
+    ],
+    "body": {
+      "charset": "us-ascii",
+      "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQu"
+    },
+    "attachments": [
+      {
+        "octets_b64": "Y29uZm9ybWFuY2Ugc3VpdGU6IGFsbCBjaGVja3MgcGFzc2VkCg=="
+      }
+    ]
+  }
+}

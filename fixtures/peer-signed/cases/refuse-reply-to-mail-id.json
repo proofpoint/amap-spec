@@ -1,0 +1,34 @@
+{
+  "description": "in_reply_to names a notice in this runtime's MAIL tree. Only the peer ledger resolves a peer reply.",
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <_LgX5A0qTqTBp547Wu9kFA@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiJfTGdYNUEwcVRxVEJwNTQ3V3U5a0ZBIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwic3ViamVjdCI6IlJlOiB5b3VyIG1haWwiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W10sImluX3JlcGx5X3RvIjoibS0yMDI2LTEwLTA5LTAwMDEifQ; b=JVR2iiJ6TwbnH7v_nrd7Ri53OZ0lwwfnzoXcMESLlhmDRBYMsEQTaoizqi5vI1CLGsObd2j1tR0H3dKABfY2BA"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "refuse",
+        "cause": "unresolved_reply",
+        "control": {
+          "outcome": "refused",
+          "cause": "unresolved_reply",
+          "to": "amap.router@host-a.fleet.example",
+          "about": "_LgX5A0qTqTBp547Wu9kFA"
+        }
+      }
+    }
+  ]
+}

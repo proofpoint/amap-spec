@@ -1,0 +1,38 @@
+{
+  "description": "The attachment's bytes changed.",
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <zwUTM32WNSjWFYF2-bZNGg@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiJ6d1VUTTMyV05TaldGWUYyLWJaTkdnIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W3sic2hhMjU2IjoiZWE5YzI3M2MwYTNiOTc2ZjJlMDEyODQ4ZjljMjc4OTI4MzNkZTJjOWY2ZmU0ZTYwN2Q5YzBlOGRkMWY4Y2UxMiIsInNpemVfYnl0ZXMiOjM3LCJmaWxlbmFtZSI6ImdhdGUubG9nIiwibWVkaWFfdHlwZSI6InRleHQvcGxhaW4ifV19; b=ddrltxigXict_5gomXhYD21PsPsc-bPsJz8BrOm7ax3P6XiTwlnShufqjRKKJUlTCTj8yHnJstOAbxyTJA4xAA"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": [
+          {
+            "octets_b64": "Y29uZm9ybWFuY2Ugc3VpdGU6IEFMTCBjaGVja3MgcGFzc2VkCg=="
+          }
+        ]
+      },
+      "expect": {
+        "outcome": "mail",
+        "cause": "attachment_digest",
+        "control": {
+          "outcome": "demoted",
+          "cause": "attachment_digest",
+          "to": "amap.router@host-a.fleet.example",
+          "about": "zwUTM32WNSjWFYF2-bZNGg"
+        }
+      }
+    }
+  ]
+}

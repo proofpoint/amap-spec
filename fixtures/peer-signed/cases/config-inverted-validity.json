@@ -1,0 +1,37 @@
+{
+  "description": "A key whose not_before is after its not_after: refused at load.",
+  "receiver_patch": {
+    "peers": [
+      {
+        "name": "host-a",
+        "runtime": "amap.router@host-a.fleet.example",
+        "domains": [
+          "host-a.fleet.example"
+        ],
+        "keys": [
+          {
+            "key_id": "test1",
+            "public_key": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+            "not_before": "2026-10-09T15:20:00Z",
+            "not_after": "2026-10-09T15:00:00Z"
+          }
+        ]
+      },
+      {
+        "name": "host-b",
+        "runtime": "amap.router@host-b.fleet.example",
+        "domains": [
+          "host-b.fleet.example"
+        ],
+        "keys": [
+          {
+            "key_id": "test3",
+            "public_key": "fc51cd8e6218a1a38da47ed00230f0580816ed13ba3303ac5deb911548908025"
+          }
+        ]
+      }
+    ]
+  },
+  "config_error": "inverted_validity",
+  "steps": []
+}
