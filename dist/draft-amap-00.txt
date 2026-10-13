@@ -216,7 +216,7 @@ Internet-Draft                    AMAP                    September 2026
      3.0.0 — direction-aware tolerance, and six closed safety
              holes . . . . . . . . . . . . . . . . . . . . . . . . . 105
      2.3.0 — inbound byte access in force  . . . . . . . . . . . . . 107
-     2.2.0 — deletion rights, read-only inbound  . . . . . . . . . . 107
+     2.2.0 — deletion rights, read-only inbound  . . . . . . . . . . 108
      2.1.0 — the body spool, and three optional Result members . . . 108
 
 
@@ -226,9 +226,9 @@ Rapp & Adams              Expires 20 March 2027                 [Page 4]
 Internet-Draft                    AMAP                    September 2026
 
 
-     2.0.0 — attachments, and contract_version required  . . . . . . 108
-     Fixture identifier normalization  . . . . . . . . . . . . . . . 108
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . . 108
+     2.0.0 — attachments, and contract_version required  . . . . . . 109
+     Fixture identifier normalization  . . . . . . . . . . . . . . . 109
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . . 109
 
 1.  Introduction — Motivation and Problem Statement
 
@@ -5754,14 +5754,14 @@ peer-origin profile's schema
       with the outcome a receiver MUST reach at each step.  The rules
       are the companion document's (spec/peer-origin.md, section 5).
       Additive: nothing existing changes shape, and a deployment without
-      cross-host peer traffic is unaffected.
+      cross-host peer traffic is unaffected.  The 30 new fixtures (8
+      valid, 22 invalid) bring version 3.1.0 to 119 (42 valid, 77
+      invalid).
 
    *  *The fleet roster* (2026-09-24).  A new, optional artifact
       (Section 11, schema in Appendix H): one Runtime-written file
       naming the instances the Runtime has admitted, so that an Agent on
       a deployment whose addresses carry an underivable suffix can learn
-      which peers exist.  It answers existence, never authorisation, and
-      states that separately from the Peer Directory.  Its readability
 
 
 
@@ -5770,6 +5770,8 @@ Rapp & Adams              Expires 20 March 2027               [Page 103]
 Internet-Draft                    AMAP                    September 2026
 
 
+      which peers exist.  It answers existence, never authorisation, and
+      states that separately from the Peer Directory.  Its readability
       obligation is split between the Runtime, which publishes only into
       a designated location and never creates it, and the deployment,
       which exposes that location.  Additive: a new schema and seven
@@ -5799,7 +5801,9 @@ Internet-Draft                    AMAP                    September 2026
       Connector's repository, package, or deployment, and opaque to the
       Runtime that reads it; the wording it replaced ("a Connector or
       deployment name") permitted a repository name to leak into a wire-
-      visible path.  The first id is claude-code.  One normative
+      visible path.  The reference Claude Code Connector chose claude-
+      code as its id; ids are chosen by each Connector, and this
+      document neither lists nor registers them.  One normative
       clarification sits beside it: an outcome written there is a claim
       by the receiving side, never proof of delivery or of non-delivery,
       and the Runtime's own delivery record is authoritative over it
@@ -5814,10 +5818,6 @@ Internet-Draft                    AMAP                    September 2026
       required members.  The profile's prose is the companion document
       spec/peer-origin.md (v3.1.0 DRAFT).
 
-   *  *Fixtures: 75 total (27 valid, 48 invalid), up from 58.* 16 peer-*
-      fixtures were added (6 valid, 10 invalid), covering a minimal
-      notice, a reply, the exposure stamp asserted both ways, a clean
-      attachment reference, an unknown-member case, and rejections for a
 
 
 
@@ -5826,6 +5826,29 @@ Rapp & Adams              Expires 20 March 2027               [Page 104]
 Internet-Draft                    AMAP                    September 2026
 
 
+   *  *The Peer Directory.* A Runtime may publish a per-instance
+      projection of the authorisation graph, directory.json, at the
+      Agent's Namespace root (Section 10, schema in Appendix G), so that
+      a Connector can learn which peers it may address without the host
+      rendering a snapshot onto an Agent-writable mount that goes stale
+      whenever the fleet changes.  It is advisory and never
+      authoritative, and a Runtime never reads it back as authorisation,
+      which is what stops it decaying into an allowlist the Agent can
+      see.  The Namespace root gains a Runtime-owned posture for
+      Runtime-written files: the file sits beside the lanes rather than
+      inside one, because it spans both.  Additive: a new optional
+      artifact, a new schema and seven fixtures (4 valid, 3 invalid); no
+      existing schema or fixture changes, and the wire contract_version
+      stays "2".
+
+      _Restored 2026-10-05._ This entry was in the versioning record
+      this document was reconciled against and was lost in the
+      reconciliation, along with its fixtures from the count below.
+
+   *  *Fixtures: 75 total (27 valid, 48 invalid), up from 58.* 16 peer-*
+      fixtures were added (6 valid, 10 invalid), covering a minimal
+      notice, a reply, the exposure stamp asserted both ways, a clean
+      attachment reference, an unknown-member case, and rejections for a
       deliver kind under the peer tree, a peer kind under the inbound
       tree, a display-name or CRLF from, encoded message identifiers, a
       missing asserted_by, a missing last-delivery timestamp when
@@ -5837,6 +5860,11 @@ Internet-Draft                    AMAP                    September 2026
       addresses in injection examples); each stays valid or invalid for
       the same reason as before, and no schema changed.
 
+      *Correction (2026-10-05).* The count above omits the seven
+      directory-* fixtures (4 valid, 3 invalid) added with the Peer
+      Directory.  With them and the fleet roster's seven, version 3.1.0
+      has 89 fixtures (34 valid, 55 invalid).
+
 3.0.0 — direction-aware tolerance, and six closed safety holes
 
    A *major document bump*; the wire major stays "2".  Section 12.1
@@ -5846,6 +5874,14 @@ Internet-Draft                    AMAP                    September 2026
    *  *Unknown-member tolerance, direction-aware.* The three Runtime-
       authored artifacts — deliver-notice, inbound-message, and result —
       became *open* at every level: additionalProperties: false was
+
+
+
+Rapp & Adams              Expires 20 March 2027               [Page 105]
+
+Internet-Draft                    AMAP                    September 2026
+
+
       removed from the top level, from message, from Descriptor items,
       and from attestation, and a consumer must tolerate an unrecognized
       member.  Emitting one remains producer non-conformance.  The
@@ -5874,14 +5910,6 @@ Internet-Draft                    AMAP                    September 2026
    *  *Path discipline, write- and read-side both.* The write-side rule
       became *conjunctive* (Section 4.1), and a new read-side rule
       applies the equivalent discipline to every Agent-influenceable
-
-
-
-Rapp & Adams              Expires 20 March 2027               [Page 105]
-
-Internet-Draft                    AMAP                    September 2026
-
-
       read.  A notice_id character-set pattern was added to the deliver-
       notice and inbound-message schemas so that every legal notice_id
       is also a legal content_ref prefix. *Disclosed cost:* notice_id
@@ -5902,6 +5930,13 @@ Internet-Draft                    AMAP                    September 2026
    *  *message.from named untrusted.* The untrusted-content sentence now
       covers explicitly the member most likely to be rendered to a human
       or used for a trust judgement (Section 7.1).
+
+
+
+Rapp & Adams              Expires 20 March 2027               [Page 106]
+
+Internet-Draft                    AMAP                    September 2026
+
 
    *  *Document authority.* The contract, its schemas, and its fixtures
       are normative; this rendering is generated from them and is non-
@@ -5930,14 +5965,6 @@ Internet-Draft                    AMAP                    September 2026
       inbound-message; the withheld-body invalid fixture was deleted,
       having become schema-valid under the relaxed envelope (its name
       always over-claimed what additionalProperties alone tested); the
-
-
-
-Rapp & Adams              Expires 20 March 2027               [Page 106]
-
-Internet-Draft                    AMAP                    September 2026
-
-
       bad-provenance fixture moved to the valid set as an unrecognized-
       value case; an invalid extra-member submit-request fixture was
       added to pin the closed side of the asymmetry, previously untested
@@ -5959,6 +5986,14 @@ Internet-Draft                    AMAP                    September 2026
    fixtures: the release-scoped byte embargo was dropped, and the
    standing rule became the one stated in Section 7.2 — a Runtime may
    publish bytes and emit content_ref/sha256 only for a Descriptor it
+
+
+
+Rapp & Adams              Expires 20 March 2027               [Page 107]
+
+Internet-Draft                    AMAP                    September 2026
+
+
    asserts clean, and a Runtime that cannot make that determination must
    not assert clean.  The substantive clarification is that disposition
    is the Runtime's _assertion_, its basis deliberately unspecified; the
@@ -5982,18 +6017,6 @@ Internet-Draft                    AMAP                    September 2026
    on every Result became a keyworded SHOULD, and a consumer must
    tolerate an unrecognized code and must not infer outcome from it.
 
-
-
-
-
-
-
-
-Rapp & Adams              Expires 20 March 2027               [Page 107]
-
-Internet-Draft                    AMAP                    September 2026
-
-
 2.1.0 — the body spool, and three optional Result members
 
    Recorded at the time as an *additive minor bump*: one new optional
@@ -6012,6 +6035,20 @@ Internet-Draft                    AMAP                    September 2026
    reintroduced as a minor.  Version 3.0.0 repairs the versioning model
    rather than relabelling this history, which is why this entry still
    records what shipped rather than what would have been correct.
+
+
+
+
+
+
+
+
+
+
+Rapp & Adams              Expires 20 March 2027               [Page 108]
+
+Internet-Draft                    AMAP                    September 2026
+
 
 2.0.0 — attachments, and contract_version required
 
@@ -6043,46 +6080,9 @@ Authors' Addresses
    Email: drapp@proofpoint.com
 
 
-
-
-Rapp & Adams              Expires 20 March 2027               [Page 108]
-
-Internet-Draft                    AMAP                    September 2026
-
-
    Trent Adams
    Proofpoint, Inc.
    Email: tadams@proofpoint.com
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
