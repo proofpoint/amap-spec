@@ -1,0 +1,34 @@
+{
+  "description": "in_reply_to names nothing in the ledger (§4's residual case).",
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <VRFCD8i5qUs0QVTt0ZiwUg@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiJWUkZDRDhpNXFVczBRVlR0MFppd1VnIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwic3ViamVjdCI6IlJlOiBzb21ldGhpbmciLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W10sImluX3JlcGx5X3RvIjoiZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmYifQ; b=k-5k-71Hr3TW0LMl5BTlnlZGAdkA1kgGnoY1bsvekuSd-XR5CQ-B9lRfd3d3e4PHMCNZE8NbAnqJhqF79bLeBw"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "refuse",
+        "cause": "unresolved_reply",
+        "control": {
+          "outcome": "refused",
+          "cause": "unresolved_reply",
+          "to": "amap.router@host-a.fleet.example",
+          "about": "VRFCD8i5qUs0QVTt0ZiwUg"
+        }
+      }
+    }
+  ]
+}

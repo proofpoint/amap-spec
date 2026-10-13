@@ -1,0 +1,69 @@
+{
+  "description": "A verified task with NO edge crashes after reservation, before the decision. Recovery decides the undecided reservation under the current configuration and refuses it; it never places it. The control notice goes out once, on recovery. A replay is a known statement.",
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <CJxWyQtSlpuo6_Vdg_4J2g@host-b.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test3; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MyIsImtpbmQiOiJwZWVyIiwiaWQiOiJDSnhXeVF0U2xwdW82X1ZkZ180SjJnIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1iLmZsZWV0LmV4YW1wbGUiLCJ0byI6InJldmlld2VyQGhvc3QtYy5mbGVldC5leGFtcGxlIiwidHMiOiIyMDI2LTEwLTA5VDE1OjAwOjAwWiIsInN1YmplY3QiOiJSdW4gdGhlIGNvbmZvcm1hbmNlIHN1aXRlIiwiYm9keV9zaGEyNTYiOiJiYTk2MjBhZjkyY2Q3MzNkZmNmMTY2N2JlMWUzMTRjYjM3NjI4ZmY1YmQ4ZmVjYjIxODAzNzhmMTJlOGQ2NzA1IiwiYXR0YWNobWVudHMiOltdfQ; b=8g6QNnVF__BHh-CC1cd366U8mwJ901wd_jSsiw843egvaG9-PcyCR_2K4DgU3ZUwJygI_cTEBGH38pxOAmKjAw"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "crash": "after_reserve",
+      "expect": {
+        "outcome": "crashed"
+      }
+    },
+    {
+      "event": "recover",
+      "expect": {
+        "recovered": [
+          {
+            "id": "CJxWyQtSlpuo6_Vdg_4J2g",
+            "outcome": "refuse",
+            "cause": "no_edge",
+            "control": {
+              "outcome": "refused",
+              "cause": "no_edge",
+              "to": "amap.router@host-b.fleet.example",
+              "about": "CJxWyQtSlpuo6_Vdg_4J2g"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <CJxWyQtSlpuo6_Vdg_4J2g@host-b.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test3; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MyIsImtpbmQiOiJwZWVyIiwiaWQiOiJDSnhXeVF0U2xwdW82X1ZkZ180SjJnIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1iLmZsZWV0LmV4YW1wbGUiLCJ0byI6InJldmlld2VyQGhvc3QtYy5mbGVldC5leGFtcGxlIiwidHMiOiIyMDI2LTEwLTA5VDE1OjAwOjAwWiIsInN1YmplY3QiOiJSdW4gdGhlIGNvbmZvcm1hbmNlIHN1aXRlIiwiYm9keV9zaGEyNTYiOiJiYTk2MjBhZjkyY2Q3MzNkZmNmMTY2N2JlMWUzMTRjYjM3NjI4ZmY1YmQ4ZmVjYjIxODAzNzhmMTJlOGQ2NzA1IiwiYXR0YWNobWVudHMiOltdfQ; b=8g6QNnVF__BHh-CC1cd366U8mwJ901wd_jSsiw843egvaG9-PcyCR_2K4DgU3ZUwJygI_cTEBGH38pxOAmKjAw"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "drop",
+        "cause": "duplicate"
+      }
+    }
+  ]
+}

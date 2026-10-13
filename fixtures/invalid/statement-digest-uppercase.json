@@ -1,0 +1,12 @@
+{
+  "v": 1,
+  "key_id": "test1",
+  "kind": "peer",
+  "id": "4f0c9a2e7b1d4c83a6e5f2b9d0c17e48",
+  "from": "planner@host-a.fleet.example",
+  "to": "builder@host-c.fleet.example",
+  "ts": "2026-10-09T15:00:00Z",
+  "subject": "Run the conformance suite",
+  "body_sha256": "5D8741A3FFBCEBF497B16768823B335B0FC2AAC0E6E1DDBC0F84ACF205572D98",
+  "attachments": []
+}

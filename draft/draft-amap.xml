@@ -2576,6 +2576,16 @@ assertion means.</t>
       </references>
       <references anchor="sec-informative-references">
         <name>Informative References</name>
+        <reference anchor="RFC8032">
+          <front>
+            <title>Edwards-Curve Digital Signature Algorithm (EdDSA)</title>
+            <author fullname="S. Josefsson" initials="S." surname="Josefsson"/>
+            <author fullname="I. Liusvaara" initials="I." surname="Liusvaara"/>
+            <date month="January" year="2017"/>
+          </front>
+          <seriesInfo name="RFC" value="8032"/>
+          <seriesInfo name="DOI" value="10.17487/RFC8032"/>
+        </reference>
         <reference anchor="MCP" target="https://modelcontextprotocol.io/specification/2025-11-25">
           <front>
             <title>Model Context Protocol specification, revision 2025-11-25</title>
@@ -3161,6 +3171,471 @@ NOTE: '\' line wrapping per RFC 8792
 }
 ]]></sourcecode>
       </figure>
+      <t><em>(Proposed, not yet reviewed.)</em> Cross-host, a peer message travels as mail carrying a
+signed statement in one <tt>AMAP-Peer-Statement</tt> header field. The sending Runtime signs
+the statement's exact bytes with Ed25519 <xref target="RFC8032"/>; the receiving Runtime
+verifies those bytes before parsing them, then validates them against the schema below,
+which is CLOSED at every level: these are signed bytes another Runtime acts on, not a
+Runtime-authored document a Connector reads. The verification steps, windows and outcomes
+are the companion document's (<tt>spec/peer-origin.md</tt>, section 5). The
+<tt>statement-*</tt> fixtures (<xref target="app-h"/>) exercise the schema, and signed
+cases with their expected outcomes are in <tt>fixtures/peer-signed/</tt>. A sending
+Runtime mints peer message ids under <tt>^[A-Za-z0-9_-]+$</tt> so that the
+<tt>Message-ID</tt> encoding is a valid msg-id.</t>
+      <figure anchor="schema-peer-statement">
+        <name>schemas/peer-statement.schema.json</name>
+        <sourcecode type="json" name="peer-statement.schema.json"><![CDATA[
+NOTE: '\' line wrapping per RFC 8792
+
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://amap-spec/schemas/peer-statement.schema.json",
+  "title": "peer-statement",
+  "description": "runtime -> runtime: the signed statement that carr\
+    ies a peer message between hosts. amap-spec v3.1.0 DRAFT, peer-o\
+    rigin profile (spec/peer-origin.md §5). The sending runtime sign\
+    s the statement's exact UTF-8 bytes with Ed25519 and ships both \
+    in one AMAP-Peer-Statement header field (§5.2); the receiving ru\
+    ntime verifies the signature over the received bytes before pars\
+    ing, then validates against this schema. CLOSED at every level, \
+    unlike the runtime-authored notices: these are signed bytes anot\
+    her runtime acts on, a member the receiver does not know is a me\
+    mber it cannot bind to what it publishes, and the version membe\
+    r `v` is the only evolution path. A statement that fails this sc\
+    hema fails verification, and the message is demoted to mail (§5.\
+    3, §5.4). Numbers are lexical integers (no fraction or exponent\
+    ) and strings contain no unpaired surrogate (§5.1, checked at §5\
+    .3 5(b)); the schema cannot express either, nor calendar validit\
+    y, interval order, the entropy of `id`, or any binding to the me\
+    ssage: those are §5's verification steps.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "v",
+    "key_id",
+    "kind",
+    "id",
+    "from",
+    "to",
+    "ts",
+    "subject",
+    "body_sha256",
+    "attachments"
+  ],
+  "properties": {
+    "v": {
+      "type": "integer",
+      "const": 1
+    },
+    "key_id": {
+      "type": "string",
+      "description": "names one key in the signing peer's configure\
+    d key set; opaque, unique within that set, 1-64 characters.",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}(?!\\n)$"
+    },
+    "kind": {
+      "const": "peer"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "the peer message id (§4), bare. A sending runt\
+    ime mints it under ^[A-Za-z0-9_-]+$ (hex or base64url), so its M\
+    essage-ID encoding <id@domain> is a valid msg-id (§5.1, §5.2); t\
+    he receiver publishes it as message.id.",
+      "pattern": "^[A-Za-z0-9_-]+(?!\\n)$"
+    },
+    "in_reply_to": {
+      "type": "string",
+      "minLength": 1,
+      "description": "the peer message id this message answers (§4)\
+    , bare, minted by the other runtime under the same pattern. Abse\
+    nt on a fresh task. Resolved against the receiver's ledger with \
+    the participants bound (§5.6).",
+      "pattern": "^[A-Za-z0-9_-]+(?!\\n)$"
+    },
+    "from": {
+      "type": "string",
+      "minLength": 1,
+      "description": "bare addr-spec of the sending agent; its domai\
+    n MUST be one of the signing peer's configured domains.",
+      "pattern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+(?\
+    !\\n)$"
+    },
+    "to": {
+      "type": "string",
+      "minLength": 1,
+      "description": "bare addr-spec of the one receiving agent (§3\
+    : a peer message is addressed to one agent).",
+      "pattern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+(?\
+    !\\n)$"
+    },
+    "ts": {
+      "type": "string",
+      "description": "when the sending runtime signed: RFC 3339 UTC\
+    , whole seconds, upper-case T and Z, no offset. MUST be a real c\
+    alendar instant (§5.1).",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9\
+    ]{2}Z(?!\\n)$"
+    },
+    "subject": {
+      "type": "string",
+      "description": "the subject the receiver publishes as message.\
+    subject; no control characters.",
+      "pattern": "^[^\u0000-\u001f]*(?!\\n)$"
+    },
+    "body_sha256": {
+      "type": "string",
+      "description": "SHA-256 of the UTF-8 encoding of the body_tex\
+    t the receiver will publish, lower-case hex.",
+      "pattern": "^[a-f0-9]{64}(?!\\n)$"
+    },
+    "attachments": {
+      "type": "array",
+      "description": "one entry per attachment, in order; empty whe\
+    n there are none.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sha256",
+          "size_bytes",
+          "filename",
+          "media_type"
+        ],
+        "properties": {
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}(?!\\n)$"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "filename": {
+            "type": "string",
+            "minLength": 1
+          },
+          "media_type": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "sender_exposure": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "§6, asserted by the sending runtime; omitted w\
+    hen it made no assessment. Timestamps in ts's format; window_sta\
+    rt <= window_end; last_external_delivery_ts present iff external\
+    _mail_delivered is true, and then within the window; asserted_b\
+    y is the signing runtime's configured runtime address (§5.1; §5.\
+    3 checks 5(b) and 8).",
+      "required": [
+        "asserted_by",
+        "external_mail_delivered",
+        "window_start",
+        "window_end"
+      ],
+      "properties": {
+        "asserted_by": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9.-\
+    ]+(?!\\n)$"
+        },
+        "external_mail_delivered": {
+          "type": "boolean"
+        },
+        "window_start": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:\
+    [0-9]{2}Z(?!\\n)$"
+        },
+        "window_end": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:\
+    [0-9]{2}Z(?!\\n)$"
+        },
+        "last_external_delivery_ts": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:\
+    [0-9]{2}Z(?!\\n)$"
+        },
+        "derived_from": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*(?!\\n)$"
+          }
+        }
+      },
+      "if": {
+        "required": [
+          "external_mail_delivered"
+        ],
+        "properties": {
+          "external_mail_delivered": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "last_external_delivery_ts"
+        ]
+      }
+    },
+    "sender_since": {
+      "type": "string",
+      "description": "OPTIONAL (§5.9): when the sending runtime firs\
+    t enrolled the sending agent's identity (as that runtime define\
+    s identity), from its durable registry; same format as ts and no\
+    t later than ts. A runtime assertion, not a sender claim. Never \
+    reset for a continuation of the same identity (restart, rebind, \
+    re-creation, key rotation); a new enrolment starts a new value. \
+    A receiver enforcing a sender age keeps the last value per (runt\
+    ime, from) and refuses an earlier one as inconsistent. Absence m\
+    eans NOT ASSERTED, never 'new'.",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9\
+    ]{2}Z(?!\\n)$"
+    }
+  }
+}
+]]></sourcecode>
+      </figure>
+      <t>A receiving Runtime reports what it did with a statement it did not place
+(refused, dropped or demoted) to the configured sending Runtime in a signed control
+notice, carried in one <tt>AMAP-Peer-Control</tt> header field with the same grammar and
+key. Its <tt>kind</tt> is <tt>"control"</tt>, so neither document validates as the other;
+it is CLOSED and carries no free text.</t>
+      <figure anchor="schema-peer-control">
+        <name>schemas/peer-control.schema.json</name>
+        <sourcecode type="json" name="peer-control.schema.json"><![CDATA[
+NOTE: '\' line wrapping per RFC 8792
+
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://amap-spec/schemas/peer-control.schema.json",
+  "title": "peer-control",
+  "description": "runtime -> runtime: the signed control notice a re\
+    ceiving runtime sends to a configured sending runtime about wha\
+    t it did with an authenticated peer statement that it did not pl\
+    ace (refused, dropped, or demoted). amap-spec v3.1.0 DRAFT, peer\
+    -origin profile (spec/peer-origin.md §5.8). Carried in an AMAP-P\
+    eer-Control header field with the same k/s/b grammar as AMAP-Pee\
+    r-Statement, signed with the same per-runtime key; `kind` is \"c\
+    ontrol\", so a control notice never validates as a peer statemen\
+    t and is never placed for an agent. CLOSED at every level, and i\
+    t carries no free text: the receiving runtime composes any agent\
+    -facing words itself (§4's DSN analogue). The schema cannot chec\
+    k that `about` names a peer message this runtime issued to the n\
+    otice's signer; that is §5.8's verification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "v",
+    "key_id",
+    "kind",
+    "id",
+    "from",
+    "to",
+    "ts",
+    "about",
+    "outcome",
+    "cause"
+  ],
+  "properties": {
+    "v": {
+      "type": "integer",
+      "const": 1
+    },
+    "key_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}(?!\\n)$"
+    },
+    "kind": {
+      "const": "control"
+    },
+    "id": {
+      "type": "string",
+      "description": "this notice's own id, minted like a peer messa\
+    ge id; replay-checked in the same store, scoped to the signing r\
+    untime.",
+      "pattern": "^[A-Za-z0-9_-]+(?!\\n)$"
+    },
+    "from": {
+      "type": "string",
+      "description": "the signing (receiving) runtime's configured r\
+    untime address.",
+      "pattern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+(?\
+    !\\n)$"
+    },
+    "to": {
+      "type": "string",
+      "description": "the configured runtime address of the runtime \
+    that signed the statement this notice is about.",
+      "pattern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+(?\
+    !\\n)$"
+    },
+    "ts": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9\
+    ]{2}Z(?!\\n)$"
+    },
+    "about": {
+      "type": "string",
+      "description": "the `id` of the peer statement this notice is \
+    about.",
+      "pattern": "^[A-Za-z0-9_-]+(?!\\n)$"
+    },
+    "outcome": {
+      "enum": [
+        "refused",
+        "dropped",
+        "demoted"
+      ]
+    },
+    "cause": {
+      "description": "why, from §5.4's outcome table. `policy` is a \
+    deployment refusal (for example a first-sight quarantine), name\
+    d further by policy_code.",
+      "enum": [
+        "statement_value",
+        "key_domain",
+        "ts_window",
+        "exposure_signer",
+        "body_charset",
+        "body_digest",
+        "attachment_count",
+        "attachment_digest",
+        "message_id",
+        "duplicate",
+        "misrouted",
+        "unresolved_reply",
+        "no_edge",
+        "policy"
+      ]
+    },
+    "policy_code": {
+      "type": "string",
+      "description": "deployment-defined token, only with cause `pol\
+    icy` (e.g. `quarantined`).",
+      "pattern": "^[a-z][a-z0-9_]{0,63}(?!\\n)$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "policy_code"
+        ]
+      },
+      "then": {
+        "properties": {
+          "cause": {
+            "const": "policy"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "cause": {
+            "const": "policy"
+          }
+        },
+        "required": [
+          "cause"
+        ]
+      },
+      "then": {
+        "required": [
+          "policy_code"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "refused"
+          }
+        },
+        "required": [
+          "outcome"
+        ]
+      },
+      "then": {
+        "properties": {
+          "cause": {
+            "enum": [
+              "unresolved_reply",
+              "no_edge",
+              "policy"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "dropped"
+          }
+        },
+        "required": [
+          "outcome"
+        ]
+      },
+      "then": {
+        "properties": {
+          "cause": {
+            "enum": [
+              "duplicate",
+              "misrouted"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "demoted"
+          }
+        },
+        "required": [
+          "outcome"
+        ]
+      },
+      "then": {
+        "properties": {
+          "cause": {
+            "enum": [
+              "statement_value",
+              "key_domain",
+              "ts_window",
+              "exposure_signer",
+              "body_charset",
+              "body_digest",
+              "attachment_count",
+              "attachment_digest",
+              "message_id"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
+]]></sourcecode>
+      </figure>
     </section>
     <section anchor="app-directory">
       <name>Peer-Directory Schema (v3.1.0 DRAFT)</name>
@@ -3567,7 +4042,7 @@ NOTE: '\' line wrapping per RFC 8792
 is part of the specification.)</em></t>
       <t>The suite consists of golden artifacts under <tt>fixtures/valid/</tt> and
 <tt>fixtures/invalid/</tt>, plus a validator, <tt>fixtures/validate.py</tt>.</t>
-      <t>At this document version the suite contains <strong>89 fixtures — 34 valid and 55 invalid</strong>.</t>
+      <t>At this document version the suite contains <strong>119 fixtures — 42 valid and 77 invalid</strong>.</t>
       <table>
         <thead>
           <tr>
@@ -3779,6 +4254,54 @@ is part of the specification.)</em></t>
               <tt>valid/roster-unknown-member.json</tt></td>
             <td align="left">
               <tt>roster.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>valid/control-demoted-body-digest.json</tt></td>
+            <td align="left">
+              <tt>peer-control.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>valid/control-dropped-duplicate.json</tt></td>
+            <td align="left">
+              <tt>peer-control.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>valid/control-refused-no-edge.json</tt></td>
+            <td align="left">
+              <tt>peer-control.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>valid/control-refused-policy.json</tt></td>
+            <td align="left">
+              <tt>peer-control.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>valid/statement-exposure-true.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>valid/statement-minimal.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>valid/statement-result-attachment.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>valid/statement-sender-since.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
           </tr>
           <tr>
             <td align="left">
@@ -4110,6 +4633,138 @@ is part of the specification.)</em></t>
             <td align="left">
               <tt>roster.schema.json</tt></td>
           </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/control-free-text.json</tt></td>
+            <td align="left">
+              <tt>peer-control.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/control-kind-peer.json</tt></td>
+            <td align="left">
+              <tt>peer-control.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/control-outcome-cause-mismatch.json</tt></td>
+            <td align="left">
+              <tt>peer-control.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/control-policy-code-without-policy.json</tt></td>
+            <td align="left">
+              <tt>peer-control.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/control-policy-without-code.json</tt></td>
+            <td align="left">
+              <tt>peer-control.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-attachment-unknown-member.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-digest-uppercase.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-exposure-date-free-text.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-exposure-unknown-member.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-from-display-name.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-id-dotted.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-id-encoded.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-key-id-empty.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-missing-attachments.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-sender-since-date-only.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-subject-crlf.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-to-array.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-ts-fractional.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-ts-offset.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-unknown-member.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-v-boolean.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-v2.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
         </tbody>
       </table>
       <t><strong>Running it.</strong> The validator is stdlib-only and takes no arguments:</t>
@@ -4122,7 +4777,8 @@ no dependency: <strong>the fixtures are the other side.</strong></t>
       <t><strong>How a fixture is mapped to a schema.</strong> By filename prefix — <tt>request-</tt> to
 the submit-request schema, <tt>notice-</tt> to deliver-notice, <tt>result-</tt> to
 result, <tt>message-</tt> to inbound-message, <tt>identity-</tt> to binding-record, and
-<tt>peer-</tt> to peer-notice (<xref target="app-f"/>).</t>
+<tt>peer-</tt> to peer-notice, <tt>statement-</tt> to peer-statement, and
+<tt>control-</tt> to peer-control (<xref target="app-f"/>).</t>
       <t><strong>What the validator checks.</strong> Schema validation in the JSON Schema
 2020-12 dialect <xref target="JSON-SCHEMA-2020-12"/>, over the subset of keywords these
 schemas use (<tt>type</tt>, <tt>const</tt>, <tt>enum</tt>, <tt>minLength</tt>, <tt>pattern</tt>, <tt>minItems</tt>,
@@ -4359,6 +5015,20 @@ the versioning record of the protocol contract this document renders.)</em></t>
         <t>An additive <strong>minor</strong> bump; the wire major stays <tt>"2"</tt>.</t>
         <ul spacing="normal">
           <li>
+            <t><strong>The signed cross-host peer statement and control notice</strong>
+(2026-10-09, proposed, not yet reviewed; companion-document section 5 revision s5-r4).
+Two new schemas (<xref target="app-f"/>): the statement a sending Runtime signs with
+Ed25519 and carries in one <tt>AMAP-Peer-Statement</tt> header field, and the control
+notice a receiving Runtime returns about a statement it did not place, both CLOSED at
+every level; <tt>statement-*</tt> and <tt>control-*</tt> fixtures; and, in
+<tt>fixtures/peer-signed/</tt>, RFC 8032 vectors with negative cases, MIME selection
+cases, and signed sequences of candidates and events with the outcome a receiver MUST
+reach at each step. The rules are the companion document's (<tt>spec/peer-origin.md</tt>,
+section 5). Additive: nothing existing changes shape, and a deployment without
+cross-host peer traffic is unaffected. The 30 new fixtures (8 valid, 22 invalid)
+bring version 3.1.0 to 119 (42 valid, 77 invalid).</t>
+          </li>
+          <li>
             <t><strong>The fleet roster</strong> (2026-09-24). A new, optional artifact
 (<xref target="sec-roster"/>, schema in <xref target="app-roster"/>): one
 Runtime-written file naming the instances the Runtime has admitted, so that an
@@ -4393,8 +5063,9 @@ on it (<xref target="sec-4-1"/>). <tt>&lt;name&gt;</tt> is pinned as a stable Co
 chosen once, unchanged by any rename of the Connector's repository,
 package, or deployment, and opaque to the Runtime that reads it; the
 wording it replaced ("a Connector or deployment name") permitted a
-repository name to leak into a wire-visible path. The first id is
-<tt>claude-code</tt>. One normative clarification sits beside it: an outcome
+repository name to leak into a wire-visible path. The reference Claude
+Code Connector chose <tt>claude-code</tt> as its id; ids are chosen by each
+Connector, and this document neither lists nor registers them. One normative clarification sits beside it: an outcome
 written there is a claim by the receiving side, never proof of delivery
 or of non-delivery, and the Runtime's own delivery record is
 authoritative over it (<xref target="sec-11-15"/>). There is deliberately no inbound
@@ -4410,6 +5081,23 @@ members. The profile's prose is the companion document
 <tt>spec/peer-origin.md</tt> (v3.1.0 DRAFT).</t>
           </li>
           <li>
+            <t><strong>The Peer Directory.</strong> A Runtime may publish a per-instance
+projection of the authorisation graph, <tt>directory.json</tt>, at the Agent's
+Namespace root (<xref target="sec-directory"/>, schema in <xref target="app-directory"/>), so that
+a Connector can learn which peers it may address without the host rendering a
+snapshot onto an Agent-writable mount that goes stale whenever the fleet
+changes. It is advisory and never authoritative, and a Runtime never reads it
+back as authorisation, which is what stops it decaying into an allowlist the
+Agent can see. The Namespace root gains a Runtime-owned posture for
+Runtime-written files: the file sits beside the lanes rather than inside one,
+because it spans both. Additive: a new optional artifact, a new schema and
+seven fixtures (4 valid, 3 invalid); no existing schema or fixture changes,
+and the wire <tt>contract_version</tt> stays <tt>"2"</tt>.</t>
+            <t><em>Restored 2026-10-05.</em> This entry was in the versioning record this
+document was reconciled against and was lost in the reconciliation, along
+with its fixtures from the count below.</t>
+          </li>
+          <li>
             <t><strong>Fixtures: 75 total (27 valid, 48 invalid), up from 58.</strong> 16 <tt>peer-*</tt>
 fixtures were added (6 valid, 10 invalid), covering a minimal notice, a
 reply, the exposure stamp asserted both ways, a clean attachment
@@ -4423,6 +5111,10 @@ applies the <tt>content_ref</tt> post-check to it. Three existing fixtures had
 example strings normalised to <tt>example.*</tt> identities (one free-text body,
 two addresses in injection examples); each stays valid or invalid for the
 same reason as before, and no schema changed.</t>
+            <t><strong>Correction (2026-10-05).</strong> The count above omits the seven
+<tt>directory-*</tt> fixtures (4 valid, 3 invalid) added with the Peer Directory.
+With them and the fleet roster's seven, version 3.1.0 has 89 fixtures (34
+valid, 55 invalid).</t>
           </li>
         </ul>
       </section>

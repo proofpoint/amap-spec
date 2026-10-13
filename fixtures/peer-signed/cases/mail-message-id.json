@@ -1,0 +1,34 @@
+{
+  "description": "Message-ID decodes to another id.",
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <AAAAAAAAAAAAAAAAAAAAAA@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiJhTFVnYkN5dzVVb1FJYnFoUEo0UjB3IiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W119; b=Ph6URw-qIR9XjllZoG_tkhe5TONdjCCRuMtpnXW__wP3iv_WPxs2yJSm5aiJV_74omlNiPJ9SF9TPPQAqRuICQ"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "mail",
+        "cause": "message_id",
+        "control": {
+          "outcome": "demoted",
+          "cause": "message_id",
+          "to": "amap.router@host-a.fleet.example",
+          "about": "aLUgbCyw5UoQIbqhPJ4R0w"
+        }
+      }
+    }
+  ]
+}

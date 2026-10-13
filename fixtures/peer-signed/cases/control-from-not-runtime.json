@@ -1,0 +1,26 @@
+{
+  "description": "Signed by host-c's key, but `from` is an agent, not host-c's configured runtime address.",
+  "receiver": "receiver-host-a.json",
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <_taPas_1EbB-3yk7M3V4WQ@host-c.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Control",
+            " k=test3; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MyIsImtpbmQiOiJjb250cm9sIiwiaWQiOiJfdGFQYXNfMUViQi0zeWs3TTNWNFdRIiwiZnJvbSI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImFtYXAucm91dGVyQGhvc3QtYS5mbGVldC5leGFtcGxlIiwidHMiOiIyMDI2LTEwLTA5VDE1OjEwOjA1WiIsImFib3V0IjoiNGYwYzlhMmU3YjFkNGM4M2E2ZTVmMmI5ZDBjMTdlNDgiLCJvdXRjb21lIjoicmVmdXNlZCIsImNhdXNlIjoibm9fZWRnZSJ9; b=wmFdh3weyn7HNzYu4zHfThxv6OfM4lPfmPUxQZvRK-hJvt9QSZ0ncQIanCxI8MOtvSOlehf4PNyJHXH1qSGeBQ"
+          ]
+        ],
+        "body": null,
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "drop",
+        "cause": "control_signer"
+      }
+    }
+  ]
+}

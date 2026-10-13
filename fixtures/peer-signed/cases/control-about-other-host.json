@@ -1,0 +1,26 @@
+{
+  "description": "`about` names a message this runtime issued to host-b; host-c may not report on it.",
+  "receiver": "receiver-host-a.json",
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <c5Eb86Y361ezqCyIhaXWHQ@host-c.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Control",
+            " k=test3; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MyIsImtpbmQiOiJjb250cm9sIiwiaWQiOiJjNUViODZZMzYxZXpxQ3lJaGFYV0hRIiwiZnJvbSI6ImFtYXAucm91dGVyQGhvc3QtYy5mbGVldC5leGFtcGxlIiwidG8iOiJhbWFwLnJvdXRlckBob3N0LWEuZmxlZXQuZXhhbXBsZSIsInRzIjoiMjAyNi0xMC0wOVQxNToxMDowNVoiLCJhYm91dCI6IlNYTnpkV1ZrVkc5SWIzTjBRakF3TURBdyIsIm91dGNvbWUiOiJyZWZ1c2VkIiwiY2F1c2UiOiJub19lZGdlIn0; b=BVOYKYR7UiQdN0EWc0g9LEd2B-IhLMCMXyHpnraLEIM6b-Un0-JoXYqdmYvQN0iOpvl45loz4PrhmvTkpUxOCQ"
+          ]
+        ],
+        "body": null,
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "drop",
+        "cause": "unknown_about"
+      }
+    }
+  ]
+}

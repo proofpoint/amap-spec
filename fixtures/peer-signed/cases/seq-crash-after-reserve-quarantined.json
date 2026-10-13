@@ -1,0 +1,51 @@
+{
+  "description": "A candidate a deployment policy will refuse (sender age 15 h, 24 h required) crashes after reservation. Recovery refuses it with the policy code; nothing is placed.",
+  "receiver_patch": {
+    "min_sender_age_s": 86400
+  },
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <pCfdpmn4tCzz-QDF439HCw@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiJwQ2ZkcG1uNHRDenotUURGNDM5SEN3IiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W10sInNlbmRlcl9zaW5jZSI6IjIwMjYtMTAtMDlUMDA6MDA6MDBaIn0; b=723VSfIM_MOfLZEJ9wMZhTfdyyd8aKdCIAd1QLod_nGHmk782H0C-QkdmGH5SSyZlmCWwEgeE6pH6y_MzuN7BA"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "crash": "after_reserve",
+      "expect": {
+        "outcome": "crashed"
+      }
+    },
+    {
+      "event": "recover",
+      "expect": {
+        "recovered": [
+          {
+            "id": "pCfdpmn4tCzz-QDF439HCw",
+            "outcome": "refuse",
+            "cause": "policy",
+            "control": {
+              "outcome": "refused",
+              "cause": "policy",
+              "to": "amap.router@host-a.fleet.example",
+              "about": "pCfdpmn4tCzz-QDF439HCw",
+              "policy_code": "quarantined"
+            },
+            "policy_code": "quarantined"
+          }
+        ]
+      }
+    }
+  ]
+}
