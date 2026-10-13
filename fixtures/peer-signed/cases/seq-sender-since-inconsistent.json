@@ -1,0 +1,99 @@
+{
+  "description": "A receiver that enforces a sender age remembers the last sender_since it saw per (runtime, from). A later statement asserting an EARLIER value claims an older enrolment than before: inconsistent, refused. A LATER value is a new enrolment of the identity, so its age starts again and it is quarantined.",
+  "receiver_patch": {
+    "min_sender_age_s": 86400
+  },
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <CFCtT3Ko3we-cjUlDc8XVw@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiJDRkN0VDNLbzN3ZS1jalVsRGM4WFZ3IiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W10sInNlbmRlcl9zaW5jZSI6IjIwMjYtMDktMzBUMDg6MDA6MDBaIn0; b=j0ijaxRDWkv9GyPswxfRIP3zA7SnvzMHwYQapWaQMHPVHx8OxhHuwFOUVHQLWxn41XlPAYsZMX_qVjj6hWvQCw"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "peer",
+        "publish": {
+          "id": "CFCtT3Ko3we-cjUlDc8XVw",
+          "from": "planner@host-a.fleet.example",
+          "subject": "Run the conformance suite",
+          "body_text": "Please run the conformance suite on main and report the result.\n",
+          "attachments": []
+        }
+      }
+    },
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <EeWTMpvu5CsGBBbs5Wpjfg@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiJFZVdUTXB2dTVDc0dCQmJzNVdwamZnIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W10sInNlbmRlcl9zaW5jZSI6IjIwMjYtMDktMDFUMDg6MDA6MDBaIn0; b=nIg31DRYp8fNLcRiH8nytMhvLTI5Djcduc3rH5cYLFHReUSDnObUpOUR2gce0oGlVXwcXsZTMsleSjZuUTT7Bg"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "refuse",
+        "cause": "policy",
+        "control": {
+          "outcome": "refused",
+          "cause": "policy",
+          "to": "amap.router@host-a.fleet.example",
+          "about": "EeWTMpvu5CsGBBbs5Wpjfg",
+          "policy_code": "sender_since_inconsistent"
+        },
+        "policy_code": "sender_since_inconsistent"
+      }
+    },
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <Jl3oKr5Pdw7qN4GtlF0Fyg@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiJKbDNvS3I1UGR3N3FONEd0bEYwRnlnIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W10sInNlbmRlcl9zaW5jZSI6IjIwMjYtMTAtMDlUMDA6MDA6MDBaIn0; b=wA2hxpE58rerB0EZk9XQGFpDC1V0ckAiG3IwAofvF7vL58C41f9q3tQagXMwbjB3LO-AEFoVs9fJ-WODq90cAw"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "refuse",
+        "cause": "policy",
+        "control": {
+          "outcome": "refused",
+          "cause": "policy",
+          "to": "amap.router@host-a.fleet.example",
+          "about": "Jl3oKr5Pdw7qN4GtlF0Fyg",
+          "policy_code": "quarantined"
+        },
+        "policy_code": "quarantined"
+      }
+    }
+  ]
+}

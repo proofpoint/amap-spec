@@ -1,0 +1,26 @@
+{
+  "description": "Altered after signing: dropped, never mailed.",
+  "receiver": "receiver-host-a.json",
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <g92DpzPsBEfSeuSTA42y3g@host-c.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Control",
+            " k=test3; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MyIsImtpbmQiOiJjb250cm9sIiwiaWQiOiJnOTJEcHpQc0JFZlNldVNUQTQyeTNnIiwiZnJvbSI6ImFtYXAucm91dGVyQGhvc3QtYy5mbGVldC5leGFtcGxlIiwidG8iOiJhbWFwLnJvdXRlckBob3N0LWEuZmxlZXQuZXhhbXBsZSIsInRzIjoiMjAyNi0xMC0wOVQxNToxMDowNVoiLCJhYm91dCI6IjRmMGM5YTJlN2IxZDRjODNhNmU1ZjJiOWQwYzE3ZTQ4Iiwib3V0Y29tZSI6InJlZnVzZWQiLCJjYXVzZSI6Im5vX2VkZ2YifQ; b=L8pYab1F1Z1l9-IRXfiIMKSYNJQPvABIg1gbHBnal47-T08_FjztEkxB3206lLg4ghNaiPC_S1z4WG-oAsH5CA"
+          ]
+        ],
+        "body": null,
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "drop",
+        "cause": "signature"
+      }
+    }
+  ]
+}

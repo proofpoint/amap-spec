@@ -1,0 +1,26 @@
+{
+  "description": "A peer statement carried in AMAP-Peer-Control: it fails the control schema and is dropped.",
+  "receiver": "receiver-host-a.json",
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <34kKZOuxYlzH_lqITpq-bA@host-c.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Control",
+            " k=test3; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MyIsImtpbmQiOiJwZWVyIiwiaWQiOiIzNGtLWk91eFlsekhfbHFJVHBxLWJBIiwiZnJvbSI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0byI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W119; b=5AjepmNneflGIxs2Ofi62SFfrcez-LwGQw-l9dalGVnLwH7nyNPZIKKB-3z9xR0UnggtFMEa7Pmz_V99pHUSAQ"
+          ]
+        ],
+        "body": null,
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "drop",
+        "cause": "statement_schema"
+      }
+    }
+  ]
+}

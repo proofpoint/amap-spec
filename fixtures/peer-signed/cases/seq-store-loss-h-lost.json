@@ -1,0 +1,116 @@
+{
+  "description": "The store AND the high-water clock H are lost: no trustworthy bound exists, so peer admission closes. A candidate reaching check 7 is held in intake, not demoted. The operator records a bound B = 15:10 (at or after the largest receiver time before the loss); the floor becomes B + F + 1 s = 15:15:01, admission reopens, and the held candidate is evaluated in order: its ts 15:00 is below the floor, so it is demoted. A statement at 15:15:01 is then placed.",
+  "receiver_patch": {
+    "now": "2026-10-09T15:00:00Z"
+  },
+  "steps": [
+    {
+      "now": "2026-10-09T15:00:00Z",
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <-jolxe1b-p_EE9KjbbYnwQ@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiItam9seGUxYi1wX0VFOUtqYmJZbndRIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W119; b=8de264w7CJ1x8LzD6566GAi3ruDNru9q8UjR4pSWmVNCIXDf7ZroADiYGuBd3vrXNZorGu7XNda4BN32OqbICQ"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "peer",
+        "publish": {
+          "id": "-jolxe1b-p_EE9KjbbYnwQ",
+          "from": "planner@host-a.fleet.example",
+          "subject": "Run the conformance suite",
+          "body_text": "Please run the conformance suite on main and report the result.\n",
+          "attachments": []
+        }
+      }
+    },
+    {
+      "event": "lose_store",
+      "at": "2026-10-09T15:01:00Z",
+      "h_lost": true,
+      "expect": {}
+    },
+    {
+      "now": "2026-10-09T15:02:00Z",
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <-jolxe1b-p_EE9KjbbYnwQ@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiItam9seGUxYi1wX0VFOUtqYmJZbndRIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W119; b=8de264w7CJ1x8LzD6566GAi3ruDNru9q8UjR4pSWmVNCIXDf7ZroADiYGuBd3vrXNZorGu7XNda4BN32OqbICQ"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "held",
+        "cause": "admission_closed"
+      }
+    },
+    {
+      "event": "set_bound",
+      "bound": "2026-10-09T15:10:00Z",
+      "expect": {
+        "released": [
+          {
+            "outcome": "mail",
+            "cause": "ts_window",
+            "control": {
+              "outcome": "demoted",
+              "cause": "ts_window",
+              "to": "amap.router@host-a.fleet.example",
+              "about": "-jolxe1b-p_EE9KjbbYnwQ"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "now": "2026-10-09T15:12:00Z",
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <dhso-Eigjs1twvI6ROfEgw@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiJkaHNvLUVpZ2pzMXR3dkk2Uk9mRWd3IiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MTU6MDFaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W119; b=cjB2ywNPHuna3YEXvo2jrIw8bUXbHXP54Aiv48xtlTtGXH8yARO6zqBVqayN3cqJnjqy9KE9-83Kd3NH7BlcBQ"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "peer",
+        "publish": {
+          "id": "dhso-Eigjs1twvI6ROfEgw",
+          "from": "planner@host-a.fleet.example",
+          "subject": "Run the conformance suite",
+          "body_text": "Please run the conformance suite on main and report the result.\n",
+          "attachments": []
+        }
+      }
+    }
+  ]
+}

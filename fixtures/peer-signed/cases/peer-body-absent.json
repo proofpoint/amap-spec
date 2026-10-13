@@ -1,0 +1,31 @@
+{
+  "description": "No body leaf at all: the empty body, whose digest the sender signed.",
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <j2vqtbBusT6aRY58uSJ9ng@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiJqMnZxdGJCdXNUNmFSWTU4dVNKOW5nIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJhdHRhY2htZW50cyI6W119; b=ZO4pRcURJhYLB38EEHsC3bDGHkm_I68dxHnFk50tjLGWIi9WR3M0OvjuUmb8moCAWXyIcYNEYp758ZZmfcreAA"
+          ]
+        ],
+        "body": null,
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "peer",
+        "publish": {
+          "id": "j2vqtbBusT6aRY58uSJ9ng",
+          "from": "planner@host-a.fleet.example",
+          "subject": "Run the conformance suite",
+          "body_text": "",
+          "attachments": []
+        }
+      }
+    }
+  ]
+}

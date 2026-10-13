@@ -1,0 +1,34 @@
+{
+  "description": "The right participants, but the record's reply window ended at 15:00.",
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <nFxIzAcnJSw2MWZN3LnHJw@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiJuRnhJekFjbkpTdzJNV1pOM0xuSEp3IiwiZnJvbSI6InJldmlld2VyQGhvc3QtYS5mbGVldC5leGFtcGxlIiwidG8iOiJidWlsZGVyQGhvc3QtYy5mbGVldC5leGFtcGxlIiwidHMiOiIyMDI2LTEwLTA5VDE1OjAwOjAwWiIsInN1YmplY3QiOiJSZTogeCIsImJvZHlfc2hhMjU2IjoiYmE5NjIwYWY5MmNkNzMzZGZjZjE2NjdiZTFlMzE0Y2IzNzYyOGZmNWJkOGZlY2IyMTgwMzc4ZjEyZThkNjcwNSIsImF0dGFjaG1lbnRzIjpbXSwiaW5fcmVwbHlfdG8iOiJSWGh3YVhKbFpGSmxZMjl5WkRBd01EQXoifQ; b=Zj9R5NMi3aojyeAUnv76wdfru8A7x1RPvwQxsh8Ho5HBeOLUWfc3qIGHejm1hvDYfZkZ_CXffpuubh_n6wQFDA"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "refuse",
+        "cause": "unresolved_reply",
+        "control": {
+          "outcome": "refused",
+          "cause": "unresolved_reply",
+          "to": "amap.router@host-a.fleet.example",
+          "about": "nFxIzAcnJSw2MWZN3LnHJw"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "description": "A small-order public key (the identity): refused at load. With R = identity and S = 0 the bare equation would accept any message under it.",
+  "receiver_patch": {
+    "peers": [
+      {
+        "name": "host-a",
+        "runtime": "amap.router@host-a.fleet.example",
+        "domains": [
+          "host-a.fleet.example"
+        ],
+        "keys": [
+          {
+            "key_id": "test1",
+            "public_key": "0100000000000000000000000000000000000000000000000000000000000000"
+          }
+        ]
+      },
+      {
+        "name": "host-b",
+        "runtime": "amap.router@host-b.fleet.example",
+        "domains": [
+          "host-b.fleet.example"
+        ],
+        "keys": [
+          {
+            "key_id": "test3",
+            "public_key": "fc51cd8e6218a1a38da47ed00230f0580816ed13ba3303ac5deb911548908025"
+          }
+        ]
+      }
+    ]
+  },
+  "config_error": "key_small_order",
+  "steps": []
+}

@@ -1,0 +1,24 @@
+From: planner@host-a.fleet.example
+To: builder@host-c.fleet.example
+Subject: Run the conformance suite
+Message-ID: <cbbuCOCVIoYbYAAgLR_hGA@host-a.fleet.example>
+AMAP-Peer-Statement: k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyI
+ iwiaWQiOiJjYmJ1Q09DVklvWWJZQUFnTFJfaEdBIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W119; b=BPGWfYDTElgMOnDb2KQkSRjU8P-jgBGvWjR491NRmlXxjLZeYxLbA6pEFGvyJfzPvLjkd4VckhV8ugKz5HBGBw
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="b1"
+
+--b1
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
+
+UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg==
+--b1
+Content-Type: text/csv
+Content-Disposition: attachment; filename=gate.csv
+Content-Transfer-Encoding: quoted-printable
+
+name,result
+validate.py,ok=3D89
+check_=
+cases.py,ok
+--b1--

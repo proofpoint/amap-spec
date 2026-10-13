@@ -1,0 +1,57 @@
+{
+  "description": "A known statement replayed with a modified body: dropped as a duplicate (the statement digest matches) rather than demoted for the body.",
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <XRQBs7YVrUkfNMfv4L06Mg@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiJYUlFCczdZVnJVa2ZOTWZ2NEwwNk1nIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W119; b=a0VqnRrlzzV6zoYE9p4tCwAHN4_G-kIeJsF64d_q2rft_UaAc5ST27s5F0WmV0vgpei7o8tVtewq0SFrtiIjAw"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "peer",
+        "publish": {
+          "id": "XRQBs7YVrUkfNMfv4L06Mg",
+          "from": "planner@host-a.fleet.example",
+          "subject": "Run the conformance suite",
+          "body_text": "Please run the conformance suite on main and report the result.\n",
+          "attachments": []
+        }
+      }
+    },
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <XRQBs7YVrUkfNMfv4L06Mg@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiJYUlFCczdZVnJVa2ZOTWZ2NEwwNk1nIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W119; b=a0VqnRrlzzV6zoYE9p4tCwAHN4_G-kIeJsF64d_q2rft_UaAc5ST27s5F0WmV0vgpei7o8tVtewq0SFrtiIjAw"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "c29tZXRoaW5nIGVsc2UK"
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "drop",
+        "cause": "duplicate"
+      }
+    }
+  ]
+}
