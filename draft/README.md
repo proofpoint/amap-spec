@@ -4,7 +4,7 @@
 
 ```
 draft-amap.xml          THE SOURCE: xml2rfc v3 XML, hand-edited. The file you edit.
-coverage.toml           the class of every normative sentence in sections 3-10
+coverage.toml           the class of every normative sentence in the protocol sections
 fixtures.toml           which fixtures the draft shows inline, and why (data)
 examples/               the illustrative JSON shapes (hand-written)
 bib/                    RFC <reference> entries, for adding a citation offline
@@ -22,10 +22,10 @@ made there is the change (`WORKFLOWS.md`, "Editor-first").
 `spec/contract.md` is frozen: the record of the text this draft was reconciled
 against. Its header maps its old sections to the draft's. The peer-origin
 profile, `spec/peer-origin.md`, is **not** frozen: it is v3.1.0 DRAFT, and this
-draft carries only its schema (Appendix F).
+draft carries only its schema (the Peer-Notice Schema appendix).
 
-The build renders `dist/draft-amap-00.xml` (a byte copy of the source) and
-`dist/draft-amap-00.txt`, and on demand `.html` and `.pdf`.
+The build renders `dist/draft-rapp-amap-00.xml` (a byte copy of the source) and
+`dist/draft-rapp-amap-00.txt`, and on demand `.html` and `.pdf`.
 
 ## 2. What a tool writes, and what you write
 
@@ -49,7 +49,7 @@ folding long lines per RFC 8792 exactly as the old kramdown-rfc build did
   empty `<sourcecode type="json"><![CDATA[]]></sourcecode>` and run
   `make sync`. `make check` fails if a schema or listed fixture has no block.
 - **Never paste JSON into the XML by hand.** The check fails on any difference.
-- **Never edit `dist/draft-amap-00.xml`.** It is a byte copy of the source and
+- **Never edit `dist/draft-rapp-amap-00.xml`.** It is a byte copy of the source and
   looks identical to it. A direct edit there is not lost silently: `make`
   leaves the edited copy alone and `make check` fails on the mismatch. Move the
   edit into `draft/draft-amap.xml`.
@@ -76,8 +76,9 @@ make -C draft reproducible    # two text renders, byte-compared
 - `tools/check_render.py`: the same equality re-derived from the XML, plus the
   fixture roster counts, the pinned `docName`, and no host paths or personal
   identifiers.
-- `tools/check_coverage.py`: every RFC 2119 sentence in sections 3–10 and the
-  peer directory has a class in `coverage.toml` (fixture, operational,
+- `tools/check_coverage.py`: every RFC 2119 sentence in the protocol sections
+  (Architecture through Versioning and Conformance, including the Peer
+  Directory and the Fleet Roster) has a class in `coverage.toml` (fixture, operational,
   informative). The 128 sentences present at the switch are an unclassified
   **baseline**; classify them as you review them, and never add a new
   unclassified entry. `--emit` prints stubs for new sentences.
@@ -112,7 +113,7 @@ no longer needed.
 
 ## 5. What is committed, and what is not
 
-- **Committed:** `draft-amap.xml` (the source), `dist/draft-amap-00.xml` (its
+- **Committed:** `draft-amap.xml` (the source), `dist/draft-rapp-amap-00.xml` (its
   copy) and `.txt`, `coverage.toml`, `fixtures.toml`, `examples/`, `bib/`.
 - **Gitignored:** `dist/*.html` and `dist/*.pdf`.
 - **Never written by the build:** `schemas/`, `fixtures/`, `spec/`.
@@ -129,10 +130,21 @@ and both authors' email addresses. The draft is ready for submission and **has
 not been submitted.** The history of each gate is kept below, because each was
 a binding legal statement rather than an editorial choice.
 
+**PENDING, 2026-10-02: the editor's review changed two gated values.** His
+edits (taken verbatim as canonical) set `submissionType="IETF"` and
+`category="std"` (Intended status: Standards Track), in place of
+`independent` and `info`. The IETF stream is the one that leads to Dispatch, a
+BoF and a working group, which is the path the editor proposes; the
+Independent stream does not go to a working group. These are rights
+statements, not editorial choices: **they are pending the owner's confirmation
+with counsel, and nothing may be submitted until that is recorded here.** If
+counsel declines, revert those two attributes and record why.
+
 - **`ipr`**: settled 2026-09-21 as `trust200902` (below).
-- **`submissionType`**: `independent` (the Independent Submissions Editor). The
-  alternative is the IETF stream, via a working group, which the full BCP 78
-  grant keeps possible.
+- **`submissionType`**: `independent` (the Independent Submissions Editor), as
+  confirmed 2026-09-24. The alternative is the IETF stream, via a working
+  group, which the full BCP 78 grant keeps possible. **The editor proposed
+  `IETF` on 2026-09-27; pending, as above.**
 
 Separately and independently, **BCP 79 (RFC 8179) imposes a patent-disclosure
 obligation** on contributors: patents or applications known to be potentially
@@ -144,9 +156,10 @@ to matter here. It is being put to counsel.
 Settled:
 
 - **Author affiliation is included** (`Proofpoint, Inc.`), per the approval.
-- **The draft name** (`draft-amap-00`) should still be confirmed against
-  datatracker before submission — the last rename happened because the old
-  acronym collided with an adopted working-group draft.
+- **The draft name** is `draft-rapp-amap-00` (the editor, 2026-09-27: the
+  IETF convention for an individual submission, `draft-<author>-<topic>`).
+  Confirm it against datatracker before submission — the last rename happened
+  because the old acronym collided with an adopted working-group draft.
 - **The date is pinned literally** (not derived from git) and must be bumped
   by hand when the content changes meaningfully — an Internet-Draft's date is
   a meaningful, deliberate signal, not a build artifact.

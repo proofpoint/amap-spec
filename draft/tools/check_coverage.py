@@ -5,8 +5,8 @@ draft must be classified in draft/coverage.toml.
 Why: the draft XML is hand-edited and canonical. An editor can add a MUST in
 one keystroke, and nothing about the XML says whether any implementation or
 fixture has caught up. This gate makes that a decision instead of an accident.
-Every RFC 2119 sentence in sections 3-10 and the peer directory
-(normative.in_coverage_scope) needs an entry, keyed by a hash of its text, with
+Every RFC 2119 sentence in the protocol sections (anchors sec-3 through sec-10,
+plus the Peer Directory and the Fleet Roster; normative.in_coverage_scope) needs an entry, keyed by a hash of its text, with
 one of these classes:
 
   fixture       exercised by the listed fixtures (each must exist on disk)
