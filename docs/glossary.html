@@ -69,7 +69,7 @@
   <dd>Quarantined or unverified mail produces no notice, and a withheld body is not spooled. The agent never sees it, and a read returns "not resolved", with no fallback fetch (§ Inbound).</dd>
 
   <dt id="fixture">Fixture</dt>
-  <dd>A golden document under <code>fixtures/valid/</code> (must pass) or <code>fixtures/invalid/</code> (must fail): 89 in all. The schema is chosen by filename prefix. The fixtures stand in for the other side of the seam: a field with no fixture is one no implementer can prove they handle (§ Versioning and Conformance).</dd>
+  <dd>A golden document under <code>fixtures/valid/</code> (must pass) or <code>fixtures/invalid/</code> (must fail): 119 in all. The schema is chosen by filename prefix. The fixtures stand in for the other side of the seam: a field with no fixture is one no implementer can prove they handle (§ Versioning and Conformance).</dd>
 
   <dt id="fleet-roster">Fleet roster</dt>
   <dd><code>roster.json</code>, written by the runtime where the deployment designates: the instances the runtime has admitted. Existence is not authorisation: being listed never means a request to that address will be accepted. It is never a source of the reader's own identity, and an unknown roster is not an empty fleet (§ Fleet Roster).</dd>

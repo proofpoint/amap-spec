@@ -49,6 +49,8 @@
     ["identity-", "binding-record.schema.json"],
     ["message-", "inbound-message.schema.json"],
     ["peer-", "peer-notice.schema.json"],
+    ["statement-", "peer-statement.schema.json"],
+    ["control-", "peer-control.schema.json"],
   ];
 
   function Num(v, isFloat, raw) { this.v = v; this.isFloat = isFloat; this.raw = raw; }

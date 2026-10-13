@@ -110,7 +110,7 @@
 <p>Either way it is dropped. Write authority for each tree must be structurally enforced, never configuration the writer reads.</p>
 
 <h2>The documents</h2>
-<p>8 document types cross the seam. The rule for which are open and which are closed is <strong>direction, not taste</strong> (§ Versioning and Conformance, since v3.0.0):</p>
+<p>10 document types cross the seam. The rule for which are open and which are closed is <strong>direction, not taste</strong> (§ Versioning and Conformance, since v3.0.0):</p>
 <ul>
   <li>Runtime-authored documents are <strong>open</strong>. A consumer must ignore members it does not recognise, although emitting an undefined member is still a producer non-conformance.</li>
   <li>The agent-authored submit-request is <strong>closed</strong>, so an unrecognised member is a legible, per-request <code>rejected</code>, never a silent drop.</li>
@@ -190,8 +190,8 @@
 <p>The specification's Conformance section defines two conformance classes, <strong>runtime</strong> and <strong>connector</strong>. The peer-origin profile adds a sub-class for each. <strong>Claiming either without the fixture run <em>and</em> the prescribed operational check for that class is not conformance.</strong></p>
 <p>Run the gate with the Python standard library only. It needs no network access and no counterpart:</p>
 <pre><code>python3 fixtures/validate.py
-# 89 fixtures checked, 0 unexpected.</code></pre>
-<p>Every <code>valid/</code> fixture must pass and every <code>invalid/</code> fixture must fail: 34 and 55 respectively. The schema is chosen by filename prefix, so a document you validate yourself needs its type chosen explicitly. The <a href="validator.html">in-browser validator</a> does that for you.</p>
+# 119 fixtures checked, 0 unexpected.</code></pre>
+<p>Every <code>valid/</code> fixture must pass and every <code>invalid/</code> fixture must fail: 42 and 77 respectively. The schema is chosen by filename prefix, so a document you validate yourself needs its type chosen explicitly. The <a href="validator.html">in-browser validator</a> does that for you.</p>
 <div class="callout caution">
   <p><strong>A green run does not prove the obligations a document validator cannot see.</strong> The NOT-CHECKED list in <code>fixtures/validate.py</code> is the authoritative inventory. It includes:</p>
   <ul>
