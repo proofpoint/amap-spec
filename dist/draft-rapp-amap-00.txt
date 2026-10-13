@@ -38,15 +38,15 @@ Abstract
    that no security property depends on the agent — or on the connector
    speaking for it — behaving correctly.
 
+About This Draft
+
+   This document and the accompanying schemas and conformance fixtures
+   are published under the Apache License 2.0.
+
 Status of This Memo
 
    This Internet-Draft is submitted in full conformance with the
    provisions of BCP 78 and BCP 79.
-
-   Internet-Drafts are working documents of the Internet Engineering
-   Task Force (IETF).  Note that other groups may also distribute
-   working documents as Internet-Drafts.  The list of current Internet-
-   Drafts is at https://datatracker.ietf.org/drafts/current/.
 
 
 
@@ -57,6 +57,11 @@ Rapp & Adams              Expires 5 April 2027                  [Page 1]
 
 Internet-Draft                    AMAP                      October 2026
 
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
 
    Internet-Drafts are draft documents valid for a maximum of six months
    and may be updated, replaced, or obsoleted by other documents at any
@@ -101,11 +106,6 @@ Table of Contents
      4.2.  Deletion rights . . . . . . . . . . . . . . . . . . . . .  20
    5.  Outbound: Submit Request  . . . . . . . . . . . . . . . . . .  23
      5.1.  Field semantics and obligations . . . . . . . . . . . . .  24
-   6.  Outbound: Result  . . . . . . . . . . . . . . . . . . . . . .  26
-     6.1.  Field semantics and obligations . . . . . . . . . . . . .  27
-   7.  Inbound: Deliver Notice and Inbound Message . . . . . . . . .  28
-     7.1.  Field semantics and obligations . . . . . . . . . . . . .  29
-     7.2.  Inbound attachment Descriptors  . . . . . . . . . . . . .  33
 
 
 
@@ -114,6 +114,11 @@ Rapp & Adams              Expires 5 April 2027                  [Page 2]
 Internet-Draft                    AMAP                      October 2026
 
 
+   6.  Outbound: Result  . . . . . . . . . . . . . . . . . . . . . .  26
+     6.1.  Field semantics and obligations . . . . . . . . . . . . .  27
+   7.  Inbound: Deliver Notice and Inbound Message . . . . . . . . .  28
+     7.1.  Field semantics and obligations . . . . . . . . . . . . .  29
+     7.2.  Inbound attachment Descriptors  . . . . . . . . . . . . .  33
      7.3.  The Inbound Message (body spool)  . . . . . . . . . . . .  34
    8.  Task Correlation  . . . . . . . . . . . . . . . . . . . . . .  36
    9.  Binding Record  . . . . . . . . . . . . . . . . . . . . . . .  36
@@ -124,7 +129,7 @@ Internet-Draft                    AMAP                      October 2026
      12.1.  Versioning . . . . . . . . . . . . . . . . . . . . . . .  41
      12.2.  Required versus optional . . . . . . . . . . . . . . . .  45
      12.3.  Conformance  . . . . . . . . . . . . . . . . . . . . . .  47
-   13. Security Considerations . . . . . . . . . . . . . . . . . . .  49
+   13. Security Considerations . . . . . . . . . . . . . . . . . . .  50
      13.1.  Path authority and traversal . . . . . . . . . . . . . .  50
      13.2.  Symlinks, descriptors, and open discipline . . . . . . .  50
      13.3.  Time-of-check to time-of-use, and ingest by copy . . . .  51
@@ -157,11 +162,6 @@ Internet-Draft                    AMAP                      October 2026
    Appendix G.  Peer-Directory Schema (v3.1.0 DRAFT) . . . . . . . .  82
    Appendix H.  Fleet-Roster Schema (v3.1.0 DRAFT) . . . . . . . . .  83
    Appendix I.  Golden Examples  . . . . . . . . . . . . . . . . . .  86
-     I.1.  Valid Submit Request with attachments . . . . . . . . . .  86
-     I.2.  Valid Deliver Notice with a clean attachment
-           Descriptor  . . . . . . . . . . . . . . . . . . . . . . .  86
-     I.3.  Valid Inbound Message . . . . . . . . . . . . . . . . . .  87
-
 
 
 
@@ -170,6 +170,10 @@ Rapp & Adams              Expires 5 April 2027                  [Page 3]
 Internet-Draft                    AMAP                      October 2026
 
 
+     I.1.  Valid Submit Request with attachments . . . . . . . . . .  86
+     I.2.  Valid Deliver Notice with a clean attachment
+           Descriptor  . . . . . . . . . . . . . . . . . . . . . . .  86
+     I.3.  Valid Inbound Message . . . . . . . . . . . . . . . . . .  87
      I.4.  Valid Result — a policy hold with per-attachment
            diagnostics . . . . . . . . . . . . . . . . . . . . . . .  88
      I.5.  Invalid Deliver Notice — a content_ref that fails the
@@ -214,10 +218,6 @@ Internet-Draft                    AMAP                      October 2026
    has read, to any address it chooses, and can do so under an identity
    that recipients associate with its operator.  Outbound mail is
    simultaneously a data-loss channel and an impersonation channel.
-
-
-
-
 
 
 
@@ -2419,10 +2419,14 @@ Internet-Draft                    AMAP                      October 2026
    extension space and its one normative clarification (Section 4.1,
    Section 13.15), and the peer-origin profile's schema and conformance
    fixtures (Appendix F, Appendix J).  No existing schema rule or
-   fixture changed.  The profile's prose is a companion document not yet
-   drafted; until it is, the schema and the peer-* fixtures are
-   normative for the shape of a peer notice, and this document specifies
-   nothing about the peer/ tree beyond that shape.
+   fixture changed.  The profile's prose is the companion document spec/
+   peer-origin.md (v3.1.0 DRAFT), whose cross-host section is revision
+   s5-r4 (proposed).  This document carries the profile's schemas and
+   fixtures and is normative for the shapes they pin: the peer-*
+   fixtures for a peer notice, and the statement-* and control-*
+   fixtures for the signed cross-host statement and control notice
+   (Appendix F).  It specifies nothing about the peer/ tree beyond those
+   shapes; the profile's other rules are the companion document's.
 
    The reasoning for holding the wire major is worth stating, because
    the alternative is tempting and wrong.  The wire major exists to
@@ -2454,10 +2458,6 @@ Internet-Draft                    AMAP                      October 2026
    1.  *The write-rule "strengthening" that was a regression.* An
        earlier revision described the exclusive-create and no-symlink-
        follow requirement on the final path component as having been
-       "strengthened to" the pinned directory-descriptor walk — that is,
-       replaced by it — and deleted the earlier clause outright.  That
-       was a *weakening*, not a strengthening: a parent chain pinned by
-       descriptor is silent about the final .tmp filename itself, so
 
 
 
@@ -2466,6 +2466,10 @@ Rapp & Adams              Expires 5 April 2027                 [Page 44]
 Internet-Draft                    AMAP                      October 2026
 
 
+       "strengthened to" the pinned directory-descriptor walk — that is,
+       replaced by it — and deleted the earlier clause outright.  That
+       was a *weakening*, not a strengthening: a parent chain pinned by
+       descriptor is silent about the final .tmp filename itself, so
        dropping exclusive-create there let an Agent that pre-plants a
        symlink at a predictable .tmp name have the Runtime write through
        it.  Section 4.1 now states the rule conjunctively, with all
@@ -2510,10 +2514,6 @@ Internet-Draft                    AMAP                      October 2026
    +===================+===================+==========================+
    | *deliver-notice*  | contract_version, | message.{task_id,        |
    |                   | notice_id, ts,    | thread_id, in_reply_to,  |
-   |                   | kind, message{id, | references,              |
-   |                   | from, subject,    | sender_standing,         |
-   |                   | preview, mailbox} | verdict, provenance},    |
-   |                   |                   | message.attachments[]    |
 
 
 
@@ -2522,6 +2522,10 @@ Rapp & Adams              Expires 5 April 2027                 [Page 45]
 Internet-Draft                    AMAP                      October 2026
 
 
+   |                   | kind, message{id, | references,              |
+   |                   | from, subject,    | sender_standing,         |
+   |                   | preview, mailbox} | verdict, provenance},    |
+   |                   |                   | message.attachments[]    |
    |                   |                   | (items require filename, |
    |                   |                   | media_type, size_bytes,  |
    |                   |                   | disposition; sha256 and  |
@@ -2566,10 +2570,6 @@ Internet-Draft                    AMAP                      October 2026
    |                   | itself is         | present, pinned to "2")  |
    |                   | OPTIONAL —        |                          |
    |                   | Section 10)_; if  |                          |
-   |                   | present: router,  |                          |
-   |                   | written_at,       |                          |
-   |                   | delegate_to,      |                          |
-   |                   | mail_to           |                          |
 
 
 
@@ -2578,6 +2578,10 @@ Rapp & Adams              Expires 5 April 2027                 [Page 46]
 Internet-Draft                    AMAP                      October 2026
 
 
+   |                   | present: router,  |                          |
+   |                   | written_at,       |                          |
+   |                   | delegate_to,      |                          |
+   |                   | mail_to           |                          |
    +-------------------+-------------------+--------------------------+
    | *roster*          | _(the artifact    | interval_s               |
    |                   | itself is         |                          |
@@ -2622,10 +2626,6 @@ Internet-Draft                    AMAP                      October 2026
    and without the prescribed operational check for that class's
    behavioral obligations, is not conformance.
 
-   *Runtime conformance class.* An implementation claiming Runtime
-   conformance:
-
-
 
 
 
@@ -2633,6 +2633,9 @@ Rapp & Adams              Expires 5 April 2027                 [Page 47]
 
 Internet-Draft                    AMAP                      October 2026
 
+
+   *Runtime conformance class.* An implementation claiming Runtime
+   conformance:
 
    *  MUST produce Deliver Notice documents valid against the deliver-
       notice schema (Appendix C) and Result documents valid against the
@@ -2679,9 +2682,6 @@ Internet-Draft                    AMAP                      October 2026
       distinct version-refusal path (Section 12.1): never folded into
       the drop path, and never surfaced to the Agent either.
 
-      Section 7.1's drop rule is *two independent conditions, not a
-      closure over schema validation*. "Fails schema validation for any
-      reason other than an unrecognized member" (check 1) covers ten of
 
 
 
@@ -2690,6 +2690,9 @@ Rapp & Adams              Expires 5 April 2027                 [Page 48]
 Internet-Draft                    AMAP                      October 2026
 
 
+      Section 7.1's drop rule is *two independent conditions, not a
+      closure over schema validation*. "Fails schema validation for any
+      reason other than an unrecognized member" (check 1) covers ten of
       the eleven other invalid notice-* fixtures — missing-required-
       member, wrong-kind, enum, pattern, and conditional violations
       alike.  The eleventh is schema-valid on its own, producing zero
@@ -2729,14 +2732,11 @@ Internet-Draft                    AMAP                      October 2026
    every pending Notice, resolves bodies, and submits outbound requests,
    without requiring any write under inbound/ to succeed.
 
-13.  Security Considerations
 
-   This section gathers the threats this protocol's obligations exist to
-   address.  It introduces no new mechanism: every requirement
-   referenced here is stated normatively in Sections 4 through 12.  The
-   organizing principle throughout is the invariant of Section 3.2 —
-   enforcement is Runtime-side, and no property depends on the Agent or
-   its Connector behaving.
+
+
+
+
 
 
 
@@ -2745,6 +2745,15 @@ Rapp & Adams              Expires 5 April 2027                 [Page 49]
 
 Internet-Draft                    AMAP                      October 2026
 
+
+13.  Security Considerations
+
+   This section gathers the threats this protocol's obligations exist to
+   address.  It introduces no new mechanism: every requirement
+   referenced here is stated normatively in Sections 4 through 12.  The
+   organizing principle throughout is the invariant of Section 3.2 —
+   enforcement is Runtime-side, and no property depends on the Agent or
+   its Connector behaving.
 
    The threat actor assumed throughout is a *fully compromised Agent*
    with write access to its own Namespace, running as a uid that owns
@@ -2782,15 +2791,6 @@ Internet-Draft                    AMAP                      October 2026
    requirements, and the conjunction is the point: each leg closes a gap
    the other two leave open.
 
-   *  Pinning only the final component leaves the _parent_ swappable,
-      and rename and directory-creation calls have no no-follow flag at
-      all — so a bare "do not follow symlinks on writes" rule is not
-      sufficient.
-
-   *  Pinning the parent chain without refusing symlinks _while
-      acquiring_ it means the pinned descriptor may point at whatever
-      the Agent planted before the Runtime opened it — including across
-      a Runtime restart, when the chain is re-opened.
 
 
 
@@ -2801,6 +2801,16 @@ Rapp & Adams              Expires 5 April 2027                 [Page 50]
 
 Internet-Draft                    AMAP                      October 2026
 
+
+   *  Pinning only the final component leaves the _parent_ swappable,
+      and rename and directory-creation calls have no no-follow flag at
+      all — so a bare "do not follow symlinks on writes" rule is not
+      sufficient.
+
+   *  Pinning the parent chain without refusing symlinks _while
+      acquiring_ it means the pinned descriptor may point at whatever
+      the Agent planted before the Runtime opened it — including across
+      a Runtime restart, when the chain is re-opened.
 
    *  Pinning the whole chain correctly still says nothing about the
       final filename.  Every Runtime-written filename in the layout tree
@@ -2840,16 +2850,6 @@ Internet-Draft                    AMAP                      October 2026
    not necessarily the document that gets composed and sent.  The
    obligation that closes this is ingest by copy (Section 4.1) — the
    Runtime copies the request and every Sidecar into Runtime-private
-   Staging outside the Volume, and validates, evaluates policy on, and
-   composes exclusively from that private copy, never re-reading an
-   Agent-writable path after a decision that depends on its content.
-
-
-
-
-
-
-
 
 
 
@@ -2857,6 +2857,10 @@ Rapp & Adams              Expires 5 April 2027                 [Page 51]
 
 Internet-Draft                    AMAP                      October 2026
 
+
+   Staging outside the Volume, and validates, evaluates policy on, and
+   composes exclusively from that private copy, never re-reading an
+   Agent-writable path after a decision that depends on its content.
 
    This is also what keeps the trust model honest.  Without it, the
    property "the request the Runtime approved is the request the Runtime
@@ -2903,16 +2907,15 @@ Internet-Draft                    AMAP                      October 2026
    references, sender display names, and attachment Descriptors alike
    (Section 7.1).
 
-   Two cases are worth restating because they are the ones most often
-   assumed safe.
-
-
 
 
 Rapp & Adams              Expires 5 April 2027                 [Page 52]
 
 Internet-Draft                    AMAP                      October 2026
 
+
+   Two cases are worth restating because they are the ones most often
+   assumed safe.
 
    *message.from is attacker-controlled display data.* Its display-name
    half is chosen freely by the sender, so a value such as
@@ -2959,9 +2962,6 @@ Internet-Draft                    AMAP                      October 2026
    parser sees the attacker's.  The profile is deliberately narrower
    than [RFC5322] for that reason, and the cost is disclosed: some
    legitimate [RFC5322] addresses cannot be expressed at this version.
-
-
-
 
 
 

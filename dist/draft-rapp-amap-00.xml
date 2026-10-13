@@ -56,6 +56,11 @@ depends on the agent — or on the connector speaking for it — behaving
 correctly.</t>
 
     </abstract>
+    <note>
+      <name>About This Draft</name>
+      <t>This document and the accompanying schemas and conformance fixtures are
+published under the Apache License 2.0.</t>
+    </note>
 
   </front>
   <middle>
@@ -1871,9 +1876,13 @@ the wire major stays <tt>"2"</tt>. It introduces the outbound extension space an
 its one normative clarification (<xref target="sec-4-1"/>, <xref target="sec-11-15"/>), and the
 peer-origin profile's schema and conformance fixtures (<xref target="app-f"/>,
 <xref target="app-h"/>). No existing schema rule or fixture changed. The profile's
-prose is a companion document not yet drafted; until it is, the schema and
-the <tt>peer-*</tt> fixtures are normative for the shape of a peer notice, and this
-document specifies nothing about the <tt>peer/</tt> tree beyond that shape.</t>
+prose is the companion document <tt>spec/peer-origin.md</tt> (v3.1.0 DRAFT), whose
+cross-host section is revision s5-r4 (proposed). This document carries the
+profile's schemas and fixtures and is normative for the shapes they pin: the
+<tt>peer-*</tt> fixtures for a peer notice, and the <tt>statement-*</tt> and
+<tt>control-*</tt> fixtures for the signed cross-host statement and control notice
+(<xref target="app-f"/>). It specifies nothing about the <tt>peer/</tt> tree beyond those
+shapes; the profile's other rules are the companion document's.</t>
         <t>The reasoning for holding the wire major is worth stating, because the
 alternative is tempting and wrong. The wire major exists to force a legible
 fail-closed refusal when a <em>whole document</em> that a counterpart already
