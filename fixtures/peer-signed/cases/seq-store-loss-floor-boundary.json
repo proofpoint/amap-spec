@@ -1,0 +1,72 @@
+{
+  "description": "The floor is STRICTLY above max(C, H) + F: with C = H = 15:01 and F = 300, ts 15:06:00 could already have been accepted before the loss and is demoted; 15:06:01 is the first admissible instant.",
+  "receiver_patch": {
+    "now": "2026-10-09T15:00:00Z"
+  },
+  "steps": [
+    {
+      "event": "lose_store",
+      "at": "2026-10-09T15:01:00Z",
+      "expect": {}
+    },
+    {
+      "now": "2026-10-09T15:06:00Z",
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <aA5lqBxuJ9zAVSrPEUMh7w@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiJhQTVscUJ4dUo5ekFWU3JQRVVNaDd3IiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDY6MDBaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W119; b=RGlkMUMsDe8nKNgl8VXS6cY05WtE7ifR5_O5Xd_hnyWZCeCW8GrwsvPQliINJN2hOfTUSDYlPc14pIqpZtdWDg"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "mail",
+        "cause": "ts_window",
+        "control": {
+          "outcome": "demoted",
+          "cause": "ts_window",
+          "to": "amap.router@host-a.fleet.example",
+          "about": "aA5lqBxuJ9zAVSrPEUMh7w"
+        }
+      }
+    },
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <kNslu1ssDaD7joyfm5Mb0g@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiJrTnNsdTFzc0RhRDdqb3lmbTVNYjBnIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDY6MDFaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W119; b=wWjp8dB_iu9LS0FzW1Qxfwj359n87VC7Jy_sekyvpwKz5kd7B3FHUk1OUy9LMrmKQGV7ofpAi2jBMk9rl9zTDA"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "peer",
+        "publish": {
+          "id": "kNslu1ssDaD7joyfm5Mb0g",
+          "from": "planner@host-a.fleet.example",
+          "subject": "Run the conformance suite",
+          "body_text": "Please run the conformance suite on main and report the result.\n",
+          "attachments": []
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "description": "A deployment refusal with its policy code.",
+  "receiver": "receiver-host-a.json",
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <kAlhU0xVh9_-hSWYBLlHHQ@host-c.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Control",
+            " k=test3; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MyIsImtpbmQiOiJjb250cm9sIiwiaWQiOiJrQWxoVTB4Vmg5Xy1oU1dZQkxsSEhRIiwiZnJvbSI6ImFtYXAucm91dGVyQGhvc3QtYy5mbGVldC5leGFtcGxlIiwidG8iOiJhbWFwLnJvdXRlckBob3N0LWEuZmxlZXQuZXhhbXBsZSIsInRzIjoiMjAyNi0xMC0wOVQxNToxMDowNVoiLCJhYm91dCI6IjRmMGM5YTJlN2IxZDRjODNhNmU1ZjJiOWQwYzE3ZTQ4Iiwib3V0Y29tZSI6InJlZnVzZWQiLCJjYXVzZSI6InBvbGljeSIsInBvbGljeV9jb2RlIjoicXVhcmFudGluZWQifQ; b=HveHB9wq26V0gvw9jloeBFrj35mLgBd40ufOxMQTVZs5Rg8MIc0YJl9a5s_3BM8KTiwzJ_SGM2vznAqVi45wCw"
+          ]
+        ],
+        "body": null,
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "control",
+        "notify": {
+          "agent": "planner@host-a.fleet.example",
+          "about": "4f0c9a2e7b1d4c83a6e5f2b9d0c17e48",
+          "outcome": "refused",
+          "cause": "policy",
+          "policy_code": "quarantined"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,195 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://amap-spec/schemas/peer-control.schema.json",
+  "title": "peer-control",
+  "description": "runtime -> runtime: the signed control notice a receiving runtime sends to a configured sending runtime about what it did with an authenticated peer statement that it did not place (refused, dropped, or demoted). amap-spec v3.1.0 DRAFT, peer-origin profile (spec/peer-origin.md §5.8). Carried in an AMAP-Peer-Control header field with the same k/s/b grammar as AMAP-Peer-Statement, signed with the same per-runtime key; `kind` is \"control\", so a control notice never validates as a peer statement and is never placed for an agent. CLOSED at every level, and it carries no free text: the receiving runtime composes any agent-facing words itself (§4's DSN analogue). The schema cannot check that `about` names a peer message this runtime issued to the notice's signer; that is §5.8's verification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "v",
+    "key_id",
+    "kind",
+    "id",
+    "from",
+    "to",
+    "ts",
+    "about",
+    "outcome",
+    "cause"
+  ],
+  "properties": {
+    "v": {
+      "type": "integer",
+      "const": 1
+    },
+    "key_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}(?!\\n)$"
+    },
+    "kind": {
+      "const": "control"
+    },
+    "id": {
+      "type": "string",
+      "description": "this notice's own id, minted like a peer message id; replay-checked in the same store, scoped to the signing runtime.",
+      "pattern": "^[A-Za-z0-9_-]+(?!\\n)$"
+    },
+    "from": {
+      "type": "string",
+      "description": "the signing (receiving) runtime's configured runtime address.",
+      "pattern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+(?!\\n)$"
+    },
+    "to": {
+      "type": "string",
+      "description": "the configured runtime address of the runtime that signed the statement this notice is about.",
+      "pattern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+(?!\\n)$"
+    },
+    "ts": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z(?!\\n)$"
+    },
+    "about": {
+      "type": "string",
+      "description": "the `id` of the peer statement this notice is about.",
+      "pattern": "^[A-Za-z0-9_-]+(?!\\n)$"
+    },
+    "outcome": {
+      "enum": [
+        "refused",
+        "dropped",
+        "demoted"
+      ]
+    },
+    "cause": {
+      "description": "why, from §5.4's outcome table. `policy` is a deployment refusal (for example a first-sight quarantine), named further by policy_code.",
+      "enum": [
+        "statement_value",
+        "key_domain",
+        "ts_window",
+        "exposure_signer",
+        "body_charset",
+        "body_digest",
+        "attachment_count",
+        "attachment_digest",
+        "message_id",
+        "duplicate",
+        "misrouted",
+        "unresolved_reply",
+        "no_edge",
+        "policy"
+      ]
+    },
+    "policy_code": {
+      "type": "string",
+      "description": "deployment-defined token, only with cause `policy` (e.g. `quarantined`).",
+      "pattern": "^[a-z][a-z0-9_]{0,63}(?!\\n)$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "policy_code"
+        ]
+      },
+      "then": {
+        "properties": {
+          "cause": {
+            "const": "policy"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "cause": {
+            "const": "policy"
+          }
+        },
+        "required": [
+          "cause"
+        ]
+      },
+      "then": {
+        "required": [
+          "policy_code"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "refused"
+          }
+        },
+        "required": [
+          "outcome"
+        ]
+      },
+      "then": {
+        "properties": {
+          "cause": {
+            "enum": [
+              "unresolved_reply",
+              "no_edge",
+              "policy"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "dropped"
+          }
+        },
+        "required": [
+          "outcome"
+        ]
+      },
+      "then": {
+        "properties": {
+          "cause": {
+            "enum": [
+              "duplicate",
+              "misrouted"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "demoted"
+          }
+        },
+        "required": [
+          "outcome"
+        ]
+      },
+      "then": {
+        "properties": {
+          "cause": {
+            "enum": [
+              "statement_value",
+              "key_domain",
+              "ts_window",
+              "exposure_signer",
+              "body_charset",
+              "body_digest",
+              "attachment_count",
+              "attachment_digest",
+              "message_id"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

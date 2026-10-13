@@ -1,0 +1,34 @@
+{
+  "description": "A verified fresh task with no edge planner@host-b -> reviewer@host-c.",
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <nOfGryxpda6CIVHak6kmtA@host-b.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test3; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MyIsImtpbmQiOiJwZWVyIiwiaWQiOiJuT2ZHcnl4cGRhNkNJVkhhazZrbXRBIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1iLmZsZWV0LmV4YW1wbGUiLCJ0byI6InJldmlld2VyQGhvc3QtYy5mbGVldC5leGFtcGxlIiwidHMiOiIyMDI2LTEwLTA5VDE1OjAwOjAwWiIsInN1YmplY3QiOiJSdW4gdGhlIGNvbmZvcm1hbmNlIHN1aXRlIiwiYm9keV9zaGEyNTYiOiJiYTk2MjBhZjkyY2Q3MzNkZmNmMTY2N2JlMWUzMTRjYjM3NjI4ZmY1YmQ4ZmVjYjIxODAzNzhmMTJlOGQ2NzA1IiwiYXR0YWNobWVudHMiOltdfQ; b=-eO-nO1NzJp4J5SiOSaJEOapQX_17X2XH4MXpcZ0rQRlSaf1PSS857SHjaUuEvYw62bTBX-ieRATo8oieVh6AA"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "refuse",
+        "cause": "no_edge",
+        "control": {
+          "outcome": "refused",
+          "cause": "no_edge",
+          "to": "amap.router@host-b.fleet.example",
+          "about": "nOfGryxpda6CIVHak6kmtA"
+        }
+      }
+    }
+  ]
+}

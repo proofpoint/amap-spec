@@ -1,0 +1,30 @@
+{
+  "description": "The admitting component carried an oversize marker (the field body exceeded 12288 octets); it never truncates.",
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <g1LFF9g64WaMR6eNhjhEyQ@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            {
+              "oversize": true
+            }
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "mail",
+        "cause": "header_size"
+      }
+    }
+  ]
+}

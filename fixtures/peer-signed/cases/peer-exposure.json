@@ -1,0 +1,41 @@
+{
+  "description": "sender_exposure asserted by the signing runtime's configured address; published from the statement only (§6).",
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <O5bblz86DDrlXNiQM7YuYA@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiJPNWJibHo4NkREcmxYTmlRTTdZdVlBIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W10sInNlbmRlcl9leHBvc3VyZSI6eyJhc3NlcnRlZF9ieSI6ImFtYXAucm91dGVyQGhvc3QtYS5mbGVldC5leGFtcGxlIiwiZXh0ZXJuYWxfbWFpbF9kZWxpdmVyZWQiOnRydWUsIndpbmRvd19zdGFydCI6IjIwMjYtMTAtMDhUMTU6MDA6MDBaIiwid2luZG93X2VuZCI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwibGFzdF9leHRlcm5hbF9kZWxpdmVyeV90cyI6IjIwMjYtMTAtMDlUMDk6MTI6MDBaIn19; b=ZR-VK823gtC5ypTMSVI5RH2310YR43bx6WD-R-TcsL4j_FAmu4GTMBlW1c43o71DhnCkeirApHXa17nG-YMsAQ"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "peer",
+        "publish": {
+          "id": "O5bblz86DDrlXNiQM7YuYA",
+          "from": "planner@host-a.fleet.example",
+          "subject": "Run the conformance suite",
+          "body_text": "Please run the conformance suite on main and report the result.\n",
+          "attachments": [],
+          "sender_exposure": {
+            "asserted_by": "amap.router@host-a.fleet.example",
+            "external_mail_delivered": true,
+            "window_start": "2026-10-08T15:00:00Z",
+            "window_end": "2026-10-09T15:00:00Z",
+            "last_external_delivery_ts": "2026-10-09T09:12:00Z"
+          }
+        }
+      }
+    }
+  ]
+}

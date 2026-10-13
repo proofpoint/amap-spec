@@ -1,0 +1,105 @@
+{
+  "description": "The receiving runtime host-c.fleet.example that the cases in cases/ are evaluated against unless a case names another. The shape of this file is NOT normative (how a deployment configures peers, edges and its ledger is the deployment's business); the values are what the cases assume. A case may change it through `receiver_patch` (top-level keys replaced; `key_validity` merged into keys by key_id) and through events. The keys are the published RFC 8032 §7.1 test keys: never deploy them.",
+  "now": "2026-10-09T15:10:00Z",
+  "windows": {
+    "ts_past_s": 3600,
+    "ts_future_s": 300,
+    "retain_s": 3600
+  },
+  "self": {
+    "runtime": "amap.router@host-c.fleet.example",
+    "domains": [
+      "host-c.fleet.example"
+    ]
+  },
+  "hosted": [
+    "builder@host-c.fleet.example",
+    "reviewer@host-c.fleet.example"
+  ],
+  "peers": [
+    {
+      "name": "host-a",
+      "runtime": "amap.router@host-a.fleet.example",
+      "domains": [
+        "host-a.fleet.example"
+      ],
+      "keys": [
+        {
+          "key_id": "test1",
+          "public_key": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a"
+        },
+        {
+          "key_id": "test2",
+          "public_key": "3d4017c3e843895a92b70aa74d1b7ebc9c982ccf2ec4968cc0cd55f12af4660c"
+        }
+      ]
+    },
+    {
+      "name": "host-b",
+      "runtime": "amap.router@host-b.fleet.example",
+      "domains": [
+        "host-b.fleet.example"
+      ],
+      "keys": [
+        {
+          "key_id": "test3",
+          "public_key": "fc51cd8e6218a1a38da47ed00230f0580816ed13ba3303ac5deb911548908025"
+        }
+      ]
+    }
+  ],
+  "edges": [
+    [
+      "planner@host-a.fleet.example",
+      "builder@host-c.fleet.example"
+    ],
+    [
+      "planner@host-b.fleet.example",
+      "builder@host-c.fleet.example"
+    ]
+  ],
+  "ledger": [
+    {
+      "id": "c3a9e0d47f1b4e2a8d6c5b0a9f8e7d61",
+      "direction": "issued",
+      "local": "builder@host-c.fleet.example",
+      "remote": "reviewer@host-a.fleet.example",
+      "expires": "2026-10-10T15:00:00Z"
+    },
+    {
+      "id": "Q2hhaW5TdGVwT25lMDAwMDAx",
+      "direction": "placed",
+      "local": "builder@host-c.fleet.example",
+      "remote": "planner@host-a.fleet.example",
+      "expires": "2026-10-10T15:00:00Z"
+    },
+    {
+      "id": "Q2hhaW5TdGVwVHdvMDAwMDAy",
+      "direction": "issued",
+      "local": "builder@host-c.fleet.example",
+      "remote": "planner@host-a.fleet.example",
+      "expires": "2026-10-10T15:00:00Z"
+    },
+    {
+      "id": "RXhwaXJlZFJlY29yZDAwMDAz",
+      "direction": "issued",
+      "local": "builder@host-c.fleet.example",
+      "remote": "reviewer@host-a.fleet.example",
+      "expires": "2026-10-09T15:00:00Z"
+    },
+    {
+      "id": "UGxhY2VkTm9FZGdlMDAwMDA0",
+      "direction": "placed",
+      "local": "reviewer@host-c.fleet.example",
+      "remote": "planner@host-a.fleet.example",
+      "expires": "2026-10-10T15:00:00Z"
+    }
+  ],
+  "mail_notice_ids": [
+    "m-2026-10-09-0001"
+  ],
+  "store": {
+    "records": [],
+    "floor": null
+  }
+}

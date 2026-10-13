@@ -77,7 +77,7 @@ Five named mounts rather than one `.` mount of the whole repo. `dist` was added
 on 2026-09-24, when the Internet-Draft became the canonical prose: without it,
 every sandbox read a `spec/contract.md` that says it is frozen and points at a
 file no sandbox could open. `dist/` is mounted rather than `draft/` because the
-rendered `draft-amap-00.txt` is what an agent can read. `draft/` holds the XML
+rendered `draft-rapp-amap-00.txt` is what an agent can read. `draft/` holds the XML
 source and build tooling, which an agent has no use for. One `.` mount: `.` would also
 carry `.git` and everything else into every amap sandbox for no benefit, and
 `.git` cannot be named as a `from` anyway (leading dot is rejected).

@@ -13,7 +13,13 @@ message-* -> inbound-message (v2.1.0, spec/contract.md §5 body-spool path),
 peer-* -> peer-notice (v3.1.0 DRAFT, peer-origin profile, spec/peer-origin.md:
 the `<agent-id>/peer/` tree; same shape as deliver-notice with kind/mailbox
 pinned to "peer", from pinned to a bare addr-spec, ids pinned to the notice_id
-charset, plus message.sender_exposure).
+charset, plus message.sender_exposure),
+statement-* -> peer-statement (v3.1.0 DRAFT, peer-origin profile §5: the signed
+cross-host statement, CLOSED at every level; the signed cases that bind it to
+a message live in peer-signed/ and are checked by peer-signed/check_cases.py,
+which this gate runs after the fixtures),
+control-* -> peer-control (v3.1.0 DRAFT, peer-origin profile §5.8: the signed
+runtime-to-runtime control notice, CLOSED at every level).
 
 Supported schema keywords (hand-rolled subset, all standard JSON Schema so a
 full validator would agree): type, const, enum, minLength, pattern, minItems,
@@ -172,6 +178,8 @@ SCHEMA_FOR_PREFIX = {
     "identity-": "binding-record.schema.json",
     "message-": "inbound-message.schema.json",
     "peer-": "peer-notice.schema.json",
+    "statement-": "peer-statement.schema.json",
+    "control-": "peer-control.schema.json",
 }
 
 _JSON_TYPE = {
@@ -383,7 +391,15 @@ def main() -> int:
     print(f"\n{checked} fixtures checked, {len(failures)} unexpected.")
     for fail in failures:
         print("  FAIL:", fail)
-    return 1 if failures else 0
+
+    # v3.1.0 DRAFT, peer-origin §5: the signed cross-host statement cases.
+    # Not counted above: they are candidates with expected outcomes, not
+    # documents with a pass/fail schema verdict.
+    sys.path.insert(0, str(HERE / "peer-signed"))
+    import check_cases
+    print()
+    signed_rc = check_cases.main()
+    return 1 if failures or signed_rc else 0
 
 
 if __name__ == "__main__":

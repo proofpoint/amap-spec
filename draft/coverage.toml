@@ -1,5 +1,6 @@
 # coverage.toml — the classification of every normative sentence in the
-# protocol sections (3-10 and the peer directory) of draft/draft-amap.xml.
+# protocol sections of draft/draft-amap.xml (Architecture through Versioning
+# and Conformance, including the Peer Directory and the Fleet Roster).
 # Enforced by draft/tools/check_coverage.py, which documents the classes.
 #
 # The entries marked `baseline = true` are the migration baseline: the 128
@@ -1009,3 +1010,11 @@ section = "sec-4-1"
 class = "operational"
 note = "Proposed 2026-10-07. A directory name, not a document member, so no schema or fixture can pin it. Check: the Connector's chosen id matches ^[a-z0-9][a-z0-9_-]{0,63}$."
 text = "Because it is also a path segment in an Agent-writable tree, <name> MUST be a single path segment of 1 to 64 characters drawn from lowercase ASCII letters, digits, hyphen and underscore, beginning with a letter or digit, so that it names the same directory on case-sensitive and case-insensitive filesystems alike."
+
+[[sentence]]
+id = "c71c1487ada2"
+section = "sec-10-2"
+class = "fixture"
+fixtures = ["valid/directory-minimal.json", "invalid/directory-missing-mail-to.json", "invalid/directory-version-1.json"]
+note = "Restored 2026-09-24: this row was in the frozen spec/contract.md section 8 table and was lost when the draft was reconciled, because the prose check saw only RFC 2119 sentences and a table row carries none."
+text = "(the artifact itself is OPTIONAL — ); if present: router, written_at, delegate_to, mail_to"

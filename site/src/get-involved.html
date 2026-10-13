@@ -1,0 +1,39 @@
+<!-- title: Get involved | description: Read, implement and contribute to AMAP: the three public repositories, how changes land, security reports, and partners wanted. -->
+<p class="eyebrow">Get involved</p>
+<h1>Read it, implement it, break it</h1>
+<p class="lede">AMAP is an open specification. The most valuable contribution is a clause you couldn't satisfy, or an attack the trust model doesn't account for.</p>
+
+<h2>The repositories</h2>
+<div class="grid three">
+  <div class="card trust"><h3><a href="https://github.com/proofpoint/amap-spec">amap-spec</a></h3><p>The AMAP specification, JSON Schemas, conformance fixtures and the Internet-Draft. Ask questions about the specification in its <a href="https://github.com/proofpoint/amap-spec/issues">issues</a>.</p></div>
+  <div class="card"><h3><a href="https://github.com/proofpoint/amap-router-local">amap-router-local</a></h3><p>The reference runtime, with its own tests and issue tracker.</p></div>
+  <div class="card agent"><h3><a href="https://github.com/proofpoint/amap-connector-claude">amap-connector-claude</a></h3><p>The Claude Code connector, which uses only the standard library.</p></div>
+  <div class="card"><h3><a href="https://github.com/proofpoint/amap-deploy-sandy">amap-deploy-sandy</a></h3><p>A working deployment of the reference runtime and connector on one host. Its <a href="https://proofpoint.github.io/amap-deploy-sandy/">walkthrough</a> gets two agents talking, then breaks each guarantee on purpose.</p></div>
+</div>
+
+<h2>How changes are made today</h2>
+<p>Until the IETF takes up the work, changes are proposed as pull requests to <a href="https://github.com/proofpoint/amap-spec">amap-spec</a>, and the rules below keep the two sides of the boundary in step. If a working group forms, change control moves to it, and these repositories will follow its decisions.</p>
+<ol class="steps">
+  <li><strong>Specification first.</strong> A capability change lands as specification, schemas and fixtures together, before either side builds it. No implementation invents a wire field locally.</li>
+  <li><strong>Fixtures in the same change.</strong> A field with no fixture is a field no implementer can prove they handle.</li>
+  <li><strong>An additive change is a minor version; breaking a fixture is a major one.</strong> A version mismatch fails closed.</li>
+</ol>
+<p>Read <a href="https://github.com/proofpoint/amap-spec/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> before opening a pull request.</p>
+
+<h2>Security reports</h2>
+<p>Don't open a public issue for a security problem. Follow <a href="https://github.com/proofpoint/amap-spec/blob/main/SECURITY.md">SECURITY.md</a> in the relevant repository. For the specification, the interesting reports are clauses that can't be satisfied securely, schemas that permit what the prose forbids, and attacks the trust model doesn't account for.</p>
+
+<h2>Wanted</h2>
+<div class="grid three">
+  <div class="card"><h3>Interop partners</h3><p>Organisations willing to run a first deployment across independent organisations, with a human-only counterparty if need be.</p></div>
+  <div class="card"><h3>Connector authors</h3><p>A connector for your agent platform, proven against the same fixtures.</p></div>
+  <div class="card"><h3>Identity and standards work</h3><p>Input on agent identity, sender verification and the IETF draft. See <a href="identity.html">Identity</a>.</p></div>
+</div>
+
+<h2>Discussion</h2>
+<div class="callout caution">
+  <p><strong>An IETF mailing list is planned</strong> for discussion ahead of a possible BoF. It will be announced on <a href="ietf.html">AMAP at the IETF</a>. Until then, please use the <a href="https://github.com/proofpoint/amap-spec/issues">amap-spec issues</a> for questions and discussion.</p>
+</div>
+
+<h2>Who is behind AMAP</h2>
+<p>Proofpoint originated AMAP. The AMAP specification, schemas, fixtures and reference implementations are published under the Apache License 2.0 and are open to every implementer. No one needs a particular vendor's runtime to conform or to interoperate.</p>

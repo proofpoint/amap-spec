@@ -5,7 +5,7 @@ specification is mounted read-only in this container at:
 
 ```
 ~/.amap-spec/
-  dist/draft-amap-00.txt  THE NORMATIVE PROSE: the AMAP Internet-Draft, rendered.
+  dist/draft-rapp-amap-00.txt  THE NORMATIVE PROSE: the AMAP Internet-Draft, rendered.
                           Cite it by section number.
   schemas/                JSON Schema documents the spec's artifacts must validate against
   fixtures/               canonical example artifacts, valid and invalid
@@ -36,7 +36,7 @@ rather than inventing one.
 **Read the spec before changing behaviour that the spec governs.** Do not work
 from memory of what amap "usually" does, and do not infer a rule from other
 code in this workspace — other code may itself be non-conformant. The draft at
-`~/.amap-spec/dist/draft-amap-00.txt`, with `schemas/` and `fixtures/`, is the
+`~/.amap-spec/dist/draft-rapp-amap-00.txt`, with `schemas/` and `fixtures/`, is the
 only authority here, plus `spec/peer-origin.md` for the peer lane.
 
 **When you touch a spec-governed surface, verify conformance rather than
@@ -65,7 +65,7 @@ need different handling, so name which one you believe it is:
   invented rule as a spec requirement.
 
 **A missing mount is not permission to proceed.** If
-`~/.amap-spec/dist/draft-amap-00.txt` is absent, the feature is not installed,
+`~/.amap-spec/dist/draft-rapp-amap-00.txt` is absent, the feature is not installed,
 the operator's checkout has moved, or this sandbox launched before the `dist`
 mount existed and needs a relaunch. Say so and stop, rather than falling back to
 the frozen `spec/contract.md` or guessing at the spec's content.

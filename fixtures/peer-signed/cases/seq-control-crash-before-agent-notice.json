@@ -1,0 +1,63 @@
+{
+  "description": "The control notice is verified and its record reserved, then the receiver crashes before the agent's failure notice is durable. The record is not done, so recovery writes the failure notice once; a replay is a duplicate.",
+  "receiver": "receiver-host-a.json",
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <sp9oWZGXDEsfvTfEdSOUcw@host-c.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Control",
+            " k=test3; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MyIsImtpbmQiOiJjb250cm9sIiwiaWQiOiJzcDlvV1pHWERFc2Z2VGZFZFNPVWN3IiwiZnJvbSI6ImFtYXAucm91dGVyQGhvc3QtYy5mbGVldC5leGFtcGxlIiwidG8iOiJhbWFwLnJvdXRlckBob3N0LWEuZmxlZXQuZXhhbXBsZSIsInRzIjoiMjAyNi0xMC0wOVQxNToxMDowNVoiLCJhYm91dCI6IjRmMGM5YTJlN2IxZDRjODNhNmU1ZjJiOWQwYzE3ZTQ4Iiwib3V0Y29tZSI6InJlZnVzZWQiLCJjYXVzZSI6Im5vX2VkZ2UifQ; b=Uhok2sKZEHJbyq_GHf93uyudel0C8di2ZDl5amNU5zDI3KOdipMthOyLabte3RpKozw_DoaqyMytjleiiF_YAw"
+          ]
+        ],
+        "body": null,
+        "attachments": []
+      },
+      "crash": "after_reserve",
+      "expect": {
+        "outcome": "crashed"
+      }
+    },
+    {
+      "event": "recover",
+      "expect": {
+        "recovered": [
+          {
+            "id": "sp9oWZGXDEsfvTfEdSOUcw",
+            "outcome": "control",
+            "notify": {
+              "agent": "planner@host-a.fleet.example",
+              "about": "4f0c9a2e7b1d4c83a6e5f2b9d0c17e48",
+              "outcome": "refused",
+              "cause": "no_edge"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <sp9oWZGXDEsfvTfEdSOUcw@host-c.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Control",
+            " k=test3; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MyIsImtpbmQiOiJjb250cm9sIiwiaWQiOiJzcDlvV1pHWERFc2Z2VGZFZFNPVWN3IiwiZnJvbSI6ImFtYXAucm91dGVyQGhvc3QtYy5mbGVldC5leGFtcGxlIiwidG8iOiJhbWFwLnJvdXRlckBob3N0LWEuZmxlZXQuZXhhbXBsZSIsInRzIjoiMjAyNi0xMC0wOVQxNToxMDowNVoiLCJhYm91dCI6IjRmMGM5YTJlN2IxZDRjODNhNmU1ZjJiOWQwYzE3ZTQ4Iiwib3V0Y29tZSI6InJlZnVzZWQiLCJjYXVzZSI6Im5vX2VkZ2UifQ; b=Uhok2sKZEHJbyq_GHf93uyudel0C8di2ZDl5amNU5zDI3KOdipMthOyLabte3RpKozw_DoaqyMytjleiiF_YAw"
+          ]
+        ],
+        "body": null,
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "drop",
+        "cause": "duplicate"
+      }
+    }
+  ]
+}

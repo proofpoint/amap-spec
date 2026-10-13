@@ -1,0 +1,34 @@
+{
+  "description": "charset label UTF-8 in upper case.",
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <eLpS73Noww-d5mobaImZvA@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiJlTHBTNzNOb3d3LWQ1bW9iYUltWnZBIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImU4ZWMyODEzOWFlNTAzYzdkZjc2ZjRjYmVhZDU5MjhjNjk0ODcyM2Q2OTE4NmFkNTRmNDRlNGNiMjMyMTBhMDAiLCJhdHRhY2htZW50cyI6W119; b=DthSSRjGKghotsh4zIWpYfQteBaGCWzU9A-_PZnFBefB0K0rfw34yE0tWjTNcIWq9mmsWeZ4IW9WzefeNOWxBQ"
+          ]
+        ],
+        "body": {
+          "charset": "UTF-8",
+          "octets_b64": "UsOpc3Vtw6kgYXR0YWNoZWQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "peer",
+        "publish": {
+          "id": "eLpS73Noww-d5mobaImZvA",
+          "from": "planner@host-a.fleet.example",
+          "subject": "Run the conformance suite",
+          "body_text": "Résumé attached.\n",
+          "attachments": []
+        }
+      }
+    }
+  ]
+}

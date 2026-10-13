@@ -1,0 +1,30 @@
+{
+  "description": "A message carrying both fields is neither: dropped.",
+  "receiver": "receiver-host-a.json",
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <9EBcK9bCsVCr2aE-pbqbTQ@host-c.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Control",
+            " k=test3; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MyIsImtpbmQiOiJjb250cm9sIiwiaWQiOiI5RUJjSzliQ3NWQ3IyYUUtcGJxYlRRIiwiZnJvbSI6ImFtYXAucm91dGVyQGhvc3QtYy5mbGVldC5leGFtcGxlIiwidG8iOiJhbWFwLnJvdXRlckBob3N0LWEuZmxlZXQuZXhhbXBsZSIsInRzIjoiMjAyNi0xMC0wOVQxNToxMDowNVoiLCJhYm91dCI6IjRmMGM5YTJlN2IxZDRjODNhNmU1ZjJiOWQwYzE3ZTQ4Iiwib3V0Y29tZSI6InJlZnVzZWQiLCJjYXVzZSI6Im5vX2VkZ2UifQ; b=3g5ljHnvVHKjPPqVSXaq1FbeGuMqQrtzc-SOteB6b3N6JuUP5WoVLAXNND4WbLazMmF1Zv1gtlRvYgxoq57XAA"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiJRdHBEbVpMNkVPbnNkS1d2QWxEX0N3IiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W119; b=Sva_niTIUZQmsOF5kEAGumOYP64EkEcfKlioVarnfdIDD9i1phu8LXzM1PhPRnteVHZvNRt3y-jFC07vQqPVDQ"
+          ]
+        ],
+        "body": null,
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "drop",
+        "cause": "header_count"
+      }
+    }
+  ]
+}

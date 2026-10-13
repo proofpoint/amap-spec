@@ -1,0 +1,34 @@
+{
+  "description": "A same-direction follow-up to reviewer@host-c resolves, but there is no edge planner -> reviewer@host-c and the record is not one this runtime issued.",
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <4CGZ5A94YqKRqvaNjvqwZw@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiI0Q0daNUE5NFlxS1JxdmFOanZxd1p3IiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6InJldmlld2VyQGhvc3QtYy5mbGVldC5leGFtcGxlIiwidHMiOiIyMDI2LTEwLTA5VDE1OjAwOjAwWiIsInN1YmplY3QiOiJGb2xsb3dpbmcgdXAiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W10sImluX3JlcGx5X3RvIjoiVUd4aFkyVmtUbTlGWkdkbE1EQXdNREEwIn0; b=YkPy9-ZIFgwcTOuW6q8b4ITjQ2LnUqF-PwrVAK1g4gkIwsZNSVifx4PmuZsDuYvDPhdBeftuS9Lk58MvlWDSBA"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "refuse",
+        "cause": "no_edge",
+        "control": {
+          "outcome": "refused",
+          "cause": "no_edge",
+          "to": "amap.router@host-a.fleet.example",
+          "about": "4CGZ5A94YqKRqvaNjvqwZw"
+        }
+      }
+    }
+  ]
+}

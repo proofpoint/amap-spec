@@ -1,0 +1,69 @@
+{
+  "description": "Placed at 15:10; the clock reaches 16:05 and the record is pruned (16:05 > ts + P). The clock then steps back to 15:50, where ts would look fresh. The lower bound uses the persisted high-water time, so the replay is demoted, not placed.",
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <Xp_GDkOpSKP2wmk_HSk0HQ@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiJYcF9HRGtPcFNLUDJ3bWtfSFNrMEhRIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W119; b=XlRBbmRswcJtK20wRL64a_iXmzXANa80VF9HWNodY8okiNSq0a4QyUYyt30MKUiR9H3WvmT_8Qr3d4GWSUUGCg"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "peer",
+        "publish": {
+          "id": "Xp_GDkOpSKP2wmk_HSk0HQ",
+          "from": "planner@host-a.fleet.example",
+          "subject": "Run the conformance suite",
+          "body_text": "Please run the conformance suite on main and report the result.\n",
+          "attachments": []
+        }
+      }
+    },
+    {
+      "now": "2026-10-09T16:05:00Z",
+      "event": "restart",
+      "expect": {}
+    },
+    {
+      "now": "2026-10-09T15:50:00Z",
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <Xp_GDkOpSKP2wmk_HSk0HQ@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiJYcF9HRGtPcFNLUDJ3bWtfSFNrMEhRIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W119; b=XlRBbmRswcJtK20wRL64a_iXmzXANa80VF9HWNodY8okiNSq0a4QyUYyt30MKUiR9H3WvmT_8Qr3d4GWSUUGCg"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "mail",
+        "cause": "ts_window",
+        "control": {
+          "outcome": "demoted",
+          "cause": "ts_window",
+          "to": "amap.router@host-a.fleet.example",
+          "about": "Xp_GDkOpSKP2wmk_HSk0HQ"
+        }
+      }
+    }
+  ]
+}

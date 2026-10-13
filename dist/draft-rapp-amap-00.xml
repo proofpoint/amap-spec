@@ -5,23 +5,32 @@
   <!ENTITY nbhy   "&#8209;">
   <!ENTITY wj     "&#8288;">
 ]>
-<rfc xmlns:xi="http://www.w3.org/2001/XInclude" ipr="trust200902" docName="draft-amap-00" category="info" submissionType="independent" tocInclude="true" sortRefs="true" symRefs="true" version="3">
+<rfc 
+	xmlns:xi="http://www.w3.org/2001/XInclude" 
+	ipr="trust200902" 
+	docName="draft-rapp-amap-00" 
+	category="std" 
+	submissionType="IETF" 
+	tocInclude="true" 
+	sortRefs="true" 
+	symRefs="true" 
+	version="3">
   <front>
     <title abbrev="AMAP">The Agent Mailbox Access Protocol (AMAP)</title>
-    <seriesInfo name="Internet-Draft" value="draft-amap-00"/>
+    <seriesInfo name="Internet-Draft" value="draft-rapp-amap-00"/>
     <author initials="D." surname="Rapp" fullname="Daniel Rapp">
       <organization>Proofpoint, Inc.</organization>
       <address>
         <email>drapp@proofpoint.com</email>
       </address>
     </author>
-    <author initials="T." surname="Adams" fullname="Trent Adams">
+    <author initials="T." surname="Adams" fullname="J. Trent Adams">
       <organization>Proofpoint, Inc.</organization>
       <address>
         <email>tadams@proofpoint.com</email>
       </address>
     </author>
-    <date year="2026" month="September" day="16"/>
+    <date year="2026" month="October" day="2"/>
     <abstract>
 
 <t>The Agent Mailbox Access Protocol (AMAP) is a wire contract, carried over a
@@ -31,63 +40,23 @@ and receive email through a runtime that does not trust it: every outbound
 message begins as an inert request file that the runtime copies into private
 staging, validates independently, and applies policy to before anything is
 transmitted, and every inbound message is authenticated and screened by the
-runtime before a notice describing it appears in the agent's namespace. This
-document specifies the directory layout and its filesystem obligations —
+runtime before a notice describing it appears in the agent's namespace. </t>
+
+<t>This document specifies the directory layout and its filesystem obligations —
 ownership, write and delete rights, and the path, symlink, and concurrency
 discipline a runtime observes; the JSON message shapes for submit requests,
 results, deliver notices, spooled message bodies, and an optional binding
 record; the correlation and versioning rules, including a direction-aware
-unknown-member tolerance rule; and two conformance classes. AMAP is
-deliberately not a mail protocol: it neither defines nor replaces SMTP, IMAP,
-or provider-side infrastructure, and composes with them rather than
-displacing them. Its single design center is that no security property
+unknown-member tolerance rule; and two conformance classes. </t>
+
+<t>AMAP is deliberately not a mail protocol: it neither defines nor replaces 
+SMTP, IMAP, or provider-side infrastructure, and composes with them rather 
+than displacing them. Its single design center is that no security property
 depends on the agent — or on the connector speaking for it — behaving
 correctly.</t>
-      <t><strong>Naming.</strong> This protocol was called AMP ("Agent Mailbox Protocol") until
-2026-09-15. It was renamed because AMP collides with the IETF DTN working
-group's adopted <tt>draft-ietf-dtn-amp</tt>. The filename of this draft is unchanged
-at this document version; the schema identifiers moved with the name (Change
-Log, 3.1.0).</t>
-      <!-- NOT `note_Status_of_This_Memo`. That heading is RESERVED: with a real `ipr`
-     value xml2rfc generates the true "Status of This Memo" itself, and a note
-     of the same name renders BESIDE it. The two then contradict each other on
-     precisely the question the IPR value exists to answer — the generated text
-     says the draft "is submitted in full conformance with the provisions of
-     BCP 78 and BCP 79", ours says it is not a standard and nothing has been
-     submitted. Under `ipr: none` no boilerplate was generated and the collision
-     could not appear, so this was invisible until the IPR value was settled. -->
-
-
 
     </abstract>
-    <note>
-      <name>About This Draft</name>
 
-<t>This document is an initial draft, distributed for review and comment. It is
-<strong>not</strong> a standard, and no assurance is given that it will become one. It may
-be updated, replaced, or rendered obsolete by later documents at any time, and
-it is inappropriate to cite this draft as a stable reference.</t>
-      <t>This draft describes Agent Mailbox Access Protocol wire major version <tt>2</tt>,
-document version 3.1.0 (DRAFT). As of document version 3.0.0 these two numbers
-deliberately track different things, and are allowed to diverge: the wire
-major tracks whole-document acceptance compatibility, while the document
-version tracks the fuller set of obligations placed on implementations.
-<xref target="sec-10-1"/> states the rule and the reasoning. Document version 3.1.0 is
-marked DRAFT: it is an additive minor revision of 3.0.0 (<xref target="sec-10-1"/>, Change
-Log). The peer-origin profile it introduces is present in this document as its
-schema and conformance fixtures (<xref target="app-f"/>, <xref target="app-h"/>); the profile's prose
-is a companion document (<tt>spec/peer-origin.md</tt>, v3.1.0 DRAFT), and nothing in
-this document's body specifies the <tt>peer/</tt> tree beyond what that schema and
-those fixtures pin.</t>
-      <t><strong>Change control.</strong> A capability change to this protocol — a new field, a new
-message kind, or a change to an existing obligation — is a change to <em>this
-document and to its conformance fixture suite</em> (<xref target="app-g"/>, <xref target="app-h"/>), made
-<strong>before</strong> any implementation adopts it. No implementation introduces a
-wire-visible change unilaterally: a change that is not reflected here and in
-the fixtures is not part of the protocol.</t>
-      <t>This document and the accompanying schemas and conformance fixtures are
-published under the Apache License 2.0.</t>
-    </note>
   </front>
   <middle>
 
@@ -239,14 +208,28 @@ wire-verifiable fact, this document says so plainly (<xref target="sec-11-14"/>)
 "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this
 document are to be interpreted as described in BCP 14 <xref target="RFC2119"/> <xref target="RFC8174"/>
 when, and only when, they appear in all capitals, as shown here.</t>
-      <t>Every message defined by this document is a JSON text as defined by
-<xref target="RFC8259"/>, encoded in UTF-8 <xref target="RFC3629"/>. The schemas in <xref target="app-a"/> through
-<xref target="app-e"/> are written in the JSON Schema 2020-12 dialect
-<xref target="JSON-SCHEMA-2020-12"/>.</t>
-      <t>Sections and subsections explicitly marked <em>(informative)</em> or
-<em>(non-normative)</em> carry no requirements; <xref target="sec-3-4"/>, <xref target="sec-3-5"/>, <xref target="app-i"/>,
-and the Change Log are the only such parts of this document.</t>
-      <t><strong>Terminology.</strong></t>
+
+	      <t>Every message defined by this document is a JSON text as defined by
+	<xref target="RFC8259"/>, encoded in UTF-8 <xref target="RFC3629"/>. The schemas in <xref target="app-a"/> through
+	<xref target="app-e"/> are written in the JSON Schema 2020-12 dialect
+	<xref target="JSON-SCHEMA-2020-12"/>.</t>
+      <t>Long lines in the JSON examples and schemas in this document are folded
+using the single-backslash strategy of <xref target="RFC8792"/>. Each folded
+block begins with that strategy's header line, which is part of the folded
+content: it is what allows the original to be reconstituted mechanically, so
+it is kept inside the block.</t>
+	      <t>Sections and subsections explicitly marked <em>(informative)</em> or
+	<em>(non-normative)</em> carry no requirements; <xref target="sec-3-4"/>, <xref target="sec-3-5"/>, <xref target="app-i"/>,
+	and the Change Log are the only such parts of this document.</t>
+
+      <t>Where this document says an artifact is <em>dropped</em>, it means the consumer MUST
+NOT surface the artifact to its Agent and MUST NOT act on it. Where it says a consumer
+<em>fails closed</em>, it means the consumer refuses to process the artifact rather
+than proceeding on a partial or guessed interpretation.</t>
+
+    <section anchor="terminology">
+      <name>Terminology</name>
+
       <ul spacing="normal">
         <li>
           <t><strong>Agent</strong> — the untrusted process whose email capability this protocol
@@ -254,6 +237,12 @@ mediates. It holds no credential, has no send path of its own, and reaches
 the protocol only through its Connector. Nothing in this document places a
 requirement on the Agent, because no security property may depend on it.</t>
         </li>
+
+        <li>
+          <t><strong>Binding Record</strong> — the optional, informational artifact at the Volume
+root naming which mailbox the Volume is bound to (<xref target="sec-9"/>).</t>
+        </li>
+
         <li>
           <t><strong>Connector</strong> — the per-Agent component that speaks the Agent-side half of
 this contract: it writes Submit Requests, reads Results and Notices, and
@@ -263,12 +252,73 @@ document it is treated as untrusted, and the requirements placed on it are
 well-formedness and non-crashing obligations, never obligations another
 party's safety rests on.</t>
         </li>
+
+        <li>
+          <t><strong>Descriptor</strong> — one entry in an <tt>attachments[]</tt> array, describing an
+attachment (its display filename, media type, size, and — depending on
+direction — digest, Disposition, or content reference). A Descriptor is
+metadata; it is never a path.</t>
+        </li>
+
+        <li>
+          <t><strong>Disposition</strong> — the Runtime's assertion about an inbound attachment's
+handling: <tt>clean</tt>, <tt>stripped</tt>, <tt>quarantined</tt>, or <tt>unscanned</tt> (<xref target="sec-7-2"/>).</t>
+        </li>
+
+        <li>
+          <t><strong>Inbound Message</strong> — the Runtime-authored artifact carrying a delivered
+message's body text and headers, spooled under a Notice's identifier and
+fetched on demand (<xref target="sec-7-3"/>).</t>
+        </li>
+
+        <li>
+          <t><strong>Namespace</strong> — the per-Agent subtree <tt>&lt;volume-root&gt;/&lt;agent-id&gt;/</tt>, mounted
+into that Agent's sandbox. It is the unit of isolation and the sole
+authority for attributing an artifact to an Agent.</t>
+        </li>
+
+        <li>
+          <t><strong>Notice</strong> (Deliver Notice) — the Runtime-authored artifact announcing that
+a message was delivered to the Agent's mailbox (<xref target="sec-7"/>). It is a
+pointer and summary, not the message.</t>
+        </li>
+
+        <li>
+          <t><strong>Ordinal</strong> — the integer naming a Sidecar blob. It equals the index of the
+corresponding Descriptor in its array, and is the sole binding authority
+between a Descriptor and its bytes.</t>
+        </li>
+
+        <li>
+          <t><strong>Result</strong> — the Runtime-authored verdict for one consumed Submit Request
+(<xref target="sec-6"/>).</t>
+        </li>
+
         <li>
           <t><strong>Runtime</strong> — the trusted, credentialed, Agent-agnostic component that
 speaks the other half: it holds mail credentials, owns each Agent's
 identity, makes every policy decision, and is the only party that
 transmits or receives mail.</t>
         </li>
+
+        <li>
+          <t><strong>Sidecar</strong> — attachment bytes stored beside a Submit Request or a Notice,
+in a directory named after that artifact, with each blob named by a
+0-based ordinal.</t>
+        </li>
+
+        <li>
+          <t><strong>Staging</strong> — Runtime-private storage outside the Volume, unreachable from
+any Agent's mount, into which the Runtime copies Agent-authored bytes
+before acting on them (<xref target="sec-4-1"/>).</t>
+        </li>
+
+        <li>
+          <t><strong>Submit Request</strong> — the Connector-authored artifact requesting that a
+message be sent (<xref target="sec-5"/>). It is inert: it carries no capability and
+effects nothing by existing.</t>
+        </li>
+
         <li>
           <t><strong>Volume</strong> — the runtime-owned filesystem tree carrying this protocol,
 containing one Namespace per Agent plus an optional Binding Record at its
@@ -276,64 +326,12 @@ root. Its mount path is a deployment choice; this document writes
 <tt>&lt;volume-root&gt;/</tt> for it and nothing in the protocol derives from its name.
 No implementation may depend on that name or any other.</t>
         </li>
-        <li>
-          <t><strong>Namespace</strong> — the per-Agent subtree <tt>&lt;volume-root&gt;/&lt;agent-id&gt;/</tt>, mounted
-into that Agent's sandbox. It is the unit of isolation and the sole
-authority for attributing an artifact to an Agent.</t>
-        </li>
-        <li>
-          <t><strong>Submit Request</strong> — the Connector-authored artifact requesting that a
-message be sent (<xref target="sec-5"/>). It is inert: it carries no capability and
-effects nothing by existing.</t>
-        </li>
-        <li>
-          <t><strong>Result</strong> — the Runtime-authored verdict for one consumed Submit Request
-(<xref target="sec-6"/>).</t>
-        </li>
-        <li>
-          <t><strong>Notice</strong> (Deliver Notice) — the Runtime-authored artifact announcing that
-a message was delivered to the Agent's mailbox (<xref target="sec-7"/>). It is a
-pointer and summary, not the message.</t>
-        </li>
-        <li>
-          <t><strong>Inbound Message</strong> — the Runtime-authored artifact carrying a delivered
-message's body text and headers, spooled under a Notice's identifier and
-fetched on demand (<xref target="sec-7-3"/>).</t>
-        </li>
-        <li>
-          <t><strong>Binding Record</strong> — the optional, informational artifact at the Volume
-root naming which mailbox the Volume is bound to (<xref target="sec-9"/>).</t>
-        </li>
-        <li>
-          <t><strong>Sidecar</strong> — attachment bytes stored beside a Submit Request or a Notice,
-in a directory named after that artifact, with each blob named by a
-0-based ordinal.</t>
-        </li>
-        <li>
-          <t><strong>Ordinal</strong> — the integer naming a Sidecar blob. It equals the index of the
-corresponding Descriptor in its array, and is the sole binding authority
-between a Descriptor and its bytes.</t>
-        </li>
-        <li>
-          <t><strong>Descriptor</strong> — one entry in an <tt>attachments[]</tt> array, describing an
-attachment (its display filename, media type, size, and — depending on
-direction — digest, Disposition, or content reference). A Descriptor is
-metadata; it is never a path.</t>
-        </li>
-        <li>
-          <t><strong>Disposition</strong> — the Runtime's assertion about an inbound attachment's
-handling: <tt>clean</tt>, <tt>stripped</tt>, <tt>quarantined</tt>, or <tt>unscanned</tt> (<xref target="sec-7-2"/>).</t>
-        </li>
-        <li>
-          <t><strong>Staging</strong> — Runtime-private storage outside the Volume, unreachable from
-any Agent's mount, into which the Runtime copies Agent-authored bytes
-before acting on them (<xref target="sec-4-1"/>).</t>
-        </li>
+
       </ul>
-      <t>Where this document says an artifact is <em>dropped</em>, it means the consumer does
-not surface it to its Agent and does not act on it; where it says a consumer
-<em>fails closed</em>, it means the consumer refuses to process the artifact rather
-than proceeding on a partial or guessed interpretation.</t>
+
+
+</section>
+
     </section>
     <section anchor="sec-3">
       <name>Architecture and Trust Model</name>
@@ -1994,6 +1992,14 @@ bump.</t>
             </tr>
             <tr>
               <td align="left">
+                <strong>directory</strong></td>
+              <td align="left">
+                <em>(the artifact itself is OPTIONAL — <xref target="sec-directory"/>)</em>; if present: <tt>router, written_at, delegate_to, mail_to</tt></td>
+              <td align="left">
+                <tt>contract_version</tt> (if present, pinned to <tt>"2"</tt>)</td>
+            </tr>
+            <tr>
+              <td align="left">
                 <strong>roster</strong></td>
               <td align="left">
                 <em>(the artifact itself is OPTIONAL — <xref target="sec-roster"/>)</em>; if present: <tt>contract_version, router, written_at, members[]</tt> (items require <tt>address, state</tt>)</td>
@@ -2514,6 +2520,20 @@ then responsible for never relaying it onward.</t>
       <name>References</name>
       <references anchor="sec-normative-references">
         <name>Normative References</name>
+
+        <reference anchor="RFC8792" target="https://www.rfc-editor.org/info/rfc8792">
+          <front>
+            <title>Handling Long Lines in Content of Internet-Drafts and RFCs</title>
+            <author fullname="K. Watsen" initials="K." surname="Watsen"/>
+            <author fullname="E. Auerswald" initials="E." surname="Auerswald"/>
+            <author fullname="A. Farrel" initials="A." surname="Farrel"/>
+            <author fullname="Q. Wu" initials="Q." surname="Wu"/>
+            <date month="June" year="2020"/>
+          </front>
+          <seriesInfo name="RFC" value="8792"/>
+          <seriesInfo name="DOI" value="10.17487/RFC8792"/>
+        </reference>
+
         <reference anchor="RFC2119">
           <front>
             <title>Key words for use in RFCs to Indicate Requirement Levels</title>
@@ -2683,6 +2703,16 @@ then responsible for never relaying it onward.</t>
           </front>
           <seriesInfo name="RFC" value="6761"/>
           <seriesInfo name="DOI" value="10.17487/RFC6761"/>
+        </reference>
+        <reference anchor="RFC8032">
+          <front>
+            <title>Edwards-Curve Digital Signature Algorithm (EdDSA)</title>
+            <author fullname="S. Josefsson" initials="S." surname="Josefsson"/>
+            <author fullname="I. Liusvaara" initials="I." surname="Liusvaara"/>
+            <date month="January" year="2017"/>
+          </front>
+          <seriesInfo name="RFC" value="8032"/>
+          <seriesInfo name="DOI" value="10.17487/RFC8032"/>
         </reference>
         <reference anchor="MCP" target="https://modelcontextprotocol.io/specification/2025-11-25">
           <front>
@@ -3269,6 +3299,471 @@ NOTE: '\' line wrapping per RFC 8792
 }
 ]]></sourcecode>
       </figure>
+      <t><em>(Proposed, not yet reviewed.)</em> Cross-host, a peer message travels as mail carrying a
+signed statement in one <tt>AMAP-Peer-Statement</tt> header field. The sending Runtime signs
+the statement's exact bytes with Ed25519 <xref target="RFC8032"/>; the receiving Runtime
+verifies those bytes before parsing them, then validates them against the schema below,
+which is CLOSED at every level: these are signed bytes another Runtime acts on, not a
+Runtime-authored document a Connector reads. The verification steps, windows and outcomes
+are the companion document's (<tt>spec/peer-origin.md</tt>, section 5). The
+<tt>statement-*</tt> fixtures (<xref target="app-h"/>) exercise the schema, and signed
+cases with their expected outcomes are in <tt>fixtures/peer-signed/</tt>. A sending
+Runtime mints peer message ids under <tt>^[A-Za-z0-9_-]+$</tt> so that the
+<tt>Message-ID</tt> encoding is a valid msg-id.</t>
+      <figure anchor="schema-peer-statement">
+        <name>schemas/peer-statement.schema.json</name>
+        <sourcecode type="json" name="peer-statement.schema.json"><![CDATA[
+NOTE: '\' line wrapping per RFC 8792
+
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://amap-spec/schemas/peer-statement.schema.json",
+  "title": "peer-statement",
+  "description": "runtime -> runtime: the signed statement that carr\
+    ies a peer message between hosts. amap-spec v3.1.0 DRAFT, peer-o\
+    rigin profile (spec/peer-origin.md §5). The sending runtime sign\
+    s the statement's exact UTF-8 bytes with Ed25519 and ships both \
+    in one AMAP-Peer-Statement header field (§5.2); the receiving ru\
+    ntime verifies the signature over the received bytes before pars\
+    ing, then validates against this schema. CLOSED at every level, \
+    unlike the runtime-authored notices: these are signed bytes anot\
+    her runtime acts on, a member the receiver does not know is a me\
+    mber it cannot bind to what it publishes, and the version membe\
+    r `v` is the only evolution path. A statement that fails this sc\
+    hema fails verification, and the message is demoted to mail (§5.\
+    3, §5.4). Numbers are lexical integers (no fraction or exponent\
+    ) and strings contain no unpaired surrogate (§5.1, checked at §5\
+    .3 5(b)); the schema cannot express either, nor calendar validit\
+    y, interval order, the entropy of `id`, or any binding to the me\
+    ssage: those are §5's verification steps.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "v",
+    "key_id",
+    "kind",
+    "id",
+    "from",
+    "to",
+    "ts",
+    "subject",
+    "body_sha256",
+    "attachments"
+  ],
+  "properties": {
+    "v": {
+      "type": "integer",
+      "const": 1
+    },
+    "key_id": {
+      "type": "string",
+      "description": "names one key in the signing peer's configure\
+    d key set; opaque, unique within that set, 1-64 characters.",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}(?!\\n)$"
+    },
+    "kind": {
+      "const": "peer"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "the peer message id (§4), bare. A sending runt\
+    ime mints it under ^[A-Za-z0-9_-]+$ (hex or base64url), so its M\
+    essage-ID encoding <id@domain> is a valid msg-id (§5.1, §5.2); t\
+    he receiver publishes it as message.id.",
+      "pattern": "^[A-Za-z0-9_-]+(?!\\n)$"
+    },
+    "in_reply_to": {
+      "type": "string",
+      "minLength": 1,
+      "description": "the peer message id this message answers (§4)\
+    , bare, minted by the other runtime under the same pattern. Abse\
+    nt on a fresh task. Resolved against the receiver's ledger with \
+    the participants bound (§5.6).",
+      "pattern": "^[A-Za-z0-9_-]+(?!\\n)$"
+    },
+    "from": {
+      "type": "string",
+      "minLength": 1,
+      "description": "bare addr-spec of the sending agent; its domai\
+    n MUST be one of the signing peer's configured domains.",
+      "pattern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+(?\
+    !\\n)$"
+    },
+    "to": {
+      "type": "string",
+      "minLength": 1,
+      "description": "bare addr-spec of the one receiving agent (§3\
+    : a peer message is addressed to one agent).",
+      "pattern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+(?\
+    !\\n)$"
+    },
+    "ts": {
+      "type": "string",
+      "description": "when the sending runtime signed: RFC 3339 UTC\
+    , whole seconds, upper-case T and Z, no offset. MUST be a real c\
+    alendar instant (§5.1).",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9\
+    ]{2}Z(?!\\n)$"
+    },
+    "subject": {
+      "type": "string",
+      "description": "the subject the receiver publishes as message.\
+    subject; no control characters.",
+      "pattern": "^[^\u0000-\u001f]*(?!\\n)$"
+    },
+    "body_sha256": {
+      "type": "string",
+      "description": "SHA-256 of the UTF-8 encoding of the body_tex\
+    t the receiver will publish, lower-case hex.",
+      "pattern": "^[a-f0-9]{64}(?!\\n)$"
+    },
+    "attachments": {
+      "type": "array",
+      "description": "one entry per attachment, in order; empty whe\
+    n there are none.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sha256",
+          "size_bytes",
+          "filename",
+          "media_type"
+        ],
+        "properties": {
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}(?!\\n)$"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "filename": {
+            "type": "string",
+            "minLength": 1
+          },
+          "media_type": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "sender_exposure": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "§6, asserted by the sending runtime; omitted w\
+    hen it made no assessment. Timestamps in ts's format; window_sta\
+    rt <= window_end; last_external_delivery_ts present iff external\
+    _mail_delivered is true, and then within the window; asserted_b\
+    y is the signing runtime's configured runtime address (§5.1; §5.\
+    3 checks 5(b) and 8).",
+      "required": [
+        "asserted_by",
+        "external_mail_delivered",
+        "window_start",
+        "window_end"
+      ],
+      "properties": {
+        "asserted_by": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9.-\
+    ]+(?!\\n)$"
+        },
+        "external_mail_delivered": {
+          "type": "boolean"
+        },
+        "window_start": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:\
+    [0-9]{2}Z(?!\\n)$"
+        },
+        "window_end": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:\
+    [0-9]{2}Z(?!\\n)$"
+        },
+        "last_external_delivery_ts": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:\
+    [0-9]{2}Z(?!\\n)$"
+        },
+        "derived_from": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*(?!\\n)$"
+          }
+        }
+      },
+      "if": {
+        "required": [
+          "external_mail_delivered"
+        ],
+        "properties": {
+          "external_mail_delivered": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "last_external_delivery_ts"
+        ]
+      }
+    },
+    "sender_since": {
+      "type": "string",
+      "description": "OPTIONAL (§5.9): when the sending runtime firs\
+    t enrolled the sending agent's identity (as that runtime define\
+    s identity), from its durable registry; same format as ts and no\
+    t later than ts. A runtime assertion, not a sender claim. Never \
+    reset for a continuation of the same identity (restart, rebind, \
+    re-creation, key rotation); a new enrolment starts a new value. \
+    A receiver enforcing a sender age keeps the last value per (runt\
+    ime, from) and refuses an earlier one as inconsistent. Absence m\
+    eans NOT ASSERTED, never 'new'.",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9\
+    ]{2}Z(?!\\n)$"
+    }
+  }
+}
+]]></sourcecode>
+      </figure>
+      <t>A receiving Runtime reports what it did with a statement it did not place
+(refused, dropped or demoted) to the configured sending Runtime in a signed control
+notice, carried in one <tt>AMAP-Peer-Control</tt> header field with the same grammar and
+key. Its <tt>kind</tt> is <tt>"control"</tt>, so neither document validates as the other;
+it is CLOSED and carries no free text.</t>
+      <figure anchor="schema-peer-control">
+        <name>schemas/peer-control.schema.json</name>
+        <sourcecode type="json" name="peer-control.schema.json"><![CDATA[
+NOTE: '\' line wrapping per RFC 8792
+
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://amap-spec/schemas/peer-control.schema.json",
+  "title": "peer-control",
+  "description": "runtime -> runtime: the signed control notice a re\
+    ceiving runtime sends to a configured sending runtime about wha\
+    t it did with an authenticated peer statement that it did not pl\
+    ace (refused, dropped, or demoted). amap-spec v3.1.0 DRAFT, peer\
+    -origin profile (spec/peer-origin.md §5.8). Carried in an AMAP-P\
+    eer-Control header field with the same k/s/b grammar as AMAP-Pee\
+    r-Statement, signed with the same per-runtime key; `kind` is \"c\
+    ontrol\", so a control notice never validates as a peer statemen\
+    t and is never placed for an agent. CLOSED at every level, and i\
+    t carries no free text: the receiving runtime composes any agent\
+    -facing words itself (§4's DSN analogue). The schema cannot chec\
+    k that `about` names a peer message this runtime issued to the n\
+    otice's signer; that is §5.8's verification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "v",
+    "key_id",
+    "kind",
+    "id",
+    "from",
+    "to",
+    "ts",
+    "about",
+    "outcome",
+    "cause"
+  ],
+  "properties": {
+    "v": {
+      "type": "integer",
+      "const": 1
+    },
+    "key_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}(?!\\n)$"
+    },
+    "kind": {
+      "const": "control"
+    },
+    "id": {
+      "type": "string",
+      "description": "this notice's own id, minted like a peer messa\
+    ge id; replay-checked in the same store, scoped to the signing r\
+    untime.",
+      "pattern": "^[A-Za-z0-9_-]+(?!\\n)$"
+    },
+    "from": {
+      "type": "string",
+      "description": "the signing (receiving) runtime's configured r\
+    untime address.",
+      "pattern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+(?\
+    !\\n)$"
+    },
+    "to": {
+      "type": "string",
+      "description": "the configured runtime address of the runtime \
+    that signed the statement this notice is about.",
+      "pattern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+(?\
+    !\\n)$"
+    },
+    "ts": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9\
+    ]{2}Z(?!\\n)$"
+    },
+    "about": {
+      "type": "string",
+      "description": "the `id` of the peer statement this notice is \
+    about.",
+      "pattern": "^[A-Za-z0-9_-]+(?!\\n)$"
+    },
+    "outcome": {
+      "enum": [
+        "refused",
+        "dropped",
+        "demoted"
+      ]
+    },
+    "cause": {
+      "description": "why, from §5.4's outcome table. `policy` is a \
+    deployment refusal (for example a first-sight quarantine), name\
+    d further by policy_code.",
+      "enum": [
+        "statement_value",
+        "key_domain",
+        "ts_window",
+        "exposure_signer",
+        "body_charset",
+        "body_digest",
+        "attachment_count",
+        "attachment_digest",
+        "message_id",
+        "duplicate",
+        "misrouted",
+        "unresolved_reply",
+        "no_edge",
+        "policy"
+      ]
+    },
+    "policy_code": {
+      "type": "string",
+      "description": "deployment-defined token, only with cause `pol\
+    icy` (e.g. `quarantined`).",
+      "pattern": "^[a-z][a-z0-9_]{0,63}(?!\\n)$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "policy_code"
+        ]
+      },
+      "then": {
+        "properties": {
+          "cause": {
+            "const": "policy"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "cause": {
+            "const": "policy"
+          }
+        },
+        "required": [
+          "cause"
+        ]
+      },
+      "then": {
+        "required": [
+          "policy_code"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "refused"
+          }
+        },
+        "required": [
+          "outcome"
+        ]
+      },
+      "then": {
+        "properties": {
+          "cause": {
+            "enum": [
+              "unresolved_reply",
+              "no_edge",
+              "policy"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "dropped"
+          }
+        },
+        "required": [
+          "outcome"
+        ]
+      },
+      "then": {
+        "properties": {
+          "cause": {
+            "enum": [
+              "duplicate",
+              "misrouted"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "demoted"
+          }
+        },
+        "required": [
+          "outcome"
+        ]
+      },
+      "then": {
+        "properties": {
+          "cause": {
+            "enum": [
+              "statement_value",
+              "key_domain",
+              "ts_window",
+              "exposure_signer",
+              "body_charset",
+              "body_digest",
+              "attachment_count",
+              "attachment_digest",
+              "message_id"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
+]]></sourcecode>
+      </figure>
     </section>
     <section anchor="app-directory">
       <name>Peer-Directory Schema (v3.1.0 DRAFT)</name>
@@ -3675,7 +4170,7 @@ NOTE: '\' line wrapping per RFC 8792
 is part of the specification.)</em></t>
       <t>The suite consists of golden artifacts under <tt>fixtures/valid/</tt> and
 <tt>fixtures/invalid/</tt>, plus a validator, <tt>fixtures/validate.py</tt>.</t>
-      <t>At this document version the suite contains <strong>89 fixtures — 34 valid and 55 invalid</strong>.</t>
+      <t>At this document version the suite contains <strong>119 fixtures — 42 valid and 77 invalid</strong>.</t>
       <table>
         <thead>
           <tr>
@@ -3887,6 +4382,54 @@ is part of the specification.)</em></t>
               <tt>valid/roster-unknown-member.json</tt></td>
             <td align="left">
               <tt>roster.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>valid/control-demoted-body-digest.json</tt></td>
+            <td align="left">
+              <tt>peer-control.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>valid/control-dropped-duplicate.json</tt></td>
+            <td align="left">
+              <tt>peer-control.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>valid/control-refused-no-edge.json</tt></td>
+            <td align="left">
+              <tt>peer-control.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>valid/control-refused-policy.json</tt></td>
+            <td align="left">
+              <tt>peer-control.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>valid/statement-exposure-true.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>valid/statement-minimal.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>valid/statement-result-attachment.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>valid/statement-sender-since.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
           </tr>
           <tr>
             <td align="left">
@@ -4218,6 +4761,138 @@ is part of the specification.)</em></t>
             <td align="left">
               <tt>roster.schema.json</tt></td>
           </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/control-free-text.json</tt></td>
+            <td align="left">
+              <tt>peer-control.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/control-kind-peer.json</tt></td>
+            <td align="left">
+              <tt>peer-control.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/control-outcome-cause-mismatch.json</tt></td>
+            <td align="left">
+              <tt>peer-control.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/control-policy-code-without-policy.json</tt></td>
+            <td align="left">
+              <tt>peer-control.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/control-policy-without-code.json</tt></td>
+            <td align="left">
+              <tt>peer-control.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-attachment-unknown-member.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-digest-uppercase.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-exposure-date-free-text.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-exposure-unknown-member.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-from-display-name.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-id-dotted.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-id-encoded.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-key-id-empty.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-missing-attachments.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-sender-since-date-only.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-subject-crlf.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-to-array.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-ts-fractional.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-ts-offset.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-unknown-member.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-v-boolean.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
+          <tr>
+            <td align="left">
+              <tt>invalid/statement-v2.json</tt></td>
+            <td align="left">
+              <tt>peer-statement.schema.json</tt></td>
+          </tr>
         </tbody>
       </table>
       <t><strong>Running it.</strong> The validator is stdlib-only and takes no arguments:</t>
@@ -4230,7 +4905,8 @@ no dependency: <strong>the fixtures are the other side.</strong></t>
       <t><strong>How a fixture is mapped to a schema.</strong> By filename prefix — <tt>request-</tt> to
 the submit-request schema, <tt>notice-</tt> to deliver-notice, <tt>result-</tt> to
 result, <tt>message-</tt> to inbound-message, <tt>identity-</tt> to binding-record, and
-<tt>peer-</tt> to peer-notice (<xref target="app-f"/>).</t>
+<tt>peer-</tt> to peer-notice, <tt>statement-</tt> to peer-statement, and
+<tt>control-</tt> to peer-control (<xref target="app-f"/>).</t>
       <t><strong>What the validator checks.</strong> Schema validation in the JSON Schema
 2020-12 dialect <xref target="JSON-SCHEMA-2020-12"/>, over the subset of keywords these
 schemas use (<tt>type</tt>, <tt>const</tt>, <tt>enum</tt>, <tt>minLength</tt>, <tt>pattern</tt>, <tt>minItems</tt>,
@@ -4466,6 +5142,20 @@ the versioning record of the protocol contract this document renders.)</em></t>
         <name>3.1.0 (DRAFT) — the protocol is AMAP; the outbound extension space; the peer-origin profile's schema</name>
         <t>An additive <strong>minor</strong> bump; the wire major stays <tt>"2"</tt>.</t>
         <ul spacing="normal">
+          <li>
+            <t><strong>The signed cross-host peer statement and control notice</strong>
+(2026-10-09, proposed, not yet reviewed; companion-document section 5 revision s5-r4).
+Two new schemas (<xref target="app-f"/>): the statement a sending Runtime signs with
+Ed25519 and carries in one <tt>AMAP-Peer-Statement</tt> header field, and the control
+notice a receiving Runtime returns about a statement it did not place, both CLOSED at
+every level; <tt>statement-*</tt> and <tt>control-*</tt> fixtures; and, in
+<tt>fixtures/peer-signed/</tt>, RFC 8032 vectors with negative cases, MIME selection
+cases, and signed sequences of candidates and events with the outcome a receiver MUST
+reach at each step. The rules are the companion document's (<tt>spec/peer-origin.md</tt>,
+section 5). Additive: nothing existing changes shape, and a deployment without
+cross-host peer traffic is unaffected. The 30 new fixtures (8 valid, 22 invalid)
+bring version 3.1.0 to 119 (42 valid, 77 invalid).</t>
+          </li>
           <li>
             <t><strong>The fleet roster</strong> (2026-09-24). A new, optional artifact
 (<xref target="sec-roster"/>, schema in <xref target="app-roster"/>): one

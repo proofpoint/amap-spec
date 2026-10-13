@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Identity and accountability · AMAP</title>
+<meta name="description" content="AMAP can verify the sender. The ecosystem must define the agent. What AMAP does today, where it could extend, and what it leaves to others.">
+<link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap header-row">
+    <a class="brand" href="index.html" aria-label="AMAP home">
+      <img src="assets/mark.svg" alt="" width="28" height="28">
+      <span class="brand-name">AMAP</span>
+      <span class="brand-sub">Agent Mailbox Access Protocol</span>
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <nav id="site-nav" class="site-nav" aria-label="Main">
+      <ul><li><a href="index.html">Home</a></li><li><a href="ietf.html">At the IETF</a></li><li><a href="why.html">Why AMAP</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="identity.html" aria-current="page">Identity</a></li><li><a href="implementers.html">Implementers</a></li><li><a href="validator.html">Validator</a></li><li><a href="status.html">Status</a></li><li><a href="faq.html">FAQ</a></li><li><a href="get-involved.html">Get involved</a></li></ul>
+    </nav>
+  </div>
+</header>
+<main id="main" class="wrap">
+<p class="eyebrow">Identity and accountability</p>
+<h1>AMAP can verify the sender. The ecosystem must define the agent.</h1>
+<p class="lede">Agent identity and accountability have to come from outside AMAP, and AMAP has to fit whatever emerges. The specification carries identity but deliberately doesn't define it: its scope puts "how identity is minted, how senders are verified" out of scope. "The wire fixes the vocabulary; it never fixes the computation."</p>
+
+<p class="small">From left to right: verifying <em>which</em> agent sent a message → establishing <em>who</em> that agent is and what it may commit to.</p>
+<div class="grid three">
+  <div class="card trust">
+    <h3>AMAP does today</h3>
+    <p><span class="tag spec">Specified</span></p>
+    <ul>
+      <li>The runtime owns each agent's sending identity, and the agent can't choose it (§ Architecture; § Submit Request).</li>
+      <li>Configured peer runtimes exchange signed statements, which the sending runtime signs with Ed25519, naming which of its agents sent a message. The keys belong to runtimes, not agents. A message that fails verification is treated as ordinary mail (peer profile §5).</li>
+      <li>A record of each request, verdict and policy path, in an audit log the agent cannot write.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>AMAP's whitespace</h3>
+    <p><span class="tag hyp">Could extend</span></p>
+    <ul>
+      <li>Sender verification any recipient can check without prior setup: "DKIM for agents".</li>
+      <li>What a <code>verifiable</code> attestation should prove to someone outside the fleet. Results already carry an attestation slot whose form can be <code>self-stamp</code> or <code>verifiable</code> (§ Result). The name collides with remote attestation in the IETF's RATS work (RFC 9334), and we expect to rename it.</li>
+      <li>Reputation models for agent senders, akin to those built on authentication signals such as DKIM.</li>
+    </ul>
+  </div>
+  <div class="card agent">
+    <h3>The ecosystem's job</h3>
+    <p><span class="tag open">Open</span></p>
+    <ul>
+      <li>An identity layer for agents, for example <a href="https://u4a.ai/docs/overview/multi-owner/">UMA for Agents</a>.</li>
+      <li>Who issues an agent's identity.</li>
+      <li>What authority that identity carries.</li>
+      <li>Who answers for what an agent commits to, and when a person must decide instead.</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Why a signature still matters when bad actors can sign too</h2>
+<p><span class="tag hyp">Hypothesis</span> This is the argument DKIM has always faced. A signature doesn't prove a message is legitimate. What it provides is a verifiable identifier to hang reputation on, and once DKIM was enforced broadly, it became the handle that reputation systems are built on.</p>
+<p>The same could hold for agents. If legitimate agent senders adopt verifiable sender identity, bad actors either do the same, and so become identifiable and scorable, or stand out by not doing it. Either way, defenders get a stronger signal for telling good agent traffic from bad. Today's signing works only runtime-to-runtime, between configured peers. Extending it is whitespace, not something AMAP already does.</p>
+
+<h2>What authentication proves, and what it doesn't</h2>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Signal</th><th>Proves</th><th>Does not prove</th></tr></thead>
+  <tbody>
+    <tr><td>SPF, DKIM, DMARC</td><td>The sending <em>domain</em></td><td>Which agent sent it, or that it may commit anyone</td></tr>
+    <tr><td>AMAP signed peer statements</td><td>Which runtime vouched for which of its agents</td><td>That the agent is authorised to commit its organisation</td></tr>
+    <tr><td>An agent identity layer <span class="tag open">open</span></td><td>Who the agent is, and on whose behalf it acts</td><td>Left to the ecosystem to define</td></tr>
+  </tbody>
+</table>
+</div>
+<p>An attestation stamps <em>sender identity</em>. It doesn't mark a message as AI-authored, and it shouldn't be read that way.</p>
+
+<h2>Accountability needs a record the agent can't touch</h2>
+<p><span class="tag spec">Specified</span> The runtime keeps an audit log that the agent can never write. The specification doesn't define the log's contents, and durability and tamper-evidence are the runtime's responsibility. A production runtime can place agent email under the same communications governance organisations already apply to people's email, with no new regime for agents: retention, supervision and discovery.</p>
+<p><span class="tag open">Open</span> If the record is to settle who answers for an agent's commitment, what must it contain, and must other organisations be able to trust it?</p>
+
+<h2>When must a person decide?</h2>
+<p>AMAP guarantees that a policy miss goes to a person. It doesn't say which actions should <em>always</em> need one. Should confirming a change to payment details, agreeing contract terms, or opening a new external data flow require a person whatever local policy says? Does the verification bar differ when the counterparty is a government body or a critical-infrastructure operator? These are policy questions as much as engineering ones.</p>
+
+<div class="callout">
+  <p><strong>Where should agent identity come from, and what should AMAP accept as proof of it?</strong> If you're working on agent identity, we'd like to hear from you. See <a href="get-involved.html">Get involved</a>.</p>
+</div>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-row">
+    <p>AMAP is an open specification, published under the Apache License 2.0. It was originated by Proofpoint and is open to every implementer.</p>
+    <ul class="footer-links"><li><a href="layers.html">MCP, A2A and AMAP</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="https://github.com/proofpoint/amap-spec">Specification on GitHub</a></li></ul>
+  </div>
+</footer>
+<script src="assets/site.js"></script>
+</body>
+</html>

@@ -10,7 +10,11 @@ conformance against the fixtures here rather than against each other.
 are about to write code that *does* something with mail, you are in the wrong
 repo. What lives here is the Internet-Draft (`draft/draft-amap.xml`, the
 canonical prose), `schemas/`, `fixtures/`, the `dist/` renderings, the frozen
-`spec/contract.md`, and the peer-origin profile `spec/peer-origin.md`.
+`spec/contract.md`, the peer-origin profile `spec/peer-origin.md`, and the
+explainer website: source in `site/`, generated into `docs/` (GitHub Pages
+serves `docs/` from `main`). **Never edit `docs/` by hand**; run
+`python3 site/build_site.py`, and `--check` to prove they agree. The site
+follows the publication posture below: it names only what is public.
 
 **It is not a mail transport, not agent-to-agent RPC, and not a policy
 language** — README's "What AMAP is not" says this normatively; keep it true.
@@ -34,7 +38,10 @@ language** — README's "What AMAP is not" says this normatively; keep it true.
   CLEAR (operator-confirmed 2026-09-24): `ipr="trust200902"` (settled
   2026-09-21, the full BCP 78 grant), `submissionType="independent"`, and an
   email for each author. The draft is **ready for submission and has not been
-  submitted.** Any future change to those values, to the author list, or to a
+  submitted.** **PENDING (2026-10-02):** the editor's review set
+  `submissionType="IETF"` and `category="std"`; those await the owner's
+  confirmation with counsel (`draft/README.md`, "Counsel gates"). Do not
+  submit, and do not change them either way, until that is recorded. Any future change to those values, to the author list, or to a
   BCP 79 disclosure is a rights statement, not an editorial choice: do not
   make one on your own initiative. The history is in `draft/README.md` under
   "Counsel gates". Note the draft ASSERTS it is submitted under BCP 78/79,
@@ -49,8 +56,8 @@ language** — README's "What AMAP is not" says this normatively; keep it true.
 |---|---|
 | Contract version | **v3.1.0 DRAFT** (in the draft; also the frozen `spec/contract.md` title) |
 | Wire `contract_version` | **`"2"`** — unchanged by 3.1.0, which is additive |
-| `README.md` claims | **3.1.0 DRAFT, 89 fixtures** — matches the gate |
-| Actual gate result | **89 fixtures, 0 unexpected** (34 valid + 55 invalid) |
+| `README.md` claims | **3.1.0 DRAFT, 119 fixtures** — matches the gate |
+| Actual gate result | **119 fixtures, 0 unexpected**, plus the signed peer cases under `fixtures/peer-signed/` (§5 revision s5-r4, proposed) |
 | Canonical prose | `draft/draft-amap.xml`, hand-edited; `make -C draft` renders and gates |
 
 The contract's own SemVer and the wire major are **two different axes** as of
@@ -71,10 +78,12 @@ The draft's JSON is never hand-copied. `draft/tools/sync_sources.py`
 `<sourcecode>` block, rewriting only that CDATA body and folding per RFC 8792.
 xml2rfc's own `src=` can't do it: 3.34.1 crashes on non-ASCII UTF-8 in a src
 file. Gates in `make -C draft`:
+- a byte comparison: `dist/draft-rapp-amap-00.xml` must equal the source (never edit `dist/`);
 - `sync_sources.py`: blocks equal disk, and no schema or listed fixture lacks a block;
 - `check_render.py`: the same, plus roster counts, docName, no host paths;
-- `check_coverage.py`: every RFC 2119 sentence in sections 3-10 and the peer
-  directory is classified in `draft/coverage.toml`;
+- `check_coverage.py`: every RFC 2119 sentence in the protocol sections
+  (Architecture through Versioning and Conformance, including the Peer
+  Directory and the Fleet Roster) is classified in `draft/coverage.toml`;
 - the fixture gate.
 
 `normdiff.py` (`make -C draft normdiff BASE=<ref>`) lists the normative
@@ -101,7 +110,9 @@ python3 fixtures/validate.py
 
 Stdlib only — no `jsonschema` dependency, no network, **no counterpart
 present**. Exit 0 iff every `valid/` fixture passes and every `invalid/` one
-fails. Verified: `89 fixtures checked, 0 unexpected.`
+fails. Verified: `119 fixtures checked, 0 unexpected.` It then runs
+`fixtures/peer-signed/check_cases.py` (the signed peer cases, MIME cases and
+RFC 8032 vectors), which must also report 0 unexpected.
 
 There is no pytest suite in this repo. (A `.pytest_cache/` directory exists; it
 is a leftover, not a suite.)
@@ -320,7 +331,7 @@ not defects:
   to the draft.
 
 Cleared 2026-09-24: the draft rendered six of the seven schemas; the
-peer-directory schema is now Appendix G. The spec was reconciled into the draft
+peer-directory schema is now in its own appendix (Peer-Directory Schema). The spec was reconciled into the draft
 before being frozen: 8 spec sentences were deliberately left out, and 27
 draft-only sentences were checked against the spec and schemas and found
 consistent.
