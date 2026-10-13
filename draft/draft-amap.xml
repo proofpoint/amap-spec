@@ -4393,8 +4393,9 @@ on it (<xref target="sec-4-1"/>). <tt>&lt;name&gt;</tt> is pinned as a stable Co
 chosen once, unchanged by any rename of the Connector's repository,
 package, or deployment, and opaque to the Runtime that reads it; the
 wording it replaced ("a Connector or deployment name") permitted a
-repository name to leak into a wire-visible path. The first id is
-<tt>claude-code</tt>. One normative clarification sits beside it: an outcome
+repository name to leak into a wire-visible path. The reference Claude
+Code Connector chose <tt>claude-code</tt> as its id; ids are chosen by each
+Connector, and this document neither lists nor registers them. One normative clarification sits beside it: an outcome
 written there is a claim by the receiving side, never proof of delivery
 or of non-delivery, and the Runtime's own delivery record is
 authoritative over it (<xref target="sec-11-15"/>). There is deliberately no inbound
@@ -4410,6 +4411,23 @@ members. The profile's prose is the companion document
 <tt>spec/peer-origin.md</tt> (v3.1.0 DRAFT).</t>
           </li>
           <li>
+            <t><strong>The Peer Directory.</strong> A Runtime may publish a per-instance
+projection of the authorisation graph, <tt>directory.json</tt>, at the Agent's
+Namespace root (<xref target="sec-directory"/>, schema in <xref target="app-directory"/>), so that
+a Connector can learn which peers it may address without the host rendering a
+snapshot onto an Agent-writable mount that goes stale whenever the fleet
+changes. It is advisory and never authoritative, and a Runtime never reads it
+back as authorisation, which is what stops it decaying into an allowlist the
+Agent can see. The Namespace root gains a Runtime-owned posture for
+Runtime-written files: the file sits beside the lanes rather than inside one,
+because it spans both. Additive: a new optional artifact, a new schema and
+seven fixtures (4 valid, 3 invalid); no existing schema or fixture changes,
+and the wire <tt>contract_version</tt> stays <tt>"2"</tt>.</t>
+            <t><em>Restored 2026-10-05.</em> This entry was in the versioning record this
+document was reconciled against and was lost in the reconciliation, along
+with its fixtures from the count below.</t>
+          </li>
+          <li>
             <t><strong>Fixtures: 75 total (27 valid, 48 invalid), up from 58.</strong> 16 <tt>peer-*</tt>
 fixtures were added (6 valid, 10 invalid), covering a minimal notice, a
 reply, the exposure stamp asserted both ways, a clean attachment
@@ -4423,6 +4441,10 @@ applies the <tt>content_ref</tt> post-check to it. Three existing fixtures had
 example strings normalised to <tt>example.*</tt> identities (one free-text body,
 two addresses in injection examples); each stays valid or invalid for the
 same reason as before, and no schema changed.</t>
+            <t><strong>Correction (2026-10-05).</strong> The count above omits the seven
+<tt>directory-*</tt> fixtures (4 valid, 3 invalid) added with the Peer Directory.
+With them and the fleet roster's seven, version 3.1.0 has 89 fixtures (34
+valid, 55 invalid).</t>
           </li>
         </ul>
       </section>
