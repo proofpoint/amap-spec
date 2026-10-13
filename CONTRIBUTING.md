@@ -29,7 +29,7 @@ Run the gate. It is stdlib-only, needs no network, and takes under a second:
 ```sh
 python3 fixtures/validate.py
 # 119 fixtures checked, 0 unexpected.
-# 92 signed peer cases and 5 MIME cases checked, RFC 8032 vectors ok, 0 unexpected.
+# 112 signed peer cases and 9 MIME cases checked, RFC 8032 vectors ok, 0 unexpected.
 ```
 
 If you touched `schemas/`, `fixtures/` or the draft, also run the draft build.
