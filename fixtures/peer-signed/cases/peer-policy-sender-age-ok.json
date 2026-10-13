@@ -1,0 +1,37 @@
+{
+  "description": "The same policy; sender_since nine days ago.",
+  "receiver_patch": {
+    "min_sender_age_s": 86400
+  },
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <Jt_V3lv6nTS1dC6O_Un5rA@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiJKdF9WM2x2Nm5UUzFkQzZPX1VuNXJBIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W10sInNlbmRlcl9zaW5jZSI6IjIwMjYtMDktMzBUMDg6MDA6MDBaIn0; b=M_k6V1Vl6UuekftZmMzic6q1AMydWLgCoWgjM45y2blxLxdg8B5ufXHNe4r8wmprzibBQF79IxutrIyOZRKGCA"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "peer",
+        "publish": {
+          "id": "Jt_V3lv6nTS1dC6O_Un5rA",
+          "from": "planner@host-a.fleet.example",
+          "subject": "Run the conformance suite",
+          "body_text": "Please run the conformance suite on main and report the result.\n",
+          "attachments": []
+        }
+      }
+    }
+  ]
+}

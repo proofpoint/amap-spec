@@ -1,0 +1,35 @@
+{
+  "description": "A public key that is not a canonical encoding of a curve point (y = p + 1): refused at load, a SEPARATE gate from verification. A bare Ed25519 backend may construct it; the key loader must not.",
+  "receiver_patch": {
+    "peers": [
+      {
+        "name": "host-a",
+        "runtime": "amap.router@host-a.fleet.example",
+        "domains": [
+          "host-a.fleet.example"
+        ],
+        "keys": [
+          {
+            "key_id": "test1",
+            "public_key": "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f"
+          }
+        ]
+      },
+      {
+        "name": "host-b",
+        "runtime": "amap.router@host-b.fleet.example",
+        "domains": [
+          "host-b.fleet.example"
+        ],
+        "keys": [
+          {
+            "key_id": "test3",
+            "public_key": "fc51cd8e6218a1a38da47ed00230f0580816ed13ba3303ac5deb911548908025"
+          }
+        ]
+      }
+    ]
+  },
+  "config_error": "key_not_canonical",
+  "steps": []
+}

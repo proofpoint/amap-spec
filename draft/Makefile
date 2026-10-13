@@ -81,7 +81,7 @@ check: $(OUT).xml
 	cd $(REPO) && python3 draft/tools/sync_sources.py
 	cd $(REPO) && python3 draft/tools/check_render.py $(SRC)
 	cd $(REPO) && python3 draft/tools/check_coverage.py
-	cd $(REPO) && python3 fixtures/validate.py | tail -1
+	cd $(REPO) && out=$$(python3 fixtures/validate.py) || { echo "$$out"; exit 1; }; echo "$$out" | grep ' checked'
 
 # The normative diff: every RFC 2119 sentence added, removed or changed
 # between BASE (a git ref, default origin/main) and the working tree. CI posts

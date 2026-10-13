@@ -1,0 +1,28 @@
+{
+  "description": "v is the token 1.0: a JSON Schema validator may call it an integer, but the statement's numbers are lexical integers.",
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <m9iLDo-hOL3SFvgYtea4mA@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLjAsImtleV9pZCI6InRlc3QxIiwia2luZCI6InBlZXIiLCJpZCI6Im05aUxEby1oT0wzU0Z2Z1l0ZWE0bUEiLCJmcm9tIjoicGxhbm5lckBob3N0LWEuZmxlZXQuZXhhbXBsZSIsInRvIjoiYnVpbGRlckBob3N0LWMuZmxlZXQuZXhhbXBsZSIsInRzIjoiMjAyNi0xMC0wOVQxNTowMDowMFoiLCJzdWJqZWN0IjoiUnVuIHRoZSBjb25mb3JtYW5jZSBzdWl0ZSIsImJvZHlfc2hhMjU2IjoiYmE5NjIwYWY5MmNkNzMzZGZjZjE2NjdiZTFlMzE0Y2IzNzYyOGZmNWJkOGZlY2IyMTgwMzc4ZjEyZThkNjcwNSIsImF0dGFjaG1lbnRzIjpbXX0; b=-8-5Vj1cjdmHEVEpYDy0cJYA3IIir7Tdgf7GIFVtpdYu32-_vxJjuZ8C1spg-BTk49mV6fK8DXwrHTQpMRIrAw"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "mail",
+        "cause": "statement_json"
+      }
+    }
+  ]
+}

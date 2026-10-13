@@ -1,0 +1,34 @@
+{
+  "description": "charset=utf-8, but the octets are Latin-1 (invalid UTF-8).",
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <DRmSzqWtKo925xuWA9lWCQ@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiJEUm1TenFXdEtvOTI1eHVXQTlsV0NRIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImU4ZWMyODEzOWFlNTAzYzdkZjc2ZjRjYmVhZDU5MjhjNjk0ODcyM2Q2OTE4NmFkNTRmNDRlNGNiMjMyMTBhMDAiLCJhdHRhY2htZW50cyI6W119; b=y2yUanWbjyhtyL5D4YkJsSHyUKv5W9dTmjMeQXawoMKJIPFU0pWes1-LeH0AiQkmkDFKWEjJkIMPa1Qtx3ISAA"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UulzdW3pIGF0dGFjaGVkLgo="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "mail",
+        "cause": "body_charset",
+        "control": {
+          "outcome": "demoted",
+          "cause": "body_charset",
+          "to": "amap.router@host-a.fleet.example",
+          "about": "DRmSzqWtKo925xuWA9lWCQ"
+        }
+      }
+    }
+  ]
+}

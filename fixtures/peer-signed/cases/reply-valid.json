@@ -1,0 +1,46 @@
+{
+  "description": "A reply to a peer message this runtime issued from builder to reviewer@host-a: the record binds local=builder and remote=reviewer@host-a, so the reverse edge is permitted with no declared edge.",
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <EfLJUNUXKBEC2uHZVBX5Tg@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiJFZkxKVU5VWEtCRUMydUhaVkJYNVRnIiwiZnJvbSI6InJldmlld2VyQGhvc3QtYS5mbGVldC5leGFtcGxlIiwidG8iOiJidWlsZGVyQGhvc3QtYy5mbGVldC5leGFtcGxlIiwidHMiOiIyMDI2LTEwLTA5VDE1OjAwOjAwWiIsInN1YmplY3QiOiJSZTogUmV2aWV3IHRoZSBnYXRlIG91dHB1dCIsImJvZHlfc2hhMjU2IjoiNWEyMzhiOWFjY2YxZDU3MDdhMzk3ZGE5M2EzMmE3YmQ5ODZjYTVlYTExNzBmMjg4M2I2YzlhMDZjMDZjZjhhNyIsImF0dGFjaG1lbnRzIjpbeyJzaGEyNTYiOiJlYTljMjczYzBhM2I5NzZmMmUwMTI4NDhmOWMyNzg5MjgzM2RlMmM5ZjZmZTRlNjA3ZDljMGU4ZGQxZjhjZTEyIiwic2l6ZV9ieXRlcyI6MzcsImZpbGVuYW1lIjoiZ2F0ZS5sb2ciLCJtZWRpYV90eXBlIjoidGV4dC9wbGFpbiJ9XSwiaW5fcmVwbHlfdG8iOiJjM2E5ZTBkNDdmMWI0ZTJhOGQ2YzViMGE5ZjhlN2Q2MSJ9; b=7sc13OOdJkX0-MlYt91JPUnx9hkqyaekvdFAiKhLkT6kDQ0F9GbKE5m4nEpM59hZ7XFnaz24tJvVrgzkkPHZCw"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UmV2aWV3ZWQ7IGxvZyBhdHRhY2hlZC4K"
+        },
+        "attachments": [
+          {
+            "octets_b64": "Y29uZm9ybWFuY2Ugc3VpdGU6IGFsbCBjaGVja3MgcGFzc2VkCg=="
+          }
+        ]
+      },
+      "expect": {
+        "outcome": "peer",
+        "publish": {
+          "id": "EfLJUNUXKBEC2uHZVBX5Tg",
+          "from": "reviewer@host-a.fleet.example",
+          "subject": "Re: Review the gate output",
+          "body_text": "Reviewed; log attached.\n",
+          "attachments": [
+            {
+              "filename": "gate.log",
+              "media_type": "text/plain",
+              "size_bytes": 37,
+              "sha256": "ea9c273c0a3b976f2e012848f9c27892833de2c9f6fe4e607d9c0e8dd1f8ce12"
+            }
+          ],
+          "in_reply_to": "c3a9e0d47f1b4e2a8d6c5b0a9f8e7d61"
+        }
+      }
+    }
+  ]
+}

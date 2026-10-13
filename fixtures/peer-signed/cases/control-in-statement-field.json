@@ -1,0 +1,26 @@
+{
+  "description": "A control notice carried in AMAP-Peer-Statement: it fails the peer-statement schema (kind) and is treated as a failed statement, without a control notice in return, so control traffic cannot loop.",
+  "receiver": "receiver-host-a.json",
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <NiwLm5WcEqlL9fcH5fKRcQ@host-c.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test3; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MyIsImtpbmQiOiJjb250cm9sIiwiaWQiOiJOaXdMbTVXY0VxbEw5ZmNINWZLUmNRIiwiZnJvbSI6ImFtYXAucm91dGVyQGhvc3QtYy5mbGVldC5leGFtcGxlIiwidG8iOiJhbWFwLnJvdXRlckBob3N0LWEuZmxlZXQuZXhhbXBsZSIsInRzIjoiMjAyNi0xMC0wOVQxNToxMDowNVoiLCJhYm91dCI6IjRmMGM5YTJlN2IxZDRjODNhNmU1ZjJiOWQwYzE3ZTQ4Iiwib3V0Y29tZSI6InJlZnVzZWQiLCJjYXVzZSI6Im5vX2VkZ2UifQ; b=rYXwFf0x1tABZnqZN2WFDq6Q4VMh1kduDa-Ak8srU0-s6KzQL4Fm4aAgVcHI84CbLxTtOBc8Ve80VB5wc8WsBQ"
+          ]
+        ],
+        "body": null,
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "mail",
+        "cause": "statement_schema"
+      }
+    }
+  ]
+}

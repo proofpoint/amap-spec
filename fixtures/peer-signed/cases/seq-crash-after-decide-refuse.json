@@ -1,0 +1,75 @@
+{
+  "description": "The refusal is decided and persisted, then the receiver crashes before the control notice is durably queued. Recovery resumes the recorded disposition: it sends the pending notice once and never publishes. A later re-signed copy of the same id is a check-12 duplicate.",
+  "steps": [
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <Wz3TCTAz-2Ab8nmQ31Pvkg@host-b.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test3; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MyIsImtpbmQiOiJwZWVyIiwiaWQiOiJXejNUQ1RBei0yQWI4bm1RMzFQdmtnIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1iLmZsZWV0LmV4YW1wbGUiLCJ0byI6InJldmlld2VyQGhvc3QtYy5mbGVldC5leGFtcGxlIiwidHMiOiIyMDI2LTEwLTA5VDE1OjAwOjAwWiIsInN1YmplY3QiOiJSdW4gdGhlIGNvbmZvcm1hbmNlIHN1aXRlIiwiYm9keV9zaGEyNTYiOiJiYTk2MjBhZjkyY2Q3MzNkZmNmMTY2N2JlMWUzMTRjYjM3NjI4ZmY1YmQ4ZmVjYjIxODAzNzhmMTJlOGQ2NzA1IiwiYXR0YWNobWVudHMiOltdfQ; b=A2vqRxTMrXiwh-0Q0kuOmKKzEh4Ur2OjASPsBNh7SHNV86ESjejj_03mqfgJj5ABSH2xDNzdlwNlQ1EaAoLdCg"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "crash": "after_decide",
+      "expect": {
+        "outcome": "crashed"
+      }
+    },
+    {
+      "event": "recover",
+      "expect": {
+        "recovered": [
+          {
+            "id": "Wz3TCTAz-2Ab8nmQ31Pvkg",
+            "outcome": "refuse",
+            "cause": "no_edge",
+            "control": {
+              "outcome": "refused",
+              "cause": "no_edge",
+              "to": "amap.router@host-b.fleet.example",
+              "about": "Wz3TCTAz-2Ab8nmQ31Pvkg"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <Wz3TCTAz-2Ab8nmQ31Pvkg@host-b.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test3; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MyIsImtpbmQiOiJwZWVyIiwiaWQiOiJXejNUQ1RBei0yQWI4bm1RMzFQdmtnIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1iLmZsZWV0LmV4YW1wbGUiLCJ0byI6InJldmlld2VyQGhvc3QtYy5mbGVldC5leGFtcGxlIiwidHMiOiIyMDI2LTEwLTA5VDE1OjA1OjAwWiIsInN1YmplY3QiOiJSdW4gdGhlIGNvbmZvcm1hbmNlIHN1aXRlIiwiYm9keV9zaGEyNTYiOiJiYTk2MjBhZjkyY2Q3MzNkZmNmMTY2N2JlMWUzMTRjYjM3NjI4ZmY1YmQ4ZmVjYjIxODAzNzhmMTJlOGQ2NzA1IiwiYXR0YWNobWVudHMiOltdfQ; b=RaNjg6FTYDfKmE-A8f5wrkr4EvmoWRkJiwum-lP3km0y6gPjXREd49MNoCcxxY9fSLD6oFGlgUo-3VqC8vs3DQ"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "drop",
+        "cause": "duplicate",
+        "control": {
+          "outcome": "dropped",
+          "cause": "duplicate",
+          "to": "amap.router@host-b.fleet.example",
+          "about": "Wz3TCTAz-2Ab8nmQ31Pvkg"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AMAP at the IETF · AMAP</title>
+<meta name="description" content="Why AMAP is being brought to the IETF: the problem, why it may need a standard, a proposed scope, related IETF work, and the open questions we want the community&#x27;s help with.">
+<link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap header-row">
+    <a class="brand" href="index.html" aria-label="AMAP home">
+      <img src="assets/mark.svg" alt="" width="28" height="28">
+      <span class="brand-name">AMAP</span>
+      <span class="brand-sub">Agent Mailbox Access Protocol</span>
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <nav id="site-nav" class="site-nav" aria-label="Main">
+      <ul><li><a href="index.html">Home</a></li><li><a href="ietf.html" aria-current="page">At the IETF</a></li><li><a href="why.html">Why AMAP</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="identity.html">Identity</a></li><li><a href="implementers.html">Implementers</a></li><li><a href="validator.html">Validator</a></li><li><a href="status.html">Status</a></li><li><a href="faq.html">FAQ</a></li><li><a href="get-involved.html">Get involved</a></li></ul>
+    </nav>
+  </div>
+</header>
+<main id="main" class="wrap">
+<section class="hero">
+  <p class="eyebrow">For the IETF community</p>
+  <h1>AMAP at the IETF</h1>
+  <p class="lede">Agents are starting to take part in email: reading it, drafting it, and increasingly sending it. We think the way they do so safely, and the way their mail can be trusted across organisations, may benefit from open standards. AMAP is an early individual Internet-Draft that proposes one piece of that. We're bringing it to the IETF for review, for collaborators, and to find out whether there is interest in working on it together.</p>
+  <div class="cta-row">
+    <a class="btn primary" href="#take-part">How to take part</a>
+    <a class="btn secondary" href="https://github.com/proofpoint/amap-spec/tree/main/dist">Read the draft</a>
+  </div>
+</section>
+
+<div class="callout">
+  <p><span class="tag open">Where this is</span> The draft is an early individual submission. It has not yet been submitted; once it is, it will be listed on the IETF Datatracker. It reflects one team's thinking and one reference implementation of each side, and nothing in it is settled. We expect the community to change it, including in ways we haven't anticipated.</p>
+</div>
+
+<h2>The problem</h2>
+<p>Email is the channel organisations already share. It crosses organisational boundaries without prior arrangement, and much of their work is requested, approved and recorded in it. Agents that do that work will need to take part in it.</p>
+<p>Today, the common way to give an agent email is to give it a mailbox: credentials it can use, and an identity it sends as. In email, authority is carried by text, and a pretext is also text. An agent holding a mailbox can be talked into acting, at machine speed, under a legitimate identity. Its recipients have no way to tell which agent sent a message, or on whose authority.</p>
+
+<h2>Why now</h2>
+<ul>
+  <li>Platforms have begun provisioning agents with mailboxes of their own. For example, Microsoft's Agent 365 preview gives an agent an identity and a mailbox (<a href="https://learn.microsoft.com/en-us/microsoft-agent-365/developer/identity">Microsoft Learn</a>), and Meta has said its Muse agent "will have its own email address" (<a href="https://www.meta.com/blog/meta-connect-2026-everything-we-announced/">Meta, September 2026</a>).</li>
+  <li>Agent-security work so far has concentrated on the agent's runtime and its tool calls. The agent's correspondence with people and organisations it has no prior relationship with has had much less attention.</li>
+  <li>Interoperable conventions are easier to agree before deployments diverge than after.</li>
+</ul>
+
+<h2>Why it may need a standard</h2>
+<p>Two interoperability problems, and they are different:</p>
+<div class="grid two">
+  <div class="card trust">
+    <h3>Inside an organisation</h3>
+    <p>The agent and the trusted component that holds its mail authority are built by different parties: agent platforms on one side, mail and security infrastructure on the other. If each pairing needs its own integration, safe designs don't spread. AMAP proposes a common boundary between them, which either side can implement and test without the other present.</p>
+  </div>
+  <div class="card agent">
+    <h3>Between organisations</h3>
+    <p>When an agent's mail arrives elsewhere, the recipient needs to know which agent sent it, for whom, and what that should be taken to mean. Domain authentication (SPF, DKIM, DMARC) proves the sending domain, not the agent. That gap sits squarely in the email-authentication work the IETF already does. AMAP doesn't solve it; it identifies it.</p>
+  </div>
+</div>
+
+<h2>The question we expect first</h2>
+<div class="callout caution">
+  <p><strong>"AMAP is a local interface over a filesystem, and it adds nothing to the mail between organisations. Why is that IETF work?"</strong></p>
+  <p>It's a fair question, and we'd like the community's view rather than to argue it. Our reasons for thinking parts of it may belong here:</p>
+  <ul>
+    <li>The boundary is where independently built components meet. The IETF has specified interfaces between independently built mail components before, such as LMTP (<a href="https://www.rfc-editor.org/rfc/rfc2033">RFC 2033</a>) for local delivery.</li>
+    <li>It doesn't stay local. The draft's companion peer profile carries signed statements between runtimes on different hosts, naming which agent sent a message.</li>
+    <li>The cross-organisation piece, agent sender identity in email, is plainly in the IETF's territory, and it depends on what the local boundary guarantees.</li>
+  </ul>
+  <p>It may turn out that the IETF work is the cross-organisation identity, and the local boundary is better described as an applicability statement or documented elsewhere. That's one of the outcomes we want to discuss.</p>
+</div>
+
+<h2>A proposed scope, for discussion</h2>
+<div class="grid two">
+  <div class="card">
+    <h3>Possibly in scope</h3>
+    <ul>
+      <li><strong>The boundary specification.</strong> The documents and filesystem obligations between an untrusted agent connector and a trusted mail runtime, with conformance fixtures. This is the current draft.</li>
+      <li><strong>Agent sender identity in email.</strong> What a recipient can verify about which agent sent a message, and on whose behalf, without prior arrangement. Not yet drafted.</li>
+      <li><strong>Guidance for deployers.</strong> How agents can take part in email workflows within an organisation's existing security, retention and approval requirements.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Out of scope</h3>
+    <ul>
+      <li>Any change to SMTP, IMAP or the message format. Counterparties receive ordinary email.</li>
+      <li>A new mail transport, or agent-to-agent RPC.</li>
+      <li>A policy language, or how a runtime decides what to allow.</li>
+      <li>Detecting prompt injection, or grading how well a runtime screens mail.</li>
+      <li>How agents themselves are built or sandboxed.</li>
+    </ul>
+  </div>
+</div>
+
+<h2 id="related">Related IETF work</h2>
+<p>AMAP should build on existing work rather than compete with it. This is where we think it touches; we'd welcome corrections.</p>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Work</th><th>How it relates</th></tr></thead>
+  <tbody>
+    <tr><td>SMTP (<a href="https://www.rfc-editor.org/rfc/rfc5321">RFC 5321</a>), message format (<a href="https://www.rfc-editor.org/rfc/rfc5322">RFC 5322</a>), IMAP (<a href="https://www.rfc-editor.org/rfc/rfc9051">RFC 9051</a>), JMAP (<a href="https://www.rfc-editor.org/rfc/rfc8620">RFC 8620</a>)</td><td>Unchanged. A runtime uses them to send and receive; AMAP sits behind it, on the agent's side.</td></tr>
+    <tr><td>DKIM (<a href="https://www.rfc-editor.org/rfc/rfc6376">RFC 6376</a>), DMARC (<a href="https://www.rfc-editor.org/rfc/rfc7489">RFC 7489</a>, being revised), ARC (<a href="https://www.rfc-editor.org/rfc/rfc8617">RFC 8617</a>)</td><td>They authenticate the sending domain. Agent sender identity would sit alongside them, and should reuse their deployment model where it can.</td></tr>
+    <tr><td><a href="https://datatracker.ietf.org/wg/wimse/about/">WIMSE</a>, OAuth token exchange (<a href="https://www.rfc-editor.org/rfc/rfc8693">RFC 8693</a>)</td><td>Workload identity and delegation: candidate foundations for who an agent is and on whose behalf it acts.</td></tr>
+    <tr><td>HTTP Message Signatures (<a href="https://www.rfc-editor.org/rfc/rfc9421">RFC 9421</a>)</td><td>Signed requests from automated agents on the web. A possible model for signed agent statements.</td></tr>
+    <tr><td><a href="https://datatracker.ietf.org/wg/scitt/about/">SCITT</a></td><td>Transparent, append-only statements: a possible model for records of what an agent was asked to do, and did, that others can rely on.</td></tr>
+    <tr><td>RATS (<a href="https://www.rfc-editor.org/rfc/rfc9334">RFC 9334</a>)</td><td>Remote attestation. The draft currently uses the word "attestation" for a sender-identity stamp on a result, which collides with RATS usage. We expect to rename it.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Open questions for the community</h2>
+<ol class="steps">
+  <li><strong>What, if anything, should the IETF take on:</strong> the local boundary, agent sender identity in email, guidance for deployers, or some combination? And in which area?</li>
+  <li><strong>What should a recipient be able to verify</strong> about an agent's message, and what should it be taken to mean?</li>
+  <li><strong>Which values should IANA register?</strong> The draft has several open vocabularies, such as result reason codes, attachment dispositions and provenance labels, that are natural registry candidates.</li>
+  <li><strong>Should the wire version start again at 1</strong> if the work is adopted? The draft's version reflects work before it reached the IETF, not a claim that the design is settled.</li>
+  <li><strong>What's missing from the trust model?</strong> The most useful review is an attack it doesn't account for, or an obligation that can't be met.</li>
+</ol>
+
+<h2 id="take-part">How to take part</h2>
+<div class="grid two">
+  <div class="card">
+    <h3>Read and comment</h3>
+    <p>Read <a href="https://github.com/proofpoint/amap-spec/tree/main/dist">the draft</a> and raise questions in the <a href="https://github.com/proofpoint/amap-spec/issues">amap-spec issues</a>. An IETF mailing list for discussion is planned; it will be announced here, and will then be the place for this conversation.</p>
+  </div>
+  <div class="card">
+    <h3>Implement it</h3>
+    <p>A reference runtime, a reference connector and public conformance fixtures exist, so an independent implementation of either side can be tested today. See <a href="implementers.html">For implementers</a> and the <a href="validator.html">validator</a>.</p>
+  </div>
+  <div class="card">
+    <h3>Bring a counterparty</h3>
+    <p>There is no deployment across independent organisations yet. We're looking for partners willing to try one, including with a counterparty who only uses ordinary email.</p>
+  </div>
+  <div class="card">
+    <h3>Support the work</h3>
+    <p>If your organisation would take part in a BoF, or in a working group if one forms, please tell us in the <a href="https://github.com/proofpoint/amap-spec/issues">issues</a>. We'll list organisations here only with their permission.</p>
+  </div>
+</div>
+
+<h2>Organisations taking part</h2>
+<p>None are listed yet. AMAP was originated by Proofpoint, and the authors of the draft work there. Bringing it to the IETF is how we intend change control to move to an open process.</p>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-row">
+    <p>AMAP is an open specification, published under the Apache License 2.0. It was originated by Proofpoint and is open to every implementer.</p>
+    <ul class="footer-links"><li><a href="layers.html">MCP, A2A and AMAP</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="https://github.com/proofpoint/amap-spec">Specification on GitHub</a></li></ul>
+  </div>
+</footer>
+<script src="assets/site.js"></script>
+</body>
+</html>

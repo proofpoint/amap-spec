@@ -4,6 +4,10 @@ A versioned wire contract for sandboxed AI agents to participate in email
 workflows through a trusted runtime that **does not trust the agent or its
 connector**.
 
+**New to AMAP?** Start with the website, [proofpoint.github.io/amap-spec](https://proofpoint.github.io/amap-spec/):
+why AMAP exists, how it works, notes for implementers, and an in-browser
+validator. Its source is `site/`; `docs/` is generated from it.
+
 AMAP separates **participation in a workflow** from **authority to act**. It is
 carried over a filesystem namespace and is deliberately independent of either
 implementation: a trusted mail runtime implements one half, an untrusted
@@ -13,7 +17,7 @@ people and versioned independently.
 **Current version: 3.1.0 (DRAFT)** (wire `contract_version` `"2"` - the contract's
 own SemVer and the wire major track different things as of 3.0.0; see
 the draft's Versioning and Conformance section).
-Conformance gate: **89 fixtures**, 0 unexpected.
+Conformance gate: **119 fixtures**, 0 unexpected, plus the signed peer cases in `fixtures/peer-signed/`.
 
 ## Motivation
 
