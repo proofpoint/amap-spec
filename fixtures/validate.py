@@ -10,15 +10,16 @@ no counterpart present. Exit 0 iff all expectations hold.
 Fixture -> schema by filename prefix: notice-* -> deliver-notice,
 request-* -> submit-request, result-* -> result, identity-* -> binding-record, directory-* -> directory, roster-* -> roster,
 message-* -> inbound-message (v2.1.0, spec/contract.md §5 body-spool path),
-peer-* -> peer-notice (v3.1.0 DRAFT, peer-origin profile, spec/peer-origin.md:
+peer-* -> peer-notice (v3.1.0, the draft's peer-origin profile, "The Peer Tree":
 the `<agent-id>/peer/` tree; same shape as deliver-notice with kind/mailbox
 pinned to "peer", from pinned to a bare addr-spec, ids pinned to the notice_id
 charset, plus message.sender_exposure),
-statement-* -> peer-statement (v3.1.0 DRAFT, peer-origin profile §5: the signed
-cross-host statement, CLOSED at every level; the signed cases that bind it to
+statement-* -> peer-statement (v3.1.0, peer-origin profile, "Peer Traffic
+Between Hosts": the signed cross-host statement, CLOSED at every level; the
+signed cases that bind it to
 a message live in peer-signed/ and are checked by peer-signed/check_cases.py,
 which this gate runs after the fixtures),
-control-* -> peer-control (v3.1.0 DRAFT, peer-origin profile §5.8: the signed
+control-* -> peer-control (v3.1.0, peer-origin profile, "Control Notices": the signed
 runtime-to-runtime control notice, CLOSED at every level).
 
 Supported schema keywords (hand-rolled subset, all standard JSON Schema so a
@@ -109,7 +110,8 @@ validator can see:
     bypassed upstream, the runtime MUST still reject or strip CR/LF/NUL
     before composing the outbound message — a runtime-side belt-and-braces
     obligation, not something this document-level gate re-checks.
-  - peer-origin profile (v3.1.0 DRAFT, spec/peer-origin.md) — all operational,
+  - peer-origin profile (v3.1.0; the draft's "The Peer-Origin Profile
+    (Optional)", formerly spec/peer-origin.md, now frozen) — all operational,
     none visible to a document validator:
     - write-authority partition: no component that admits messages from a
       transport not restricted to authorised peer senders holds write
@@ -352,7 +354,7 @@ def check_document(fixture_name: str, doc) -> list[str]:
     so running the result-only post-check there would misfire.
 
     The content_ref-index post-check (v3.0.0) is gated on `notice-`,
-    `message-` and (v3.1.0 DRAFT) `peer-`, the artifacts that carry a
+    `message-` and (v3.1.0) `peer-`, the artifacts that carry a
     `content_ref`-bearing descriptor keyed on a document-level `notice_id`.
     Confinement is per tree (contract.md §2 tree rules): the check binds the
     ref to the enclosing document; which `notices/` directory it resolves in
@@ -392,7 +394,8 @@ def main() -> int:
     for fail in failures:
         print("  FAIL:", fail)
 
-    # v3.1.0 DRAFT, peer-origin §5: the signed cross-host statement cases.
+    # v3.1.0, peer-origin profile, "Peer Traffic Between Hosts": the signed
+    # cross-host statement cases.
     # Not counted above: they are candidates with expected outcomes, not
     # documents with a pass/fail schema verdict.
     sys.path.insert(0, str(HERE / "peer-signed"))

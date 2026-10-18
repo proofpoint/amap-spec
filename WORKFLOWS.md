@@ -17,9 +17,9 @@ hand-edited, rendered to `dist/`, and generated from nothing. `schemas/` and
 `fixtures/` stay canonical for what a machine can check. `spec/contract.md` is
 **frozen**: kept as the record of the text the draft was reconciled against,
 never edited (its header maps its sections to the draft's). The peer-origin
-profile, `spec/peer-origin.md`, is **not** frozen: it is v3.1.0 DRAFT, the
-Internet-Draft carries only its schema, and it stays the canonical prose for
-the peer lane until it leaves DRAFT.
+profile's prose now lives in the draft too, as "The Peer-Origin Profile
+(Optional)", which is canonical for the peer lane; `spec/peer-origin.md` is
+**frozen** as of the text the draft took in, and never edited.
 
 The draft never contains hand-copied JSON. Every schema, listed fixture and
 illustrative example it shows is written into it from the file on disk by
@@ -55,7 +55,7 @@ vocabulary value, or a tightened rule.
    and `dist/` together.
 5. **Classify each new normative sentence** in `draft/coverage.toml`: which
    fixtures exercise it, or why none can (operational, informative).
-6. **Record it in the draft's Change Log.**
+6. **Record it in the draft's Historical Background appendix.**
 
 **What catches you:**
 - `sync_sources.py`: a schema or listed fixture changed and the draft's copy of
@@ -86,14 +86,15 @@ and a change made there is the change. Do not revert, reword or re-derive it.
 4. **Classify the new or reworded sentences** in `draft/coverage.toml`.
 5. **Ripple it to the implementations.** This is the expensive step and the
    easy one to skip: a tightened obligation can make a conforming runtime
-   non-conforming. Note it in the Change Log so both sides upgrade
+   non-conforming. Note it in the Historical Background appendix so both sides upgrade
    deliberately.
 6. **Re-render and commit** `dist/`.
 
 **What catches you:**
 - `check_coverage.py`: every RFC 2119 sentence in the protocol sections
   (Architecture through Versioning and Conformance, including the Peer
-  Directory and the Fleet Roster) needs a class in `draft/coverage.toml`. A new
+  Directory, the Fleet Roster and the peer-origin profile) needs a class in
+  `draft/coverage.toml`. A new
   sentence, or a reworded one (rewording changes its key), fails the build
   until someone decides what covers it.
 - `normdiff.py` (`make -C draft normdiff BASE=<ref>`; CI writes it to the job
@@ -135,7 +136,7 @@ down. Keep the subject under ~72 characters and lowercase after the prefix
 (`draft:`, `dist:`, `spec:`) where one applies.
 
 **Record a correction rather than rewriting history.** The version history's
-house style (the draft's Change Log, and the frozen `spec/contract.md` §7
+house style (the draft's Historical Background appendix, and the frozen `spec/contract.md` §7
 before it) is to leave a wrong bullet standing and attach a **Correction** to
 it. What shipped is a fact, and a version history that
 quietly edits itself is worth less than one that admits a mistake. This
@@ -182,7 +183,7 @@ editorial one.
 | What must pass and fail | `fixtures/` + `validate.py` | the draft shows the ones in `draft/fixtures.toml` |
 | Draft prose, section order, RFC conventions, IETF apparatus | the draft, outright | — |
 | Front matter, `ipr`, author, draft name, date | the draft | counsel gates apply — `draft/README.md` |
-| Peer-lane prose (DRAFT profile) | `spec/peer-origin.md` | the draft carries only its schema |
+| Peer-lane prose (the peer-origin profile) | the draft's "The Peer-Origin Profile (Optional)" | `schemas/` + `fixtures/` + `fixtures/peer-signed/` must agree; `spec/peer-origin.md` is frozen history |
 | Which normative sentences are covered by what | `draft/coverage.toml` | enforced by `check_coverage.py` |
 
 ## The checks, and what each proves
@@ -203,8 +204,9 @@ make -C draft normdiff BASE=origin/main
   roster counts, the pinned draft name, and no host paths or personal
   identifiers.
 - `tools/check_coverage.py`: every normative sentence in the protocol sections
-  is classified. The 128 sentences present at the switch are recorded as an
-  unclassified baseline; working it down is the backlog.
+  is classified. The 128 sentences present at the switch were recorded as an
+  unclassified baseline; 115 of the 294 now in scope are still unclassified,
+  and working them down is the backlog.
 - `tools/normdiff.py`: the normative diff, for the reviewer.
 - `fixtures/validate.py`: the conformance gate itself.
 

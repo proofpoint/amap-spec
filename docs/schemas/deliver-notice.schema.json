@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://amap-spec/schemas/deliver-notice.schema.json",
   "title": "deliver-notice",
-  "description": "runtime -> connector: one notice per delivered message. amap-spec v3.0.0 (spec/contract.md §5). Runtime-authored: this document's envelope is OPEN (no additionalProperties:false) at every level per §7's v3.0.0 tolerance rule — a consumer MUST ignore members it does not recognize; emitting an unrecognized member remains producer non-conformance.",
+  "description": "runtime -> connector: one notice per delivered message. AMAP, section \"Inbound: Deliver Notice and Inbound Message\". Runtime-authored: this document's envelope is OPEN (no additionalProperties:false) at every level per the tolerance rule of section \"Versioning\" — a consumer MUST ignore members it does not recognize; emitting an unrecognized member remains producer non-conformance.",
   "type": "object",
   "required": ["contract_version", "notice_id", "ts", "kind", "message"],
   "properties": {
@@ -25,11 +25,11 @@
         "references": { "type": "array", "items": { "type": "string" } },
         "sender_standing": {
           "type": "string",
-          "description": "advisory, open vocabulary (known, agent-tier, first-contact, read-only, ...). A consumer MUST tolerate a value outside this list, treating it as opaque — never grounds to drop the notice; a runtime may add a value as a MINOR change (v3.0.0, contract.md §5/§7)."
+          "description": "advisory, open vocabulary (known, agent-tier, first-contact, read-only, ...). A consumer MUST tolerate a value outside this list, treating it as opaque — never grounds to drop the notice; a runtime may add a value without a new wire major (section \"Versioning\")."
         },
         "provenance": {
           "type": "string",
-          "description": "advisory, open vocabulary (external, internal, ...). A consumer MUST tolerate a value outside this list, treating it as opaque — never grounds to drop the notice; a runtime may add a value as a MINOR change (v3.0.0, contract.md §5/§7)."
+          "description": "advisory, open vocabulary (external, internal, ...). A consumer MUST tolerate a value outside this list, treating it as opaque — never grounds to drop the notice; a runtime may add a value without a new wire major (section \"Versioning\")."
         },
         "verdict": {
           "type": "object",

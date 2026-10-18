@@ -1,0 +1,23 @@
+{
+  "description": "A statement field body of 12300 octets as transmitted, folded 14 times, so 12272 octets once unfolded. §5.2's 12288-octet limit applies to the field body as transmitted, before unfolding or trimming: it is carried as an oversize marker (and fails check 1, mail, header_size), never unfolded and carried as text.",
+  "eml": "oversize-counted-raw.eml",
+  "candidate": {
+    "fields": [
+      [
+        "Message-ID",
+        "<RllbEMgWvicPU9Q2WzZJYw@host-a.fleet.example>"
+      ],
+      [
+        "AMAP-Peer-Statement",
+        {
+          "oversize": true
+        }
+      ]
+    ],
+    "body": {
+      "charset": "utf-8",
+      "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+    },
+    "attachments": []
+  }
+}

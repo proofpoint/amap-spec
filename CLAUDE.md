@@ -9,8 +9,9 @@ conformance against the fixtures here rather than against each other.
 **It is not an implementation.** No connector, no runtime, no transport. If you
 are about to write code that *does* something with mail, you are in the wrong
 repo. What lives here is the Internet-Draft (`draft/draft-amap.xml`, the
-canonical prose), `schemas/`, `fixtures/`, the `dist/` renderings, the frozen
-`spec/contract.md`, the peer-origin profile `spec/peer-origin.md`, and the
+canonical prose, including the peer-origin profile), `schemas/`, `fixtures/`,
+the `dist/` renderings, the frozen `spec/contract.md` and
+`spec/peer-origin.md`, and the
 explainer website: source in `site/`, generated into `docs/` (GitHub Pages
 serves `docs/` from `main`). **Never edit `docs/` by hand**; run
 `python3 site/build_site.py`, and `--check` to prove they agree. The site
@@ -50,19 +51,22 @@ language** — README's "What AMAP is not" says this normatively; keep it true.
   one.
 - Keep shipped text free of absolute host paths and personal identifiers.
 
-## Version state (as of the peer-origin-profile merge to `main`)
+## Version state (as of the -00 prepared for the editor's review, 2026-10-18)
 
 | | |
 |---|---|
-| Contract version | **v3.1.0 DRAFT** (in the draft; also the frozen `spec/contract.md` title) |
-| Wire `contract_version` | **`"2"`** — unchanged by 3.1.0, which is additive |
-| `README.md` claims | **3.1.0 DRAFT, 119 fixtures** — matches the gate |
-| Actual gate result | **119 fixtures, 0 unexpected**, plus the signed peer cases under `fixtures/peer-signed/` (§5 revision s5-r4, proposed) |
+| Document | **`draft-rapp-amap-00`**, dated 2026-10-18; corresponds to contract 3.1.0 (the frozen files' titles) |
+| Wire `contract_version` | **`"2"`** — the draft's Versioning section says why it is not reset to `"1"` |
+| `README.md` claims | **121 fixtures** — matches the gate |
+| Actual gate result | **121 fixtures (42 valid, 79 invalid), 0 unexpected**, then **114 signed peer cases and 10 MIME cases, RFC 8032 vectors ok, 0 unexpected** |
 | Canonical prose | `draft/draft-amap.xml`, hand-edited; `make -C draft` renders and gates |
 
-The contract's own SemVer and the wire major are **two different axes** as of
-3.0.0 (§7). Do not collapse them: "3.1.0" is the document; `"2"` is what goes
-on the wire and what a consumer version-checks.
+The draft's body no longer carries the contract's own version number: before
+the IETF the contract had its own SemVer (1.0.0 to 3.1.0), separate from the
+wire major, and that history is now the draft's "Historical Background"
+appendix. Revisions are draft revisions (-00, -01, ...). Do not collapse the
+two axes: a draft revision is not a wire version, and `"2"` is what goes on
+the wire and what a consumer version-checks.
 
 **The Internet-Draft XML is the canonical source (since 2026-09-24).**
 `draft/draft-amap.xml` is xml2rfc v3, hand-edited by the standards editor, and
@@ -70,8 +74,10 @@ generated from nothing. It was converted from the last kramdown-rfc rendering
 with a byte-identical text rendering, so nothing a reader sees changed. The
 contract is now **`draft/draft-amap.xml` + `schemas/` + `fixtures/`**.
 `spec/contract.md` is **FROZEN**: never edit it; its header maps its sections
-to the draft's. `spec/peer-origin.md` is **not** frozen: the draft carries only
-its schema, and it stays the canonical peer-lane prose until it leaves DRAFT.
+to the draft's. `spec/peer-origin.md` is **FROZEN too** (2026-10-18, at §5
+revision s5-r4): its prose is now the draft's section "The Peer-Origin Profile
+(Optional)", and its header maps its sections and lists what the draft changed
+since. Never edit either file.
 
 The draft's JSON is never hand-copied. `draft/tools/sync_sources.py`
 (`make -C draft sync`) writes each schema, listed fixture and example into its
@@ -83,7 +89,8 @@ file. Gates in `make -C draft`:
 - `check_render.py`: the same, plus roster counts, docName, no host paths;
 - `check_coverage.py`: every RFC 2119 sentence in the protocol sections
   (Architecture through Versioning and Conformance, including the Peer
-  Directory and the Fleet Roster) is classified in `draft/coverage.toml`;
+  Directory, the Fleet Roster and the peer-origin profile, anchors `sec-peer*`)
+  is classified in `draft/coverage.toml`;
 - the fixture gate.
 
 `normdiff.py` (`make -C draft normdiff BASE=<ref>`) lists the normative
@@ -93,14 +100,15 @@ kramdown-rfc and Ruby are gone. `draft/tools/preflight.sh` checks the artifact,
 never the mechanism. **Never invoke `kdrfc`**: it POSTs the XML to
 author-tools.ietf.org when it cannot exec a local xml2rfc.
 
-**v3.1.0 is DRAFT.** It carries the peer-origin profile —
-`spec/peer-origin.md` (the prose: tree, origin-class rule, addressing,
-correlation, cross-host signing, `sender_exposure`, conformance sub-classes),
-`schemas/peer-notice.schema.json` and the `peer-*` fixtures — and, in core
-§2, the tree rules and the `outbound/ext/<name>/` convention. The profile
-file was drafted 2026-09-15; `peer-notice.schema.json` and
-`fixtures/validate.py` cite its section numbers. The schema descriptions and
-the profile must agree — a disagreement is a finding, report it.
+**The peer-origin profile is part of the draft.** Its prose (tree,
+origin-class rule, addressing, correlation, signed traffic between hosts,
+`sender_exposure`, conformance sub-classes) is the draft's section "The
+Peer-Origin Profile (Optional)"; its shapes are `schemas/peer-notice`,
+`peer-statement` and `peer-control`, the `peer-*`, `statement-*` and
+`control-*` fixtures, and `fixtures/peer-signed/`. The core tree rules and the
+`outbound/ext/<name>/` convention are in Volume Layout. The schema descriptions
+cite the draft's section **names**; they and the draft must agree — a
+disagreement is a finding, report it.
 
 ## Running the gate
 
@@ -110,9 +118,10 @@ python3 fixtures/validate.py
 
 Stdlib only — no `jsonschema` dependency, no network, **no counterpart
 present**. Exit 0 iff every `valid/` fixture passes and every `invalid/` one
-fails. Verified: `119 fixtures checked, 0 unexpected.` It then runs
+fails. Verified: `121 fixtures checked, 0 unexpected.` It then runs
 `fixtures/peer-signed/check_cases.py` (the signed peer cases, MIME cases and
-RFC 8032 vectors), which must also report 0 unexpected.
+RFC 8032 vectors), which must also report 0 unexpected: `114 signed peer
+cases and 10 MIME cases checked, RFC 8032 vectors ok, 0 unexpected.`
 
 There is no pytest suite in this repo. (A `.pytest_cache/` directory exists; it
 is a leftover, not a suite.)
@@ -213,9 +222,9 @@ The two schemas **cross-lock**, and this is the profile's second lock: a
 §5's drop rule. The invalid fixtures `notice-kind-peer.json`,
 `peer-kind-deliver.json` and `peer-mailbox-inbox.json` pin all three legs.
 
-§2's directory-layout block shows the `peer/` tree beside `inbound/`,
-marked PROFILE; the profile's own §1 carries the same block with the
-sidecar paths spelled out.
+The draft's Volume Layout block shows the `peer/` tree beside `inbound/`,
+marked OPTIONAL; the profile's "The Peer Tree" section carries the same block
+with the sidecar paths spelled out.
 
 What the peer profile pins that mail does not:
 - `message.from` is a **bare addr-spec** with no display name — the *one* `from`
@@ -262,8 +271,9 @@ Changes enter this repo from both ends and the rules are not symmetric.
 
 **`draft/coverage.toml` is the guard, and its baseline is not an allowlist.**
 Every normative sentence in the protocol sections needs a class: fixture,
-operational or informative. The 128 sentences present at the switch are
-marked `baseline = true` and unclassified. Working that list down is real
+operational or informative. The 128 sentences present at the switch were
+marked `baseline = true` and unclassified; 115 remain. Rewording a baseline
+sentence changes its hash, so the reworded sentence gets its real class. Working that list down is real
 progress. **Never add an unclassified entry** to silence a new-sentence
 failure: give the sentence its real class, which is the point of the gate.
 
@@ -279,8 +289,9 @@ failure: give the sentence its real class, which is the point of the gate.
    mis-parses.
 3. Add the fixtures in the same change. The fixtures *are* the other side — a
    field with no fixture is a field no implementer can prove they handle.
-4. Record it in the draft's Change Log (the frozen `spec/contract.md` §7 holds
-   the history before the switch). The house style is to **leave a wrong
+4. Record it in the draft's "Historical Background" appendix (the frozen
+   `spec/contract.md` §7 holds the history before the switch). The appendix is
+   marked for removal before RFC publication. The house style is to **leave a wrong
    bullet standing and attach a Correction**, because what shipped is a fact;
    see the v2.1.0 bullet.
 5. `dist/` is **generated, never patched**: `make -C draft` copies the source
@@ -317,18 +328,19 @@ for that class's behavioral obligations is not conformance.**
 Nothing is currently known-wrong. Known-open items — deliberate, tracked, and
 not defects:
 
-- **`draft/coverage.toml` has a 128-sentence unclassified baseline.**
+- **`draft/coverage.toml` has a 115-sentence unclassified baseline.**
   Classifying each (fixture, operational, informative) is real progress.
-- **The schema descriptions and `fixtures/validate.py` still cite
+- **`fixtures/validate.py` and `fixtures/peer-signed/` code comments still cite
   `spec/contract.md` / `spec/peer-origin.md` section numbers.** They resolve,
-  because the frozen file stays, but they should be remapped to the draft's
-  sections in a reviewed change of their own: the schemas are normative files.
+  because the frozen files stay. (The schema descriptions were remapped to the
+  draft's section names for draft-rapp-amap-00.)
 - **CI changes are proposed, not applied.** `.github/workflows/` is read-only
   from agent sessions, so a workflow change is handed to the operator to apply.
 - **The `attestation` field name collides with IETF RATS usage** (RFC 9334):
   IETF reviewers will read "attestation" as remote attestation of platform
   state, not a sender-identity stamp. Clarifying it is an editor-first change
-  to the draft.
+  to the draft; the -00 lists it among the open questions in "Why This Work Is
+  Brought to the IETF".
 
 Cleared 2026-09-24: the draft rendered six of the seven schemas; the
 peer-directory schema is now in its own appendix (Peer-Directory Schema). The spec was reconciled into the draft

@@ -18,6 +18,17 @@ fixtures/validate.py runs this after the schema fixtures. It checks:
    step's declared outcome, cause, published fields and control notice. A
    case with `config_error` expects the receiver to refuse its configuration.
 
+The receiver files (receiver.json, receiver-host-a.json) configure the
+receiver a case runs against. Their `windows` keys are §5.5's windows, in
+seconds: `ts_future_s` is F, `ts_past_s` is P, and `retain_s` is how long a
+`done` record is kept, measured like P (a record is pruned once H > ts +
+max(P, retain_s)). The receiver files set `retain_s` equal to P, the minimum
+§5.5 allows, and the cases that probe the retention boundary
+(seq-clock-rollback, seq-window-widened, seq-replay-after-retention,
+seq-resign-after-retention) assume that minimum. A receiver that retains
+records longer, as §5.5 permits, reaches a different but conforming outcome
+at those steps, and maps them by its own retention.
+
 This is a fixture self-check, not a runtime. It holds no real key, reads no
 mail and writes nothing. The `Receiver` below models only the state §5.5
 makes normative (the replay store with its reservation, decision and done
@@ -47,6 +58,7 @@ import ed25519_ref  # noqa: E402
 STATEMENT, CONTROL, MSGID = "amap-peer-statement", "amap-peer-control", "message-id"
 MAX_FIELD_OCTETS = 12288
 MAX_STATEMENT_BYTES = 8192
+MAX_F = 900
 KEY_ID = re.compile(r"\A[A-Za-z0-9][A-Za-z0-9._-]{0,63}\Z")
 B64U = re.compile(r"\A[A-Za-z0-9_-]+\Z")
 TS_RE = re.compile(r"\A[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z\Z")
@@ -228,13 +240,17 @@ class Receiver:
         lb = self.high - self.P
         return max(lb, self.floor) if self.floor is not None else lb
 
-    def lose_store(self, at, h_lost=False):
+    def lose_store(self, at, h_lost=False, f_history_lost=False):
         """Store lost or incompletely restored: coverage restarts at `at`.
         §5.5: the floor excludes every ts that could already have been
         accepted: strictly greater than max(C, H at loss) + Fmax. If H is
-        lost too, no trustworthy bound exists and admission closes."""
+        lost too, no trustworthy bound exists and admission closes. Losing H
+        does not by itself lose the F history; `f_history_lost` says it was
+        lost too, and Fmax then falls back to 900, the largest F allowed."""
         self.set_now(at)
         self.records = {}
+        if f_history_lost:
+            self._windows_history = [(self.now, MAX_F)]
         if h_lost:
             self.high = self.now
             self.closed = True
@@ -632,7 +648,7 @@ def run_case(doc, schemas, validate) -> list[str]:
         elif ev == "restart":
             got = {}
         elif ev == "lose_store":
-            rx.lose_store(step["at"], step.get("h_lost", False))
+            rx.lose_store(step["at"], step.get("h_lost", False), step.get("f_history_lost", False))
             got = {}
         elif ev == "set_bound":
             got = {"released": rx.set_bound(step["bound"])}

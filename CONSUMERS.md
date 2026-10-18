@@ -32,6 +32,13 @@ Maintained by hand, and therefore incomplete — see the honesty note below.
 | a connector interface document | defines what a connector IS, upstream of any one implementation | **targets v3.1.0 DRAFT** (§5.2); older sections pinned v2.3.0 and are mid-cascade |
 | a conformance harness | runs the fixture gate against implementations | unknown |
 
+The pins above are dated. The current revision, `draft-rapp-amap-00`,
+corresponds to contract 3.1.0 (wire `contract_version` `"2"`); its body no
+longer says "DRAFT". It also folds in cross-host statement changes made since
+those dates (the statement id grammar, point decoding, the size limit and
+replay-store recovery), so a peer-lane consumer pinned at those dates has
+something to re-check.
+
 **Classes, not instances, and that is deliberate.** Naming individual
 implementations here would publish a roster of deployments that are not
 themselves published, and would go stale faster than the classes do — a

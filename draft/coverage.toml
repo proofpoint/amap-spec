@@ -1,15 +1,17 @@
 # coverage.toml — the classification of every normative sentence in the
 # protocol sections of draft/draft-amap.xml (Architecture through Versioning
-# and Conformance, including the Peer Directory and the Fleet Roster).
+# and Conformance, including the Peer Directory, the Fleet Roster and the
+# peer-origin profile).
 # Enforced by draft/tools/check_coverage.py, which documents the classes.
 #
 # The entries marked `baseline = true` are the migration baseline: the 128
 # sentences present when the draft XML became the canonical source
-# (2026-09-24), recorded but not yet reasoned about. Classify them — fixture,
+# (2026-09-24), recorded but not yet reasoned about (115 remain at
+# draft-rapp-amap-00, where every sentence the revision reworded was given its
+# real class). Classify them — fixture,
 # operational or informative — as they are reviewed; that is how this file
 # earns its keep. Never add an unclassified entry: a new sentence gets its real
 # class when it lands.
-
 [[sentence]]
 id = "085f5ab1ac02"
 section = "sec-4"
@@ -137,20 +139,6 @@ baseline = true
 text = "The Runtime MUST NOT place non-clean bytes in an Agent's Namespace. content_ref is the Runtime's access grant, present only for bytes it has published as clean ()."
 
 [[sentence]]
-id = "1a8ea4941aeb"
-section = "sec-4-1"
-class = "unclassified"
-baseline = true
-text = "Every Runtime-owned inbound-class tree is an origin class: a consumer derives the class of a document from the tree it was read from, and never from any member of the document. notice_id uniqueness is per tree, and where a tree has more than one writer each MUST mint so that cross-writer collision is negligible — at least 128 bits of entropy under the identifier character set, or a writer-specific prefix — and a consumer keying state across trees MUST include the tree in that key. content_ref resolves only within the notices/ directory of the tree the enclosing document was read from."
-
-[[sentence]]
-id = "a2738d93384f"
-section = "sec-4-1"
-class = "unclassified"
-baseline = true
-text = "Write authority per tree is distinct and MUST be structurally enforced, never by configuration the writer itself reads. inbound/ is the one tree this document defines; a profile MAY define others."
-
-[[sentence]]
 id = "553979be8d2e"
 section = "sec-4-1"
 class = "unclassified"
@@ -163,20 +151,6 @@ section = "sec-4-1"
 class = "unclassified"
 baseline = true
 text = "A Connector MUST NOT require write access anywhere under inbound/: it MUST start, relay Notices, and resolve bodies when every write, rename, and directory creation under inbound/ fails. inbound/notices/processed/ is OPTIONAL — a conventional archive location a Connector MAY use only where a deployment leaves inbound writable; nothing on either side may depend on its existence or its contents."
-
-[[sentence]]
-id = "f4313d19d7e4"
-section = "sec-4-1"
-class = "unclassified"
-baseline = true
-text = "Such state lives in the Connector's own storage outside the Volume, or in Connector-owned paths under outbound/ not enumerated in the layout tree — which MUST NOT use the req- prefix, reserved for Submit Requests and their Sidecars, so that a Runtime's scan of the drop-box never encounters Connector-private state."
-
-[[sentence]]
-id = "4015578758a5"
-section = "sec-4-1"
-class = "unclassified"
-baseline = true
-text = "Outbound extension space (v3.1.0 DRAFT). outbound/ext/<name>/ is a Connector-owned side channel, one directory per <name>, that a Runtime MAY read by out-of-band agreement. <name> is a stable Connector id: the Connector chooses it once, and it MUST NOT change when the Connector's repository, package, or deployment is renamed or moved."
 
 [[sentence]]
 id = "acaa46cdf4f4"
@@ -242,25 +216,11 @@ baseline = true
 text = "The Submit Request envelope is closed: additionalProperties is false at every level, and a Runtime MUST reject a request carrying any unrecognized member. explains why this direction is closed while the Runtime-authored artifacts are open."
 
 [[sentence]]
-id = "9cabf697b54a"
-section = "sec-5-1"
-class = "unclassified"
-baseline = true
-text = "contract_version (REQUIRED) is the wire major version, the string \"2\" at this document version."
-
-[[sentence]]
 id = "dcd80991c55d"
 section = "sec-5-1"
 class = "unclassified"
 baseline = true
 text = "A Runtime MUST check it before schema validation and MUST fail closed on an absent, lower, or higher major ()."
-
-[[sentence]]
-id = "68f0d251a00c"
-section = "sec-5-1"
-class = "unclassified"
-baseline = true
-text = "req_id (REQUIRED) is monotonic per Namespace and MUST NOT be reused across the drop-box's life; derive it from max(pending, processed, results) + 1."
 
 [[sentence]]
 id = "f489a26db66c"
@@ -289,13 +249,6 @@ section = "sec-5-1"
 class = "unclassified"
 baseline = true
 text = "It is a hint from an untrusted party and MUST NOT by itself widen what the request is permitted to do — the same posture fixes for task_id."
-
-[[sentence]]
-id = "31aa402a9d8e"
-section = "sec-5-1"
-class = "unclassified"
-baseline = true
-text = "draft.subject and draft.body_text are REQUIRED and MAY be empty strings. body_text is plain text; this document defines no alternative body representation at this version."
 
 [[sentence]]
 id = "bb46abc353b3"
@@ -585,13 +538,6 @@ baseline = true
 text = "The content_ref binding. content_ref's leading notice_id prefix MUST equal the enclosing document's own notice_id, and its trailing <index> MUST equal the Descriptor's own 0-based array index."
 
 [[sentence]]
-id = "54c334868c75"
-section = "sec-7-2"
-class = "unclassified"
-baseline = true
-text = "The array index remains the sole binding authority (), and a consumer that resolves bytes MUST derive the path from the enclosing notice_id and the index — never trusting the content_ref string's own text as the path, since a Descriptor could otherwise point into another Notice's Sidecar directory."
-
-[[sentence]]
 id = "e2c7b22bb259"
 section = "sec-7-2"
 class = "unclassified"
@@ -613,25 +559,11 @@ baseline = true
 text = "task_id MUST be unguessable and Runtime-minted — an HMAC over the thread root, for instance."
 
 [[sentence]]
-id = "61b24a494023"
-section = "sec-8"
-class = "unclassified"
-baseline = true
-text = "It MUST NOT be a sequential or otherwise guessable value, and it MUST NOT be a capability an inbound sender can assert."
-
-[[sentence]]
 id = "32b29248e785"
 section = "sec-8"
 class = "unclassified"
 baseline = true
 text = "Matching a task_id, by itself, MUST NOT grant a message entry into that task."
-
-[[sentence]]
-id = "731eba5d76a4"
-section = "sec-9-1"
-class = "unclassified"
-baseline = true
-text = "Consumers MUST tolerate its absence, and MUST treat its contents as untrusted data: a malformed, oversized, or hostile file MUST never crash a reader or otherwise affect protocol behavior."
 
 [[sentence]]
 id = "a5b442797b38"
@@ -767,32 +699,11 @@ baseline = true
 text = "A consumer MUST ignore members it does not recognize, at every level of the document, and MUST NOT reject, drop, or fail the artifact on their account."
 
 [[sentence]]
-id = "a1a08ef1906f"
-section = "sec-10-1"
-class = "unclassified"
-baseline = true
-text = "Emitting an unknown member remains a producer non-conformance: a Runtime MUST NOT emit members undefined at the version it claims."
-
-[[sentence]]
 id = "685a7be1d43a"
 section = "sec-10-1"
 class = "unclassified"
 baseline = true
 text = "A Runtime MUST reject a request carrying unrecognized members."
-
-[[sentence]]
-id = "eb8c47a20766"
-section = "sec-10-1"
-class = "unclassified"
-baseline = true
-text = "A consumer MUST tolerate a value it does not recognize, treating it as opaque or as the member being absent, and MUST NOT reject, drop, or fail the artifact on that account; a Runtime MAY add a value to either vocabulary as a minor change."
-
-[[sentence]]
-id = "339b967b7af8"
-section = "sec-10-2"
-class = "unclassified"
-baseline = true
-text = "contract_version is REQUIRED on every protocol artifact — Submit Request, Deliver Notice, and Result — with the Binding Record as the single exception ()."
 
 [[sentence]]
 id = "71e1e29504dc"
@@ -956,13 +867,6 @@ note = "Whether an empty list was written for an unknown membership is a runtime
 text = "When the Runtime cannot determine membership, it MUST NOT write an empty members list; it leaves the previous file in place to age. written_at is the only staleness signal a consumer gets, and interval_s, when present, is the Runtime's nominal rewrite interval to judge it against."
 
 [[sentence]]
-id = "ad3fcc581880"
-section = "sec-roster"
-class = "operational"
-note = "Consumer behaviour on absence and staleness."
-text = "A consumer MUST treat an absent roster, or one it judges stale, as unknown, never as an empty fleet."
-
-[[sentence]]
 id = "7267ff5ab634"
 section = "sec-roster"
 class = "operational"
@@ -991,13 +895,6 @@ note = "What an agent is told, and by whom, is presentation behaviour of the con
 text = "Whatever points an Agent at the roster, whether a Connector that surfaces it or a deployment that tells the Agent where to read it, MUST convey that membership is neither authorisation nor a prediction of acceptance, that the roster is not the Agent's identity and its own entry is not a peer, and that an absent or stale roster means unknown."
 
 [[sentence]]
-id = "28a8d8a68ed5"
-section = "sec-4-1"
-class = "operational"
-note = "Proposed 2026-10-07. Where a Runtime gets each Namespace's name is configuration and layout, invisible to a document validator. Check: start the Runtime without a name source and confirm it refuses to start or rejects requests."
-text = "A Runtime MUST know the <agent-id> of every Namespace it serves: from its own configuration or, where its own layout carries it, from the Namespace's path, and never from anything the Agent writes."
-
-[[sentence]]
 id = "ace0041a313e"
 section = "sec-4-1"
 class = "operational"
@@ -1018,3 +915,1158 @@ class = "fixture"
 fixtures = ["valid/directory-minimal.json", "invalid/directory-missing-mail-to.json", "invalid/directory-version-1.json"]
 note = "Restored 2026-09-24: this row was in the frozen spec/contract.md section 8 table and was lost when the draft was reconciled, because the prose check saw only RFC 2119 sentences and a table row carries none."
 text = "(the artifact itself is OPTIONAL — ); if present: router, written_at, delegate_to, mail_to"
+
+[[sentence]]
+id = "fb781db6c125"
+section = "sec-4-1"
+class = "operational"
+note = "Where a Runtime gets each Namespace's name is configuration and layout, invisible to a document validator. Check: start the Runtime without a name source and confirm it refuses to start or rejects requests. Reworded for draft-rapp-amap-00 (never -> MUST NOT)."
+text = "A Runtime MUST know the <agent-id> of every Namespace it serves: from its own configuration or, where its own layout carries it, from the Namespace's path, and MUST NOT take it from anything the Agent writes."
+
+[[sentence]]
+id = "502af2f588f3"
+section = "sec-4-1"
+class = "operational"
+note = "Listed in the NOT-CHECKED docstring of fixtures/validate.py: write-side path discipline, leg (a), descriptor pinning."
+text = "The write resolves its full parent chain through pinned directory descriptors from the Namespace root — openat, mkdirat, renameat off a descriptor the Runtime opened once per Namespace — and MUST NOT re-resolve a path string for the act itself."
+
+[[sentence]]
+id = "c98c3752a593"
+section = "sec-4-1"
+class = "operational"
+note = "Listed in the NOT-CHECKED docstring of fixtures/validate.py: the filename never-a-path invariant."
+text = "Nothing else names a blob; a Descriptor's filename is display-only, and MUST NOT be used as a path."
+
+[[sentence]]
+id = "68a271ece93f"
+section = "sec-4-1"
+class = "operational"
+note = "Listed in the NOT-CHECKED docstring of fixtures/validate.py: inbound Sidecar directories keyed on the Runtime-minted notice identifier."
+text = "A Runtime MUST NOT name one after the provider message.id."
+
+[[sentence]]
+id = "7de705eab8d3"
+section = "sec-4-1"
+class = "operational"
+note = "Listed in the NOT-CHECKED docstring of fixtures/validate.py: the body spool keyed on the notice identifier, a filesystem name no document shows."
+text = "The same rule extends to the body artifact: inbound/messages/notice-<id>.json MUST be keyed on the notice identifier, and MUST NOT be keyed on message.id."
+
+[[sentence]]
+id = "412fad9fa81f"
+section = "sec-4-1"
+class = "operational"
+note = "Tree rules: how a consumer derives class and keys state, and how writers mint, are behaviour; per-tree content_ref confinement for the peer tree is also pinned by invalid/peer-attachment-ref-index-mismatch.json."
+text = "Every Runtime-owned inbound-class tree is an origin class: a consumer MUST derive the class of a document from the tree it was read from, and MUST NOT derive it from any member of the document. notice_id uniqueness is per tree, and where a tree has more than one writer each MUST mint so that cross-writer collision is negligible — at least 128 bits of entropy under the identifier character set, or a writer-specific prefix — and a consumer keying state across trees MUST include the tree in that key. content_ref resolves only within the notices/ directory of the tree the enclosing document was read from."
+
+[[sentence]]
+id = "14d90d69dda6"
+section = "sec-4-1"
+class = "operational"
+note = "Write authority per tree is structural; checked by the write probe of the peer-origin profile, not by a document."
+text = "Write authority per tree is distinct and MUST be structurally enforced; it MUST NOT depend on configuration the writer itself reads. inbound/ is the one tree this document defines; a profile MAY define others."
+
+[[sentence]]
+id = "06df2092ab15"
+section = "sec-4-1"
+class = "operational"
+note = "Where a Connector keeps private state is filesystem layout, invisible to a document validator."
+text = "Such state lives in the Connector's own storage outside the Volume, or in Connector-owned paths under outbound/ not enumerated in the layout tree — which MUST NOT use the req- prefix, reserved for Submit Requests and their Sidecars, so that a Runtime's scan of outbound/ never encounters Connector-private state."
+
+[[sentence]]
+id = "21f090a09837"
+section = "sec-4-1"
+class = "operational"
+note = "A directory name chosen once and kept across renames: stability over time is invisible to a document validator."
+text = "Outbound extension space. outbound/ext/<name>/ is a Connector-owned side channel, one directory per <name>, that a Runtime MAY read by out-of-band agreement. <name> is a stable Connector id: the Connector chooses it once, and it MUST NOT change when the Connector's repository, package, or deployment is renamed or moved."
+
+[[sentence]]
+id = "94004fdef5c0"
+section = "sec-4-2"
+class = "operational"
+note = "Deletion rights are filesystem behaviour."
+text = "The Connector MUST NOT delete it."
+
+[[sentence]]
+id = "415bf304df07"
+section = "sec-4-2"
+class = "operational"
+note = "Deletion rights are filesystem behaviour."
+text = "A Runtime MUST NOT delete the directory itself or anything else under it, and an operator reset is not consumption."
+
+[[sentence]]
+id = "79014f841754"
+section = "sec-5-1"
+class = "operational"
+note = "req_id monotonicity is state across the life of a Namespace; one document cannot show reuse. The schema pins only the character set."
+text = "req_id (REQUIRED) is monotonic per Namespace and MUST NOT be reused for the life of the Namespace's outbound/ tree; derive it from max(pending, processed, results) + 1."
+
+[[sentence]]
+id = "acea6c56ae2d"
+section = "sec-5-1"
+class = "operational"
+note = "Which source a Runtime attributes a request from is Runtime behaviour."
+text = "A Runtime MUST NOT use it as the attribution source ()."
+
+[[sentence]]
+id = "ec35f5d24e7f"
+section = "sec-6-1"
+class = "operational"
+note = "Whether a request that missed policy was sent or silently dropped is not visible in any document."
+text = "A Runtime MUST NOT send such a request, and MUST NOT drop it without a Result."
+
+[[sentence]]
+id = "ffe04cc24d7b"
+section = "sec-6-1"
+class = "operational"
+note = "Whether a partial send happened is not visible in the Result."
+text = "Per-attachment outcomes are diagnostic detail under one governing top-level outcome, and a Runtime MUST NOT send part of a request on their strength."
+
+[[sentence]]
+id = "f09731a76d15"
+section = "sec-7"
+class = "operational"
+note = "Listed in the NOT-CHECKED docstring of fixtures/validate.py: enforcement by absence for a quarantined or blocked message."
+text = "Quarantined or unverified mail produces no Notice: a Runtime MUST NOT write a Notice for it, and logs it on its own side instead."
+
+[[sentence]]
+id = "b13eb185c8ea"
+section = "sec-7-1"
+class = "fixture"
+fixtures = ["valid/notice-unknown-member.json", "valid/message-unknown-member.json", "valid/result-unknown-member.json"]
+text = "A Connector MUST NOT drop a Notice because it carries an unrecognized member (); that is the one carve-out from \"fails schema validation.\""
+
+[[sentence]]
+id = "2ff014cce09e"
+section = "sec-7-1"
+class = "operational"
+note = "Presentation behaviour of the Connector."
+text = "It is advisory metadata, like verdict, and a Connector MUST NOT present it as license for an Agent to obey body content."
+
+[[sentence]]
+id = "7405bd8b48b2"
+section = "sec-7-1"
+class = "operational"
+note = "Presentation behaviour of the Connector."
+text = "A Connector treats it as advisory metadata, and MUST NOT present it as license for an Agent to obey body content."
+
+[[sentence]]
+id = "b20f84eba8a3"
+section = "sec-7-1"
+class = "operational"
+note = "A trust decision made by a consumer is behaviour."
+text = "They grant correlation, and a consumer MUST NOT treat them as grounds for trust ()."
+
+[[sentence]]
+id = "3d94692fe6ea"
+section = "sec-7-2"
+class = "fixture"
+fixtures = ["invalid/notice-attachment-ref-index-mismatch.json", "valid/notice-attachment-clean-ref.json", "invalid/peer-attachment-ref-index-mismatch.json"]
+text = "The array index remains the sole binding authority (), and a consumer that resolves bytes MUST derive the path from the enclosing notice_id and the index, and MUST NOT use the content_ref string's own text as the path, since a Descriptor could otherwise point into another Notice's Sidecar directory."
+
+[[sentence]]
+id = "887ea296051e"
+section = "sec-7-3"
+class = "operational"
+note = "Connector read behaviour. Check: a missing body returns not resolved, with no fallback fetch (the Connector conformance class)."
+text = "A Connector MUST resolve a notice identifier to a body from this artifact only, and MUST NOT fetch the body from the provider."
+
+[[sentence]]
+id = "7eeeb01dccd9"
+section = "sec-8"
+class = "operational"
+note = "Unguessability is a property of the minting algorithm, invisible in any one document."
+text = "It MUST NOT be a sequential or otherwise guessable value, and it MUST NOT be a capability an inbound sender can assert: a guessable task_id lets a sender who has seen one predict others."
+
+[[sentence]]
+id = "89989a91af6a"
+section = "sec-8"
+class = "operational"
+note = "Runtime correlation behaviour."
+text = "A subaddress or header token supplied by an inbound sender is a hint only, and a Runtime MUST NOT treat it as authoritative: it is attacker-controllable, and it is stripped by many gateways."
+
+[[sentence]]
+id = "ccdda575029e"
+section = "sec-9-1"
+class = "operational"
+note = "Consumer robustness against a hostile or malformed Binding Record: run the consumer against such a file."
+text = "Consumers MUST tolerate its absence, and MUST treat its contents as untrusted data: a reader MUST NOT crash, or change its protocol behavior, because of a malformed, oversized, or hostile file."
+
+[[sentence]]
+id = "81510efad097"
+section = "sec-roster"
+class = "operational"
+note = "Consumer behaviour on absence and staleness."
+text = "A consumer MUST treat an absent roster, or one it judges stale, as unknown, and MUST NOT treat it as an empty fleet."
+
+[[sentence]]
+id = "896ec4ea9e22"
+section = "sec-peer-tree"
+class = "operational"
+note = "Mount posture and deletion for peer/; checked by running the read-only operational check against peer/ as for inbound/."
+text = "Every obligation on inbound/ in applies to peer/ unchanged: it is Runtime-owned; it MAY be mounted read-only; a Connector MUST NOT require write access to it; only the Runtime deletes from it; and its retention is conservative and age-based."
+
+[[sentence]]
+id = "3db28c7fcd27"
+section = "sec-peer-tree"
+class = "operational"
+note = "Minting entropy across writers is state, not a document property."
+text = "Where a tree has more than one writer, each MUST mint so that a collision between writers is negligible: at least 128 bits of entropy under the notice_id character set, or a writer-specific prefix."
+
+[[sentence]]
+id = "6ce7932befd9"
+section = "sec-peer-tree"
+class = "operational"
+note = "How a consumer keys its own state is behaviour."
+text = "A consumer that keys state across trees MUST include the tree in the key."
+
+[[sentence]]
+id = "0e1af22e9368"
+section = "sec-peer-tree"
+class = "informative"
+note = "A permission; it asks nothing checkable of an implementer."
+text = "On a single host, a Runtime MAY make the notice_id equal to the peer message id ()."
+
+[[sentence]]
+id = "920e67286852"
+section = "sec-peer-tree"
+class = "operational"
+note = "Consumer behaviour."
+text = "A consumer MUST NOT assume that they coincide."
+
+[[sentence]]
+id = "31359fc3d00b"
+section = "sec-peer-tree"
+class = "operational"
+note = "Origin class derivation is consumer behaviour; that provenance may be omitted is shown by valid/peer-minimal.json."
+text = "Advisory members. provenance on a Peer Notice is redundant with the tree and MAY be omitted; if present, it is advisory, and a consumer MUST NOT derive or override the origin class from it. sender_standing, if present, SHOULD be the existing agent-tier value."
+
+[[sentence]]
+id = "6aa4f2fc68a4"
+section = "sec-peer-origin"
+class = "operational"
+note = "Origin class derivation is Connector behaviour; the cross-lock fixtures (invalid/peer-kind-deliver.json, invalid/notice-kind-peer.json, invalid/peer-mailbox-inbox.json) pin the kind/tree agreement it relies on."
+text = "A Connector MUST derive the class from the tree, and MUST NOT derive or override it from any member of the document."
+
+[[sentence]]
+id = "c18d134516b7"
+section = "sec-peer-origin"
+class = "operational"
+note = "Connector behaviour when the tree is unknown."
+text = "A Connector that cannot establish which tree a document came from MUST treat it as mail."
+
+[[sentence]]
+id = "fe26336aea04"
+section = "sec-peer-origin"
+class = "operational"
+note = "Listed in the NOT-CHECKED docstring of fixtures/validate.py: the write-authority partition, checked by the write probe."
+text = "Write authority over peer/ MUST be distinct from write authority over inbound/."
+
+[[sentence]]
+id = "63666507c70b"
+section = "sec-peer-origin"
+class = "operational"
+note = "Listed in the NOT-CHECKED docstring of fixtures/validate.py: the write-authority partition, checked by the write probe."
+text = "A component that admits messages from a transport not restricted to authorized peer senders (the admitting component, of which a mail deliverer is the usual example) MUST NOT hold write authority over peer/."
+
+[[sentence]]
+id = "9b57af5102f4"
+section = "sec-peer-origin"
+class = "operational"
+note = "Listed in the NOT-CHECKED docstring of fixtures/validate.py: the write-authority partition, checked by the write probe."
+text = "The restriction MUST be structural, and MUST NOT be configuration that the component reads."
+
+[[sentence]]
+id = "6486b2c7c222"
+section = "sec-peer-origin"
+class = "operational"
+note = "This sentence is the prescribed operational check itself (the write probe)."
+text = "The prescribed operational check is a write attempt against peer/ from inside the admitting component, which MUST fail."
+
+[[sentence]]
+id = "66dd691e9140"
+section = "sec-peer-origin"
+class = "informative"
+note = "A permission stating the direction of the partition; nothing to check."
+text = "The rule is one-directional: a component holding peer write authority MAY write inbound/, as demotion requires ()."
+
+[[sentence]]
+id = "c484987449d9"
+section = "sec-peer-origin"
+class = "operational"
+note = "Placement criteria are Runtime behaviour."
+text = "A Runtime MUST NOT write a notice into peer/ on the basis of any claim the message makes about itself."
+
+[[sentence]]
+id = "bcefca5e5c50"
+section = "sec-peer-origin"
+class = "fixture"
+fixtures = ["peer-signed/cases/peer-task-minimal.json", "peer-signed/cases/mail-signature-invalid.json", "peer-signed/cases/mail-unknown-key.json"]
+text = "It MAY write there only when the message arrived through a path whose write authority is already restricted to authorized peer senders, or when the message carries a signature that verifies against a configured peer key ()."
+
+[[sentence]]
+id = "dec1a00b1a20"
+section = "sec-peer-origin"
+class = "operational"
+note = "Listed in the NOT-CHECKED docstring of fixtures/validate.py: verification placement."
+text = "Verification MUST be performed by a component holding peer write authority, which receives candidates through a location that is neither tree ()."
+
+[[sentence]]
+id = "a4cc4dfe45d9"
+section = "sec-peer-origin"
+class = "operational"
+note = "Listed in the NOT-CHECKED docstring of fixtures/validate.py: verification placement."
+text = "The admitting component MUST NOT perform verification."
+
+[[sentence]]
+id = "80a471f13bea"
+section = "sec-peer-addr"
+class = "informative"
+note = "A permission; it asks nothing checkable of an implementer."
+text = "A deployment confined to one host, with no mail, MAY use a non-routable domain."
+
+[[sentence]]
+id = "7d1068c92a12"
+section = "sec-peer-addr"
+class = "operational"
+note = "Deployment configuration across configured peers."
+text = "A peer domain MUST belong to exactly one Runtime among those configured as peers, so a deployment that may peer across organizations should use domains it controls."
+
+[[sentence]]
+id = "02705e4de4e3"
+section = "sec-peer-addr"
+class = "operational"
+note = "A deployment choice of address."
+text = "Where an Agent has a bound mailbox (the Binding Record's address, ), the deployment SHOULD use it, so that the Agent has one identity on both lanes."
+
+[[sentence]]
+id = "06ca2399350b"
+section = "sec-peer-addr"
+class = "operational"
+note = "Where the Runtime takes from is behaviour; the bare addr-spec shape is pinned by invalid/peer-from-display-name.json and invalid/peer-from-crlf.json."
+text = "A Runtime MUST NOT copy it from text the sender supplied."
+
+[[sentence]]
+id = "15f20aedc524"
+section = "sec-peer-addr"
+class = "operational"
+note = "Listed in the NOT-CHECKED docstring of fixtures/validate.py: at-most-once action by the Connector."
+text = "A Connector MUST NOT cause it to be acted on more than once."
+
+[[sentence]]
+id = "c2f8076dd2eb"
+section = "sec-peer-addr"
+class = "operational"
+note = "Listed in the NOT-CHECKED docstring of fixtures/validate.py: at-most-once action by the Connector, holding rather than fanning out."
+text = "A Connector that cannot identify a single target MUST hold the notice rather than fan it out, and SHOULD report the condition through its own side channel ()."
+
+[[sentence]]
+id = "701e820aa8fa"
+section = "sec-peer-corr"
+class = "fixture"
+fixtures = ["valid/peer-minimal.json", "invalid/peer-message-id-encoded.json", "invalid/peer-notice-id-trailing-newline.json"]
+text = "The id MUST be globally unique and unguessable, with at least 128 bits of entropy, and MUST be spelled under the notice_id character set (^[A-Za-z0-9_][A-Za-z0-9_.-]*$)."
+
+[[sentence]]
+id = "21bfd12f36d4"
+section = "sec-peer-corr"
+class = "fixture"
+fixtures = ["invalid/peer-message-id-encoded.json", "invalid/peer-in-reply-to-encoded.json", "invalid/statement-id-encoded.json"]
+text = "The encoding is applied on the way into the header and removed on the way out, and MUST NOT appear in an AMAP document."
+
+[[sentence]]
+id = "ea52517b0191"
+section = "sec-peer-corr"
+class = "operational"
+note = "The content of a peer-routed Result is Runtime behaviour; reason_code is an open vocabulary the schema does not pin."
+text = "MUST equal the peer message id, so that the sender learns it from its own Result. reason_code SHOULD be peer_routed, so that the sender can tell the lanes apart (an open vocabulary, )."
+
+[[sentence]]
+id = "d2996014c24d"
+section = "sec-peer-corr"
+class = "operational"
+note = "Required by prose only, on a reply; valid/peer-result.json shows the shape."
+text = "REQUIRED on a reply, and equal to the id being answered."
+
+[[sentence]]
+id = "2f2f87f64df3"
+section = "sec-peer-corr"
+class = "operational"
+note = "Submit-time Runtime behaviour."
+text = "A reply key (in_reply_to, or else draft.reply_to_message_id) that the Runtime cannot resolve from its own ledger MUST produce a rejected Result with reason_code unresolved_reply."
+
+[[sentence]]
+id = "f59b17884efc"
+section = "sec-peer-corr"
+class = "operational"
+note = "Submit-time Runtime behaviour."
+text = "A Runtime MUST NOT strip the key and route the message on draft.to as a new peer message."
+
+[[sentence]]
+id = "bdf299852c10"
+section = "sec-peer-corr"
+class = "operational"
+note = "Submit-time Runtime behaviour."
+text = "A key that resolves but whose reverse edge is not permitted (no declared edge, or an expired window) MUST likewise produce a rejected Result (reason_code peer_reply_window_expired, or the Runtime's own code), and MUST NOT be re-routed."
+
+[[sentence]]
+id = "0d5bd377d0d4"
+section = "sec-peer-corr"
+class = "operational"
+note = "Listed in the NOT-CHECKED docstring of fixtures/validate.py: in_reply_to only when the placing Runtime resolved it."
+text = "A Peer Notice MUST carry in_reply_to if and only if the placing Runtime resolved it from its own ledger to a peer message id that it issued or placed."
+
+[[sentence]]
+id = "4f0934f50dc4"
+section = "sec-peer-corr"
+class = "operational"
+note = "Connector policy behaviour."
+text = "Such a policy MUST NOT widen anything else about the notice's treatment."
+
+[[sentence]]
+id = "a41fb00541ad"
+section = "sec-peer-corr"
+class = "fixture"
+fixtures = ["peer-signed/cases/refuse-unresolved-reply.json", "peer-signed/cases/refuse-reply-to-mail-id.json", "peer-signed/cases/refuse-reply-wrong-remote-agent.json"]
+text = "The receiver MUST NOT place it in peer/ with the key, MUST NOT place it as a new peer task, and MUST log the cause, and it SHOULD tell the sending Runtime with a signed Control Notice ()."
+
+[[sentence]]
+id = "198747554148"
+section = "sec-peer-corr"
+class = "operational"
+note = "What a Runtime tells its own Agent is behaviour; the control cases expect the failure notice to be owed (peer-signed/cases/seq-control-crash-before-agent-notice.json)."
+text = "A Runtime that reports a terminal delivery failure to the sending Agent SHOULD do so as a deliver Notice in the sender's inbound/ tree, with message.from set to the Runtime's own address (amap.router@<domain> or equivalent), in_reply_to set to the peer message id, and a body authored by the Runtime alone."
+
+[[sentence]]
+id = "eea719e82c65"
+section = "sec-peer-corr"
+class = "operational"
+note = "Placement and content of the failure notice are Runtime behaviour."
+text = "Such a notice MUST NOT be placed in peer/, and MUST NOT quote or forward any text from the receiving Connector's outcome file."
+
+[[sentence]]
+id = "3d5253a24470"
+section = "sec-peer-xhost"
+class = "informative"
+note = "A permission; it asks nothing checkable of an implementer."
+text = "Traffic on one host needs no signature, because local write permission is a stronger guarantee, although a Runtime MAY sign it too, for a uniform code path, without changing its treatment."
+
+[[sentence]]
+id = "64f52647b7a1"
+section = "sec-peer-stmt"
+class = "fixture"
+fixtures = ["peer-signed/cases/mail-statement-ts-not-a-date.json", "invalid/statement-ts-offset.json", "invalid/statement-ts-fractional.json"]
+text = "Formats. ts, sender_since and the timestamps in sender_exposure are date-times in UTC, in whole seconds, with the Z designator, and each MUST denote a real instant."
+
+[[sentence]]
+id = "34c05263a263"
+section = "sec-peer-stmt"
+class = "fixture"
+fixtures = ["invalid/statement-id-leading-dash.json", "invalid/statement-id-dotted.json", "invalid/statement-id-encoded.json", "peer-signed/cases/mail-id-leading-dash.json"]
+text = "A sending Runtime MUST mint the ids it sends between hosts under ^[A-Za-z0-9_][A-Za-z0-9_-]*$, which is the notice_id character set () without \".\", with at least 128 bits of entropy, so that <id@domain> is a valid msg-id ()."
+
+[[sentence]]
+id = "ac251bb5d5db"
+section = "sec-peer-stmt"
+class = "fixture"
+fixtures = ["invalid/statement-id-leading-dash.json", "invalid/statement-in-reply-to-leading-dash.json", "peer-signed/cases/mail-id-leading-dash.json"]
+text = "Hexadecimal satisfies this; a base64url id whose first character is \"-\" MUST be minted again."
+
+[[sentence]]
+id = "97b86e8eab2e"
+section = "sec-peer-stmt"
+class = "fixture"
+fixtures = ["invalid/statement-id-dotted.json"]
+text = "An id used only on one host MAY also contain \".\", as the notice_id character set allows; an id sent between hosts MUST NOT."
+
+[[sentence]]
+id = "3ed8a813d2f2"
+section = "sec-peer-carriage"
+class = "fixture"
+fixtures = ["peer-signed/cases/mail-key-id-mismatch.json"]
+text = "The signed key_id MUST equal k."
+
+[[sentence]]
+id = "1e0ca6eeb9a1"
+section = "sec-peer-carriage"
+class = "fixture"
+fixtures = ["peer-signed/cases/mail-two-headers.json", "peer-signed/cases/mail-two-headers-one-invalid.json"]
+text = "The sending Runtime MUST emit exactly one such field."
+
+[[sentence]]
+id = "120b266b6421"
+section = "sec-peer-carriage"
+class = "operational"
+note = "A sender's emission; the receiver side is exercised by peer-signed/cases/peer-folded-header.json."
+text = "The sender MUST fold the field so that no line exceeds 998 octets (), and SHOULD fold at 78."
+
+[[sentence]]
+id = "34ba76ed5202"
+section = "sec-peer-carriage"
+class = "operational"
+note = "A sender limit; a receiver enforces it at check 1."
+text = "A statement MUST NOT exceed 8192 bytes."
+
+[[sentence]]
+id = "e3778f3b941d"
+section = "sec-peer-carriage"
+class = "operational"
+note = "Submit-time Runtime behaviour."
+text = "A sending Runtime that would otherwise emit a larger one SHOULD refuse the submit instead, with a rejected Result whose reason_code is peer_statement_too_large."
+
+[[sentence]]
+id = "45b0f097f7df"
+section = "sec-peer-carriage"
+class = "fixture"
+fixtures = ["peer-signed/cases/mail-message-id.json", "peer-signed/cases/mail-message-id-wrong-domain.json"]
+text = "The sending Runtime MUST also set Message-ID to <id@domain>, where domain is the domain of from, and SHOULD set In-Reply-To and References to the encoded forms (), so that mail threads coherently and a demoted message still threads as mail."
+
+[[sentence]]
+id = "34910ff36b95"
+section = "sec-peer-carriage"
+class = "fixture"
+fixtures = ["peer-signed/mime/single-text-plain-qp.json", "peer-signed/mime/mixed-text-and-attachment.json"]
+text = "A sending Runtime SHOULD send either a single text/plain part, or multipart/mixed holding one text/plain part followed by the attachments."
+
+[[sentence]]
+id = "061c586ad440"
+section = "sec-peer-carriage"
+class = "operational"
+note = "A sender's choice of encoding."
+text = "The text part SHOULD be charset=utf-8 with base64 transfer encoding, so that transport cannot rewrite it."
+
+[[sentence]]
+id = "ed91bee87932"
+section = "sec-peer-carriage"
+class = "fixture"
+fixtures = ["peer-signed/mime/mixed-text-and-attachment.json", "peer-signed/mime/interleaved-fields-message-order.json", "peer-signed/mime/nested-message-rfc822.json"]
+text = "The intake location () MUST hold the following, in a layout this document does not prescribe:"
+
+[[sentence]]
+id = "eff2a503a8db"
+section = "sec-peer-carriage"
+class = "fixture"
+fixtures = ["peer-signed/mime/single-text-plain-qp.json", "peer-signed/cases/peer-folded-header.json"]
+text = "The admitting component MAY unfold a field body or trim its surrounding whitespace, and MUST NOT otherwise alter it."
+
+[[sentence]]
+id = "66433d62b9ac"
+section = "sec-peer-carriage"
+class = "fixture"
+fixtures = ["peer-signed/mime/oversize-counted-raw.json", "peer-signed/cases/mail-header-oversize.json"]
+text = "A field body over 12288 octets MUST be carried as an oversize marker, and MUST NOT be truncated."
+
+[[sentence]]
+id = "2e5b19b98105"
+section = "sec-peer-carriage"
+class = "fixture"
+fixtures = ["peer-signed/mime/second-statement-field-non-ascii.json", "peer-signed/cases/mail-header-non-ascii.json"]
+text = "A field body the admitting component cannot carry as ASCII text (a non-ASCII octet, or an undecodable value) MUST be carried as an invalid marker in the field's position."
+
+[[sentence]]
+id = "b831323066c0"
+section = "sec-peer-carriage"
+class = "fixture"
+fixtures = ["peer-signed/mime/second-statement-field-non-ascii.json", "peer-signed/cases/mail-two-headers-one-invalid.json"]
+text = "A marker keeps the field's identity and multiplicity: the admitting component MUST NOT omit a field, because omitting a second, malformed statement field would leave one well-formed field, and the verifier would select it."
+
+[[sentence]]
+id = "38b60d06f05d"
+section = "sec-peer-carriage"
+class = "fixture"
+fixtures = ["peer-signed/cases/mail-body-latin1.json", "peer-signed/cases/peer-body-charset-label-case.json", "peer-signed/cases/peer-body-no-charset-ascii.json", "peer-signed/cases/mail-body-ascii-label-high-octet.json"]
+text = "The charset label, compared case-insensitively, MUST be utf-8 or us-ascii; an absent label means us-ascii."
+
+[[sentence]]
+id = "17752276bcff"
+section = "sec-peer-carriage"
+class = "fixture"
+fixtures = ["peer-signed/cases/peer-task-minimal.json", "peer-signed/cases/peer-exposure.json"]
+text = "On placement, the receiver takes all of the following from the verified statement, and MUST NOT take them from headers: message.id, in_reply_to and from; subject; sender_exposure; and the attachment Descriptors' filename, media_type, size_bytes and sha256. to selects the Namespace."
+
+[[sentence]]
+id = "7072ff46ce30"
+section = "sec-peer-carriage"
+class = "operational"
+note = "The cases do not model header-derived references; a receiver's publishing behaviour."
+text = "The receiver MUST NOT publish references from headers; it MAY derive them from its own ledger ()."
+
+[[sentence]]
+id = "f9cac1b48697"
+section = "sec-peer-carriage"
+class = "fixture"
+fixtures = ["peer-signed/cases/mail-message-id.json", "peer-signed/cases/mail-message-id-wrong-domain.json", "peer-signed/cases/peer-message-id-domain-case.json", "peer-signed/cases/peer-message-id-folded.json"]
+text = "After unfolding and trimming, Message-ID MUST be exactly \"<\", the id, \"@\", the domain and \">\", with the id equal to the statement's id and the domain equal to the domain of from."
+
+[[sentence]]
+id = "9377b48ec0c8"
+section = "sec-peer-carriage"
+class = "operational"
+note = "Logging behaviour."
+text = "A receiver MUST NOT log a raw header field value unescaped."
+
+[[sentence]]
+id = "4656383302e6"
+section = "sec-peer-verify"
+class = "operational"
+note = "Listed in the NOT-CHECKED docstring of fixtures/validate.py: verification placement; the verifier hashes body and attachment bytes itself."
+text = "The verifier MUST hash bytes it holds itself, and MUST NOT use a digest that the admitting component computed."
+
+[[sentence]]
+id = "edb5d538f242"
+section = "sec-peer-verify"
+class = "fixture"
+fixtures = ["peer-signed/cases/seq-crash-after-decide-place.json", "peer-signed/cases/seq-crash-after-decide-refuse.json"]
+text = "The decision MUST be persisted on the record before it has any effect ()."
+
+[[sentence]]
+id = "904a232daa49"
+section = "sec-peer-verify"
+class = "fixture"
+fixtures = ["peer-signed/cases/seq-crash-after-decide-refuse.json", "peer-signed/cases/seq-crash-after-reserve-edge-removed.json"]
+text = "Only a persisted placement decision is ever published; a persisted refusal or drop MUST NOT be published, whatever happens afterwards."
+
+[[sentence]]
+id = "d8f6388c1708"
+section = "sec-peer-outcomes"
+class = "fixture"
+fixtures = ["peer-signed/cases/mail-body-digest.json", "peer-signed/cases/mail-key-domain.json"]
+text = "SHOULD, for 5(b) and 6 to 11"
+
+[[sentence]]
+id = "ef479681c4a5"
+section = "sec-peer-outcomes"
+class = "fixture"
+fixtures = ["peer-signed/cases/seq-resend-same-id.json", "peer-signed/cases/seq-duplicate-exact.json"]
+text = "SHOULD, for check 12 only"
+
+[[sentence]]
+id = "4a0522194695"
+section = "sec-peer-outcomes"
+class = "fixture"
+fixtures = ["peer-signed/cases/drop-misrouted.json", "peer-signed/cases/refuse-unresolved-reply.json", "peer-signed/cases/refuse-no-edge.json"]
+text = "SHOULD"
+
+[[sentence]]
+id = "958cba35e87c"
+section = "sec-peer-outcomes"
+class = "fixture"
+fixtures = ["peer-signed/cases/refuse-policy-quarantined.json", "valid/control-refused-policy.json"]
+text = "SHOULD, with policy_code"
+
+[[sentence]]
+id = "d34df7c23a83"
+section = "sec-peer-outcomes"
+class = "operational"
+note = "The demoted notice is mail admission's output; the cases stop at the outcome."
+text = "The demoted notice MUST NOT carry sender_exposure, the statement or the signature, and carries the mail-admission verdict the admitting component attached."
+
+[[sentence]]
+id = "0d07b9ba3203"
+section = "sec-peer-outcomes"
+class = "operational"
+note = "Mail admission behaviour."
+text = "Mail admission MUST NOT treat an invalid statement as evidence of who sent the message."
+
+[[sentence]]
+id = "be01354d83f3"
+section = "sec-peer-outcomes"
+class = "operational"
+note = "Logging behaviour."
+text = "Every outcome other than peer and \"mail, no statement\" MUST be logged with its cause."
+
+[[sentence]]
+id = "354220739700"
+section = "sec-peer-outcomes"
+class = "fixture"
+fixtures = ["peer-signed/cases/mail-signature-invalid.json", "peer-signed/cases/mail-unknown-key.json", "peer-signed/cases/seq-duplicate-exact.json", "peer-signed/cases/control-replay.json"]
+text = "A Control Notice () MUST be sent only when every one of these holds; a configured k alone is never enough:"
+
+[[sentence]]
+id = "d5b84e1d993c"
+section = "sec-peer-replay"
+class = "fixture"
+fixtures = ["peer-signed/cases/mail-ts-future.json", "peer-signed/cases/peer-ts-upper-bound-inclusive.json"]
+text = "F, the allowance for clock skew, defaults to 300 seconds and MUST NOT exceed 900."
+
+[[sentence]]
+id = "8cf83034c216"
+section = "sec-peer-replay"
+class = "fixture"
+fixtures = ["peer-signed/cases/mail-ts-old.json", "peer-signed/cases/peer-ts-lower-bound-inclusive.json", "peer-signed/cases/mail-ts-lower-bound-minus-one.json"]
+text = "P, the past window, defaults to 3600 seconds, and MUST be at least 300 and at most 86400."
+
+[[sentence]]
+id = "121e1112d953"
+section = "sec-peer-replay"
+class = "fixture"
+fixtures = ["peer-signed/cases/seq-crash-after-reserve.json", "peer-signed/cases/seq-crash-after-place.json", "peer-signed/cases/seq-crash-after-decide-place.json"]
+text = "On restart, the receiver MUST finish every record that is not done, exactly once, by resuming its recorded state, and MUST NOT infer a disposition from the absence of a notice:"
+
+[[sentence]]
+id = "5b2a9c3dbc4c"
+section = "sec-peer-replay"
+class = "fixture"
+fixtures = ["peer-signed/cases/seq-crash-after-reserve.json", "peer-signed/cases/seq-crash-after-decide-place.json", "peer-signed/cases/seq-crash-after-place.json", "peer-signed/cases/seq-crash-after-decide-refuse.json", "peer-signed/cases/seq-crash-after-reserve-edge-removed.json", "peer-signed/cases/seq-control-crash-before-agent-notice.json"]
+text = "An implementation MUST survive a crash at each of these points: after reservation, after the decision, after a notice is placed, after a control notice is queued, and after a terminal refusal is recorded, including when the graph or policy changed while it was down."
+
+[[sentence]]
+id = "15023f39c3fc"
+section = "sec-peer-replay"
+class = "fixture"
+fixtures = ["peer-signed/cases/seq-replay-after-retention.json", "peer-signed/cases/multi-duplicate-ts-expired-retained.json"]
+text = "The receiver MUST retain each done record while H ≤ ts + P, and MAY retain it longer."
+
+[[sentence]]
+id = "7d06d5a805c3"
+section = "sec-peer-replay"
+class = "operational"
+note = "Store contents over time; the gate's model never prunes a record that is not done, but an implementation's store is not observable."
+text = "It MUST NOT prune a record that is not done."
+
+[[sentence]]
+id = "e3916a40a3bb"
+section = "sec-peer-replay"
+class = "informative"
+note = "A claim an implementation must not make; nothing in a document to check."
+text = "Duplicate suppression is therefore effective only within retention: this profile does not promise exactly-once delivery, and an implementation MUST NOT claim it."
+
+[[sentence]]
+id = "5dd336f1d9b7"
+section = "sec-peer-replay"
+class = "fixture"
+fixtures = ["peer-signed/cases/seq-resend-same-id.json", "peer-signed/cases/seq-resign-after-retention.json"]
+text = "A sending Runtime whose hand-off was ambiguous MAY resend the same id, signed again with a new ts."
+
+[[sentence]]
+id = "6bb0a9084183"
+section = "sec-peer-replay"
+class = "operational"
+note = "Sender behaviour across resends."
+text = "A sending Runtime that resends MUST keep the same id, including across a resend that a person approved."
+
+[[sentence]]
+id = "8559369e5d48"
+section = "sec-peer-replay"
+class = "operational"
+note = "A deployment-profile choice."
+text = "A deployment that cannot accept that MUST forbid signing again in its own deployment profile, and resend only the original bytes, which check 2 drops or freshness demotes."
+
+[[sentence]]
+id = "adf8eaa039df"
+section = "sec-peer-replay"
+class = "operational"
+note = "Listed in the NOT-CHECKED docstring of fixtures/validate.py: durability of the replay store and of H across restarts."
+text = "The store and H MUST survive a restart."
+
+[[sentence]]
+id = "66aaa8af9e34"
+section = "sec-peer-replay"
+class = "fixture"
+fixtures = ["peer-signed/cases/seq-store-loss-at-equality.json", "peer-signed/cases/seq-store-loss-after-rollback.json", "peer-signed/cases/seq-store-loss-rollback-larger-f.json", "peer-signed/cases/seq-store-loss-floor-boundary.json", "peer-signed/cases/seq-store-loss-future-skew.json"]
+text = "If the receiver loses the store, or cannot show that a restored store is complete, it MUST restore this barrier: no statement that could already have been accepted under the lost coverage may be admitted again, including at the boundary, under a clock that stepped back, and under the largest F that was ever in effect."
+
+[[sentence]]
+id = "b04d1cc11221"
+section = "sec-peer-replay"
+class = "fixture"
+fixtures = ["peer-signed/cases/seq-store-loss-rollback-larger-f.json"]
+text = "Fmax MUST NOT be chosen from the wall-clock interval ending at C: after a clock rollback, that interval can miss a larger F that was in effect near H."
+
+[[sentence]]
+id = "0b22ff22fb29"
+section = "sec-peer-replay"
+class = "fixture"
+fixtures = ["peer-signed/cases/seq-store-loss-h-lost.json", "peer-signed/cases/seq-store-loss-h-and-f-history-lost.json"]
+text = "With H lost as well, no trustworthy bound exists, and the receiver MUST close peer admission: candidates reaching check 7 are held in intake, and nothing is placed or demoted on a window the receiver cannot define."
+
+[[sentence]]
+id = "c4478d16f386"
+section = "sec-peer-replay"
+class = "fixture"
+fixtures = ["peer-signed/cases/seq-window-widened.json"]
+text = "Widening P MUST NOT re-admit anything: the receiver sets the floor to the lower bound in effect at the moment of the change, and the window then widens only as records accumulate."
+
+[[sentence]]
+id = "ad90bdca8578"
+section = "sec-peer-edges"
+class = "fixture"
+fixtures = ["peer-signed/cases/refuse-no-edge.json", "peer-signed/cases/refuse-follow-up-no-edge.json"]
+text = "The edge MUST be checked against the receiver's own graph."
+
+[[sentence]]
+id = "8609ce08557a"
+section = "sec-peer-edges"
+class = "operational"
+note = "Submit-time sender behaviour."
+text = "The sending Runtime MUST apply the same binding: a reply key resolves only if the submitting Agent is the record's local Agent."
+
+[[sentence]]
+id = "12f66e683ac2"
+section = "sec-peer-edges"
+class = "operational"
+note = "Submit-time sender behaviour."
+text = "It SHOULD also refuse at submission a message it already knows the receiver will refuse, such as one for a pair it knows has no edge or is held by policy, so that the Agent learns of it at once."
+
+[[sentence]]
+id = "f2e3f699fcbf"
+section = "sec-peer-keys"
+class = "fixture"
+fixtures = ["peer-signed/cases/config-duplicate-key-id-across-peers.json", "peer-signed/cases/config-inverted-validity.json", "peer-signed/cases/config-key-non-canonical.json", "peer-signed/cases/config-key-small-order.json"]
+text = "A receiver MUST refuse to load a configuration in which:"
+
+[[sentence]]
+id = "8146931d8067"
+section = "sec-peer-keys"
+class = "operational"
+note = "A sender's configuration choice."
+text = "A sending Runtime SHOULD make its key ids globally unique, for example by deriving them from a fingerprint of the public key."
+
+[[sentence]]
+id = "d6a0da558009"
+section = "sec-peer-keys"
+class = "fixture"
+fixtures = ["peer-signed/cases/config-key-small-order.json", "peer-signed/cases/config-key-non-canonical.json"]
+text = "An implementation MUST demonstrate the refusal through its loader, and MUST NOT count passing the vectors marked for rejection at verification as covering it."
+
+[[sentence]]
+id = "42fe41d5fe25"
+section = "sec-peer-keys"
+class = "fixture"
+fixtures = ["peer-signed/cases/peer-task-second-key.json"]
+text = "A receiver MUST support at least two concurrent keys per peer."
+
+[[sentence]]
+id = "ed7dbd26d83a"
+section = "sec-peer-keys"
+class = "operational"
+note = "Listed in the NOT-CHECKED docstring of fixtures/validate.py: protection of the signing key."
+text = "It MUST NOT be readable from any Agent Namespace or by the admitting component."
+
+[[sentence]]
+id = "bb1fd24e219e"
+section = "sec-peer-keys"
+class = "operational"
+note = "Key use is behaviour; the kind members that keep the two documents apart are pinned by invalid/control-kind-peer.json."
+text = "It MUST NOT be used to sign anything except this profile's statements and Control Notices, which their kind members keep apart."
+
+[[sentence]]
+id = "f72664521cb7"
+section = "sec-peer-keys"
+class = "fixture"
+fixtures = ["peer-signed/rfc8032-vectors.json", "peer-signed/cases/mail-signature-invalid.json"]
+text = "A verifier MUST reject a signature whose S is not less than L; a non-canonical encoding of R or A; and a key that failed the configuration checks above."
+
+[[sentence]]
+id = "bd52580e5ed8"
+section = "sec-peer-keys"
+class = "fixture"
+fixtures = ["peer-signed/rfc8032-vectors.json"]
+text = "A point encoding MUST be decoded canonically before any other check is applied to it: the \"negative zero\" encoding of x = 0 (y = p − 1 with the sign bit set) is non-canonical, and is rejected as such before a small-order check is reached."
+
+[[sentence]]
+id = "5e9c1d7e59b0"
+section = "sec-peer-keys"
+class = "fixture"
+fixtures = ["peer-signed/rfc8032-vectors.json"]
+text = "An implementation MUST pass both kinds through the implementation it ships."
+
+[[sentence]]
+id = "19532d0de09d"
+section = "sec-peer-control"
+class = "fixture"
+fixtures = ["peer-signed/cases/mail-signature-invalid.json", "peer-signed/cases/seq-duplicate-exact.json", "peer-signed/cases/control-replay.json"]
+text = "A receiver SHOULD send one for every outcome marks, and MUST send one only when the eligibility conditions of hold in full: never for a failure before check 5(b), never for a duplicate caught at check 2, never about a Control Notice, and never merely because a key was found."
+
+[[sentence]]
+id = "ca381327ec17"
+section = "sec-peer-control"
+class = "fixture"
+fixtures = ["peer-signed/cases/seq-crash-after-decide-refuse.json", "peer-signed/cases/seq-control-crash-before-agent-notice.json"]
+text = "There is one notice per record: the pending notice is part of the record's disposition (), MUST be queued durably before the record is done, and MUST be sent at most once, including across a crash."
+
+[[sentence]]
+id = "352dc011a299"
+section = "sec-peer-control"
+class = "operational"
+note = "Rate limiting and logging behaviour."
+text = "A receiver MAY rate-limit Control Notices; any suppression MUST be logged."
+
+[[sentence]]
+id = "2d1e64cc800e"
+section = "sec-peer-control"
+class = "operational"
+note = "Rendering of policy_code is local behaviour."
+text = "An unknown token gets a generic description, and MUST NOT be interpreted."
+
+[[sentence]]
+id = "8e541da5ff4f"
+section = "sec-peer-control"
+class = "fixture"
+fixtures = ["peer-signed/cases/refuse-no-edge.json", "peer-signed/cases/control-from-not-runtime.json"]
+text = "Addressing. from is the receiver's own Runtime address. to MUST be the Runtime address configured for the peer that owns the verifying key, and MUST NOT be an address taken from the message."
+
+[[sentence]]
+id = "16a81e0510d9"
+section = "sec-peer-control"
+class = "operational"
+note = "Sending-side addressing; the cases model only configured peers."
+text = "A control notice MUST NOT be sent to a Runtime that is not a configured peer."
+
+[[sentence]]
+id = "c28e92910001"
+section = "sec-peer-control"
+class = "fixture"
+fixtures = ["peer-signed/cases/control-bad-signature.json", "peer-signed/cases/control-about-unknown.json", "peer-signed/cases/control-from-not-runtime.json", "peer-signed/cases/control-and-statement-together.json"]
+text = "A Control Notice that fails any rule is dropped and logged: it MUST NOT be placed, handed to mail admission, or answered."
+
+[[sentence]]
+id = "9cd873e3d773"
+section = "sec-peer-policy"
+class = "fixture"
+fixtures = ["peer-signed/cases/refuse-policy-quarantined.json", "peer-signed/cases/refuse-policy-sender-age-unknown.json"]
+text = "A deployment MAY refuse authenticated peer messages for reasons of its own, such as a first-sight quarantine for a new sender, or a requirement that every delegation between hosts carry sender_exposure."
+
+[[sentence]]
+id = "efa65e694e75"
+section = "sec-peer-policy"
+class = "operational"
+note = "Where the sending Runtime takes the value from is invisible on the wire."
+text = "It is a Runtime assertion, covered by the signature, and MUST NOT be taken from text the sender supplied."
+
+[[sentence]]
+id = "ddfd2fc4dc25"
+section = "sec-peer-policy"
+class = "operational"
+note = "Sender behaviour across the life of an identity."
+text = "The sending Runtime MUST NOT reset it for a continuation of the same identity: a restart, a rebinding, a re-creation or a key rotation keeps the value."
+
+[[sentence]]
+id = "3ebea08742dd"
+section = "sec-peer-policy"
+class = "operational"
+note = "Sender behaviour across the life of an identity."
+text = "The sending Runtime decides which of the two a given event is, and MUST decide it the same way every time for that identity."
+
+[[sentence]]
+id = "60517052e049"
+section = "sec-peer-policy"
+class = "fixture"
+fixtures = ["peer-signed/cases/seq-sender-since-inconsistent.json"]
+text = "A receiver that enforces a sender-age policy MUST keep the last value it accepted for each pair (Runtime, from)."
+
+[[sentence]]
+id = "4d4d9d180ab5"
+section = "sec-peer-policy"
+class = "fixture"
+fixtures = ["peer-signed/cases/peer-policy-sender-age-ok.json", "peer-signed/cases/refuse-policy-sender-age-unknown.json"]
+text = "A receiver MAY enforce a minimum sender age from it."
+
+[[sentence]]
+id = "b24ff1217b68"
+section = "sec-peer-policy"
+class = "fixture"
+fixtures = ["peer-signed/cases/refuse-policy-sender-age-unknown.json"]
+text = "Its absence means \"not asserted\", and a receiver MUST NOT read it as \"new\" or as \"old enough\"."
+
+[[sentence]]
+id = "c9bf51b1dc26"
+section = "sec-peer-intake"
+class = "operational"
+note = "Listed in the NOT-CHECKED docstring of fixtures/validate.py: intake isolation."
+text = "The intake location is REQUIRED, as a structural property with no prescribed layout."
+
+[[sentence]]
+id = "6f032aa5f77c"
+section = "sec-peer-intake"
+class = "operational"
+note = "Listed in the NOT-CHECKED docstring of fixtures/validate.py: intake isolation."
+text = "A message admitted from a shared transport that presents as a peer or control candidate MUST be held, until it is disposed of, in a location that is neither inbound/ nor peer/, that is writable by the admitting component and readable by the verifying component, and that is unreachable from any Agent Namespace."
+
+[[sentence]]
+id = "0aa9fd73a7a2"
+section = "sec-peer-intake"
+class = "operational"
+note = "Listed in the NOT-CHECKED docstring of fixtures/validate.py: intake isolation; the candidate's content is defined by the MIME cases."
+text = "Candidates MUST be held as the candidate of : the verifier MUST NOT parse mail."
+
+[[sentence]]
+id = "0a9818f30fca"
+section = "sec-peer-intake"
+class = "operational"
+note = "Read discipline is filesystem behaviour."
+text = "The verifier MUST apply the read-side discipline of to candidates, since the admitting component is less trusted than the verifier."
+
+[[sentence]]
+id = "d5a9be8690a8"
+section = "sec-peer-exposure"
+class = "operational"
+note = "How a consumer reads absence is behaviour; valid/peer-exposure-false.json and valid/peer-minimal.json show the two shapes."
+text = "A consumer MUST NOT read the member's absence as \"no exposure\". false, asserted, is a stronger statement than the member omitted: it says that the Runtime assessed the window and delivered no external mail."
+
+[[sentence]]
+id = "a72dc782fc00"
+section = "sec-peer-exposure"
+class = "operational"
+note = "Whether a Runtime assessed the window is Runtime behaviour; valid/peer-exposure-false.json shows the assertion."
+text = "A Runtime that is the only writer of a sender's mail tree, and has written there only same-principal Agent mail and its own delivery failure notices, SHOULD assert false."
+
+[[sentence]]
+id = "f43290e68edb"
+section = "sec-peer-exposure"
+class = "operational"
+note = "Listed in the NOT-CHECKED docstring of fixtures/validate.py: sender_exposure never settable by a sender."
+text = "A Runtime MUST NOT accept it from any sender."
+
+[[sentence]]
+id = "b3c7efdb2fbc"
+section = "sec-peer-exposure"
+class = "operational"
+note = "Routing behaviour."
+text = "It MUST NOT drive routing or treatment ()."
+
+[[sentence]]
+id = "d06aae268e4e"
+section = "sec-peer-presentation"
+class = "operational"
+note = "Presentation behaviour of the Connector."
+text = "A Connector presenting a peer body MUST meet the presentation obligations of , with one prohibition and two additions."
+
+[[sentence]]
+id = "6f7ddfd9708b"
+section = "sec-peer-presentation"
+class = "operational"
+note = "Presentation behaviour of the Connector."
+text = "It MUST NOT convey that the sender is unauthenticated: on this tree, message.from is asserted by the Runtime from the restricted write path (), and saying otherwise contradicts the mechanism the tree exists to provide."
+
+[[sentence]]
+id = "499cee2e41af"
+section = "sec-peer-presentation"
+class = "operational"
+note = "Presentation behaviour of the Connector."
+text = "It SHOULD convey that an authenticated request is still bounded by what the receiving Agent is authorized to do: a verified sender can ask for something the receiver may not perform, and a framing that reads as a grant invites the reader to treat verified identity as having settled that question."
+
+[[sentence]]
+id = "d1bd2e86e869"
+section = "sec-peer-presentation"
+class = "operational"
+note = "Presentation behaviour of the Connector."
+text = "It SHOULD convey that authenticated origin is not a warranty about content: peer content is authored by a peer and unscreened, and may paraphrase external mail ()."
+
+[[sentence]]
+id = "436ef98bd322"
+section = "sec-10-1"
+class = "operational"
+note = "An open schema accepts an undefined member, so a producer's emission of one is checked by review, not by the gate."
+text = "Emitting an unknown member is still a producer non-conformance: a Runtime MUST NOT emit members this document does not define."
+
+[[sentence]]
+id = "f85e8efed467"
+section = "sec-10-1"
+class = "fixture"
+fixtures = ["valid/notice-provenance-unrecognized-value.json"]
+text = "A consumer MUST tolerate a value it does not recognize, treating it as opaque or as the member being absent, and MUST NOT reject, drop, or fail the artifact on that account; a Runtime MAY add a value to either vocabulary without a new wire major."
+
+[[sentence]]
+id = "2e810674910f"
+section = "sec-10-2"
+class = "fixture"
+fixtures = ["invalid/request-version-absent.json", "invalid/notice-version-1.json", "invalid/roster-version-1.json"]
+text = "contract_version is REQUIRED on the Submit Request, the Deliver Notice, the Result, the Peer Notice and the Fleet Roster."
+
+[[sentence]]
+id = "696dd4a58b5a"
+section = "sec-10-2"
+class = "fixture"
+fixtures = ["valid/identity-basic.json", "valid/directory-minimal.json", "valid/statement-minimal.json"]
+text = "It is OPTIONAL on the Binding Record () and the Peer Directory, and the signed Peer Statement and Control Notice carry their own version member, v, instead."
+
+[[sentence]]
+id = "d96fd6ce61e0"
+section = "sec-10-2"
+class = "fixture"
+fixtures = ["valid/peer-minimal.json", "valid/peer-result.json", "valid/peer-exposure-true.json"]
+text = "message.{in_reply_to, references, task_id, thread_id, sender_standing, provenance, verdict, sender_exposure, attachments}; in_reply_to is REQUIRED on a reply ()."
+
+[[sentence]]
+id = "c2d64bfbdd73"
+section = "sec-10-2"
+class = "fixture"
+fixtures = ["invalid/control-policy-without-code.json", "invalid/control-policy-code-without-policy.json"]
+text = "policy_code (REQUIRED with cause policy)"
+
+[[sentence]]
+id = "698bcd993c91"
+section = "sec-10-3"
+class = "fixture"
+fixtures = ["valid/peer-minimal.json", "valid/peer-result.json", "valid/peer-exposure-false.json", "valid/peer-exposure-true.json", "valid/peer-attachment-clean-ref.json", "valid/peer-unknown-member.json"]
+text = "MUST produce Peer Notices valid against the peer-notice schema (), and MUST confirm that its own emitted Peer Notices satisfy the same schema the valid peer-* fixtures satisfy;"
+
+[[sentence]]
+id = "65f0fe37761a"
+section = "sec-10-3"
+class = "fixture"
+fixtures = ["invalid/notice-kind-peer.json", "invalid/peer-kind-deliver.json"]
+text = "MUST refuse to emit into peer/ any document that would fail that schema, and MUST NOT emit a peer document into inbound/ ();"
+
+[[sentence]]
+id = "3d6100731ce6"
+section = "sec-10-3"
+class = "operational"
+note = "The profile's operational obligations, listed in the NOT-CHECKED docstring of fixtures/validate.py."
+text = "MUST uphold the operational obligations of the profile: the write-authority partition, proven by the write probe, and verification placement (); a Runtime-asserted peer from (); in_reply_to only when resolved, and refusal rather than stripping (); the intake location, and hashing of bytes by the verifier itself (); and sender_exposure never settable by a sender ();"
+
+[[sentence]]
+id = "4591b7b29b22"
+section = "sec-10-3"
+class = "fixture"
+fixtures = ["invalid/peer-kind-deliver.json", "invalid/peer-mailbox-inbox.json", "invalid/notice-kind-peer.json", "valid/peer-minimal.json"]
+text = "MUST accept every valid peer-* fixture and MUST reject every invalid peer-* fixture when read from peer/notices/, and MUST reject invalid/notice-kind-peer.json when read from inbound/notices/;"
+
+[[sentence]]
+id = "e4d9511f1ed2"
+section = "sec-10-3"
+class = "operational"
+note = "Connector behaviour: tree derivation and at-most-once action."
+text = "MUST derive the origin class from the tree alone (), and MUST act on a peer message at most once, holding rather than fanning out when it cannot identify a single target ();"
+
+[[sentence]]
+id = "7c2e44006304"
+section = "sec-10-3"
+class = "fixture"
+fixtures = ["valid/peer-unknown-member.json"]
+text = "MUST tolerate unknown members on a Peer Notice, whose envelope is open ()."
+
+[[sentence]]
+id = "3f0ce0de50d6"
+section = "sec-5-1"
+class = "fixture"
+fixtures = ["invalid/request-version-absent.json", "valid/request-minimal.json"]
+text = "contract_version (REQUIRED) is the wire major version, the string \"2\"."
+
+[[sentence]]
+id = "ce3827830659"
+section = "sec-5-1"
+class = "fixture"
+fixtures = ["valid/request-minimal.json", "invalid/request-subject-crlf.json"]
+text = "draft.subject and draft.body_text are REQUIRED and MAY be empty strings. body_text is plain text; this document defines no alternative body representation."
+
+[[sentence]]
+id = "077fa6156ca8"
+section = "sec-9-1"
+class = "operational"
+note = "What a Runtime consults when it enforces is behaviour no document shows."
+text = "This record grants nothing, and a Runtime MUST NOT consult it for enforcement."
+
+[[sentence]]
+id = "09d306325d6d"
+section = "sec-peer-exposure"
+class = "operational"
+note = "Runtime behaviour when computing the stamp."
+text = "Notices the Runtime authors in the mail tree (the delivery failure notices of ) are not external mail, and MUST NOT make the boolean true."
+
+[[sentence]]
+id = "1e366d94a5cf"
+section = "sec-10-3"
+class = "fixture"
+fixtures = ["peer-signed/rfc8032-vectors.json", "peer-signed/cases/peer-task-minimal.json"]
+text = "if it verifies peer traffic from other hosts, MUST reach every step's expected outcome in the signed cases, and MUST pass the Ed25519 vectors through the implementation it ships ()."

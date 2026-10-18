@@ -1,10 +1,10 @@
-<!-- title: For implementers | description: The AMAP specification at the wire level: the per-agent namespace, the seven documents and their schemas, versioning, conformance, and the reference implementations. -->
+<!-- title: For implementers | description: The AMAP specification at the wire level: the per-agent namespace, the documents and their schemas, versioning, conformance, and the reference implementations. -->
 <p class="eyebrow">For implementers</p>
 <h1>The AMAP specification, at the wire level</h1>
 <p class="lede">AMAP defines a wire contract between a trusted runtime, which holds the mail credentials and applies policy, and an agent-side connector, which holds nothing credentialed. The two sides share one thing: a per-agent filesystem namespace. This page summarises what each side must do. The authority is the specification itself.</p>
 
 <div class="callout">
-  <p><strong>Source of truth.</strong> <a href="https://github.com/proofpoint/amap-spec/tree/main/dist">The AMAP Internet-Draft</a> (v3.1.0 DRAFT; its source is <a href="https://github.com/proofpoint/amap-spec/blob/main/draft/draft-amap.xml"><code>draft/draft-amap.xml</code></a>), the <a href="https://github.com/proofpoint/amap-spec/tree/main/schemas">schemas</a> and the <a href="https://github.com/proofpoint/amap-spec/tree/main/fixtures">fixtures</a> are the normative specification. The peer-origin profile is in <a href="https://github.com/proofpoint/amap-spec/blob/main/spec/peer-origin.md"><code>spec/peer-origin.md</code></a>. Where this page and the specification disagree, the specification wins. A reference such as "§ Inbound" names a section of the Internet-Draft. The older <code>spec/contract.md</code> is frozen history, not the specification.</p>
+  <p><strong>Source of truth.</strong> <a href="https://github.com/proofpoint/amap-spec/tree/main/dist">The AMAP Internet-Draft</a> (<code>draft-rapp-amap-00</code>; its source is <a href="https://github.com/proofpoint/amap-spec/blob/main/draft/draft-amap.xml"><code>draft/draft-amap.xml</code></a>), the <a href="https://github.com/proofpoint/amap-spec/tree/main/schemas">schemas</a> and the <a href="https://github.com/proofpoint/amap-spec/tree/main/fixtures">fixtures</a> are the normative specification. The peer-origin profile is a section of the Internet-Draft, § The Peer-Origin Profile (Optional). Where this page and the specification disagree, the specification wins. A reference such as "§ Inbound" names a section of the Internet-Draft. The older <code>spec/contract.md</code> and <code>spec/peer-origin.md</code> are frozen history, not the specification.</p>
 </div>
 
 <h2>Three actors, one invariant</h2>
@@ -73,7 +73,7 @@
   <text x="30" y="414" class="d-muted" font-size="13">Every write is atomic (.tmp then rename). One connector writes outbound/ and one runtime drains it.</text>
   <text x="30" y="436" class="d-muted" font-size="13">Runtime-private staging lives outside the mounted volume, where the agent cannot reach it.</text>
 </svg>
-<figcaption>The per-agent tree from § Volume Layout, with the peer tree from the peer-origin profile §1. Colour shows who writes.</figcaption>
+<figcaption>The per-agent tree from § Volume Layout, with the peer tree from § The Peer Tree. Colour shows who writes.</figcaption>
 </figure>
 
 <h3>Two lanes, two trees</h3>
@@ -139,7 +139,7 @@
 <h2>Versioning</h2>
 <p>Two axes, not one:</p>
 <ul>
-  <li><strong>The specification's own version</strong> (currently v3.1.0 DRAFT) is SemVer for the document. Additive changes are MINOR, and a change that breaks an existing fixture is MAJOR.</li>
+  <li><strong>The specification's own version</strong> (3.1.0 at <code>draft-rapp-amap-00</code>) is SemVer for the document. The Internet-Draft's own revisions (-00, -01, …) are a third sequence, and its body does not carry the SemVer. Additive changes are MINOR, and a change that breaks an existing fixture is MAJOR.</li>
   <li><strong>The wire <code>contract_version</code></strong> (currently <code>"2"</code>) is what goes in every document and what a consumer checks.</li>
 </ul>
 <p>Read <code>contract_version</code> <strong>before</strong> any schema validation, comparing majors as non-negative integers (§ Versioning and Conformance). An absent, lower or higher major is a <strong>version refusal</strong> that fails closed. It is a distinct, logged outcome, never folded into the malformed-document path. The refusal is asymmetric:</p>

@@ -28,8 +28,8 @@ Run the gate. It is stdlib-only, needs no network, and takes under a second:
 
 ```sh
 python3 fixtures/validate.py
-# 119 fixtures checked, 0 unexpected.
-# 112 signed peer cases and 9 MIME cases checked, RFC 8032 vectors ok, 0 unexpected.
+# 121 fixtures checked, 0 unexpected.
+# 114 signed peer cases and 10 MIME cases checked, RFC 8032 vectors ok, 0 unexpected.
 ```
 
 If you touched `schemas/`, `fixtures/` or the draft, also run the draft build.
@@ -64,10 +64,11 @@ listed at the top of `fixtures/validate.py`.
 
 **`dist/` is generated, never hand-edited.** If a diff to `dist/` is not the
 output of `make -C draft`, it is wrong. The canonical source is
-`draft/draft-amap.xml`. `spec/contract.md` is frozen, kept only as the record the
-draft was reconciled against.
+`draft/draft-amap.xml`. `spec/contract.md` and `spec/peer-origin.md` are frozen,
+kept only as the record the draft was reconciled against.
 
-**Version history is recorded, not rewritten.** The draft's Change Log (and the
+**Version history is recorded, not rewritten.** The draft's Historical Background
+appendix (and the
 frozen `spec/contract.md` §7 before it) leaves a wrong bullet standing and
 attaches a *Correction*, because what shipped is a fact.
 Please follow it rather than editing history into agreement with the present.

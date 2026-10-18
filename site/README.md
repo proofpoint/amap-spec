@@ -45,7 +45,8 @@ node site/tools/test_validator.mjs   # every fixture; must print AGREE
   specified.
 - Cite the specification by section **name** (for example "§ Inbound"),
   never by rendered number or commit hash. Rendered numbers move whenever
-  the Internet-Draft gains a section. Peer-origin profile citations
-  ("profile §2") use its own numbers, because it is a separate document.
+  the Internet-Draft gains a section. The peer-origin profile is a section
+  of the Internet-Draft, so its subsections are cited by name too ("§ The
+  Peer Tree"); the frozen `spec/peer-origin.md`'s numbers are not cited.
 - Name only what is public. The site describes the public repositories and
   nothing else.

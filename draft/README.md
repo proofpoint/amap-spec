@@ -21,8 +21,14 @@ made there is the change (`WORKFLOWS.md`, "Editor-first").
 
 `spec/contract.md` is frozen: the record of the text this draft was reconciled
 against. Its header maps its old sections to the draft's. The peer-origin
-profile, `spec/peer-origin.md`, is **not** frozen: it is v3.1.0 DRAFT, and this
-draft carries only its schema (the Peer-Notice Schema appendix).
+profile's prose is now in this draft, as "The Peer-Origin Profile (Optional)",
+and `spec/peer-origin.md` is frozen in the same way, as of the text the draft
+took in.
+
+The draft no longer carries the contract's own version number in its body:
+its revisions are draft revisions, and `-00` corresponds to contract 3.1.0.
+The wire `contract_version` is still `"2"`. The version history is the
+"Historical Background" appendix, which is removed before RFC publication.
 
 The build renders `dist/draft-rapp-amap-00.xml` (a byte copy of the source) and
 `dist/draft-rapp-amap-00.txt`, and on demand `.html` and `.pdf`.
@@ -78,10 +84,11 @@ make -C draft reproducible    # two text renders, byte-compared
   identifiers.
 - `tools/check_coverage.py`: every RFC 2119 sentence in the protocol sections
   (Architecture through Versioning and Conformance, including the Peer
-  Directory and the Fleet Roster) has a class in `coverage.toml` (fixture, operational,
-  informative). The 128 sentences present at the switch are an unclassified
-  **baseline**; classify them as you review them, and never add a new
-  unclassified entry. `--emit` prints stubs for new sentences.
+  Directory, the Fleet Roster and the peer-origin profile) has a class in
+  `coverage.toml` (fixture, operational, informative). The 128 sentences
+  present at the switch were an unclassified **baseline**; 115 of the 294 now
+  in scope are still unclassified. Classify them as you review them, and never
+  add a new unclassified entry. `--emit` prints stubs for new sentences.
 - `fixtures/validate.py`: the conformance suite.
 
 `tools/normdiff.py` is not a gate. It lists the normative sentences added,

@@ -35,7 +35,7 @@
     <p><span class="tag spec">Specified</span></p>
     <ul>
       <li>The runtime owns each agent's sending identity, and the agent can't choose it (§ Architecture; § Submit Request).</li>
-      <li>Configured peer runtimes exchange signed statements, which the sending runtime signs with Ed25519, naming which of its agents sent a message. The keys belong to runtimes, not agents. A message that fails verification is treated as ordinary mail (peer profile §5).</li>
+      <li>Configured peer runtimes exchange signed statements, which the sending runtime signs with Ed25519, naming which of its agents sent a message. The keys belong to runtimes, not agents. A message that fails verification is treated as ordinary mail (§ Peer Traffic Between Hosts).</li>
       <li>A record of each request, verdict and policy path, in an audit log the agent cannot write.</li>
     </ul>
   </div>
