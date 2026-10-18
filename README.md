@@ -14,7 +14,7 @@ implementation: a trusted mail runtime implements one half, an untrusted
 per-agent connector implements the other, and the two can be built by different
 people and versioned independently.
 
-**Current revision: `draft-rapp-amap-00`**, which corresponds to contract
+**Current revision: `draft-rapp-ammp-00`**, which corresponds to contract
 3.1.0 (wire `contract_version` `"2"` - the contract's own SemVer and the wire
 major track different things as of 3.0.0; see the draft's Versioning and
 Conformance section). The draft has not been submitted.
@@ -134,14 +134,14 @@ draft/draft-amap.xml  the normative prose, as an IETF Internet-Draft - actors,
                       hand-edited, and the source of dist/
 schemas/              JSON Schema (2020-12) for each message
 fixtures/             golden valid + invalid artifacts, and the validator
-dist/                 the draft rendered: draft-rapp-amap-00.txt to read, .xml to submit
+dist/                 the draft rendered: draft-rapp-ammp-00.txt to read, .xml to submit
 spec/contract.md      FROZEN - the prose the draft was reconciled against
 spec/peer-origin.md   FROZEN - the peer-origin profile's prose before it moved
                       into the draft
 ```
 
 The Internet-Draft (`draft/draft-amap.xml`), together with `schemas/` and
-`fixtures/`, is the normative contract. Read it as `dist/draft-rapp-amap-00.txt`.
+`fixtures/`, is the normative contract. Read it as `dist/draft-rapp-ammp-00.txt`.
 The JSON the draft shows is written into it from `schemas/` and `fixtures/`,
 never copied by hand, and the build fails if the two ever differ.
 

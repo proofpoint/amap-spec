@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://amap-spec/schemas/inbound-message.schema.json",
   "title": "inbound-message",
-  "description": "runtime -> connector: the full delivered message (incl. body_text), spooled at inbound/messages/notice-<id>.json, keyed on the runtime-minted notice-id (never the provider message.id). AMAP, section \"The Inbound Message (body spool)\". Runtime-authored: this document's envelope is OPEN (no additionalProperties:false) at every level per the tolerance rule of section \"Versioning\" — a consumer MUST ignore members it does not recognize; emitting an unrecognized member remains producer non-conformance.",
+  "description": "runtime -> connector: the full delivered message (incl. body_text), spooled at inbound/messages/notice-<id>.json, keyed on the runtime-minted notice-id (never the provider message.id). AMMP, section \"The Inbound Message (body spool)\". Runtime-authored: this document's envelope is OPEN (no additionalProperties:false) at every level per the tolerance rule of section \"Versioning\" — a consumer MUST ignore members it does not recognize; emitting an unrecognized member remains producer non-conformance.",
   "type": "object",
   "required": ["contract_version", "notice_id", "body_text"],
   "properties": {

@@ -193,7 +193,7 @@ make -C draft          # build dist/ and run every gate
 make -C draft normdiff BASE=origin/main
 ```
 
-- The dist copy: `dist/draft-rapp-amap-00.xml` must equal `draft/draft-amap.xml`
+- The dist copy: `dist/draft-rapp-ammp-00.xml` must equal `draft/draft-amap.xml`
   byte for byte. It looks identical to the source and is easy to edit by
   mistake; an edit there fails the check instead of being silently overwritten.
 - `tools/sync_sources.py`: every JSON block in the draft equals its file on

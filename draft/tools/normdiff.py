@@ -11,7 +11,7 @@ the new sentence's classification a decision.
     normdiff.py [BASE]      BASE is a git ref; default origin/main
 
 If BASE predates the canonical XML (draft/draft-amap.xml), the committed
-rendering in dist/ (draft-rapp-amap-00.xml, or draft-amap-00.xml before the
+rendering in dist/ (draft-rapp-ammp-00.xml; draft-rapp-amap-00.xml or draft-amap-00.xml before the
 2026-10 rename) is used instead, so the diff can span the
 switch. Informational: always exits 0 unless git itself fails.
 
@@ -28,7 +28,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import normative  # noqa: E402
 
 REPO = Path(__file__).resolve().parent.parent.parent
-CANDIDATES = ("draft/draft-amap.xml", "dist/draft-rapp-amap-00.xml", "dist/draft-amap-00.xml")
+CANDIDATES = ("draft/draft-amap.xml", "dist/draft-rapp-ammp-00.xml", "dist/draft-rapp-amap-00.xml", "dist/draft-amap-00.xml")
 
 
 def at_ref(ref: str) -> tuple[str, str]:

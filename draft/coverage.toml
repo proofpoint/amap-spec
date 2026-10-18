@@ -7,7 +7,7 @@
 # The entries marked `baseline = true` are the migration baseline: the 128
 # sentences present when the draft XML became the canonical source
 # (2026-09-24), recorded but not yet reasoned about (115 remain at
-# draft-rapp-amap-00, where every sentence the revision reworded was given its
+# draft-rapp-ammp-00, where every sentence the revision reworded was given its
 # real class). Classify them — fixture,
 # operational or informative — as they are reviewed; that is how this file
 # earns its keep. Never add an unclassified entry: a new sentence gets its real
@@ -920,7 +920,7 @@ text = "(the artifact itself is OPTIONAL — ); if present: router, written_at, 
 id = "fb781db6c125"
 section = "sec-4-1"
 class = "operational"
-note = "Where a Runtime gets each Namespace's name is configuration and layout, invisible to a document validator. Check: start the Runtime without a name source and confirm it refuses to start or rejects requests. Reworded for draft-rapp-amap-00 (never -> MUST NOT)."
+note = "Where a Runtime gets each Namespace's name is configuration and layout, invisible to a document validator. Check: start the Runtime without a name source and confirm it refuses to start or rejects requests. Reworded for draft-rapp-ammp-00 (never -> MUST NOT)."
 text = "A Runtime MUST know the <agent-id> of every Namespace it serves: from its own configuration or, where its own layout carries it, from the Namespace's path, and MUST NOT take it from anything the Agent writes."
 
 [[sentence]]
@@ -1267,11 +1267,11 @@ fixtures = ["valid/peer-minimal.json", "invalid/peer-message-id-encoded.json", "
 text = "The id MUST be globally unique and unguessable, with at least 128 bits of entropy, and MUST be spelled under the notice_id character set (^[A-Za-z0-9_][A-Za-z0-9_.-]*$)."
 
 [[sentence]]
-id = "21bfd12f36d4"
+id = "25a8d1957b9b"
 section = "sec-peer-corr"
 class = "fixture"
 fixtures = ["invalid/peer-message-id-encoded.json", "invalid/peer-in-reply-to-encoded.json", "invalid/statement-id-encoded.json"]
-text = "The encoding is applied on the way into the header and removed on the way out, and MUST NOT appear in an AMAP document."
+text = "The encoding is applied on the way into the header and removed on the way out, and MUST NOT appear in an AMMP document."
 
 [[sentence]]
 id = "ea52517b0191"
