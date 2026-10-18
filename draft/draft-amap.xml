@@ -35,8 +35,10 @@
 
 <t>The Agent Mediated Messaging Protocol (AMMP) is a wire contract, carried over a
 filesystem namespace, between an untrusted per-agent connector and a trusted,
-credentialed mail runtime. It gives a sandboxed AI agent the ability to send
-and receive email through a runtime that does not trust it: every outbound
+credentialed, store-and-forward messaging runtime. It gives a sandboxed AI
+agent the ability to send and receive messages (email, and under an optional
+profile, messages to other agents) through a runtime that does not trust it:
+every outbound
 message begins as an inert request file that the runtime copies into private
 staging, validates independently, and applies policy to before anything is
 transmitted, and every inbound message is authenticated and screened by the
@@ -75,7 +77,8 @@ issue tracker can be found at <eref target="https://github.com/proofpoint/amap-s
 
 <section anchor="sec-1">
       <name>Introduction — Motivation and Problem Statement</name>
-      <t>AI agents increasingly need email. They are tasked over it, they return
+      <t>AI agents increasingly need to correspond, by email above all. They are
+tasked over it, they return
 results over it, and they correspond over it with people and with systems
 that speak no other protocol. An agent is nonetheless an untrusted process: it
 can be prompt-injected by the very content it is asked to read, it can be
@@ -118,14 +121,15 @@ positions AMMP against that landscape in detail.</t>
       </section>
       <section anchor="sec-the-approach">
         <name>The approach</name>
-        <t>AMMP interposes a <strong>trusted runtime</strong> between the agent and the mail system.
+        <t>AMMP interposes a <strong>trusted runtime</strong> between the agent and the systems
+that carry its messages, holding each message before forwarding it.
 The runtime holds every credential, owns the agent's sending identity, and
 makes every policy decision. The agent interacts with the runtime only
 through a channel that carries <strong>no capability</strong>: it writes an inert request
 file into a directory, and the runtime — independently, on its own schedule,
 over its own private copy of those bytes — decides what, if anything, happens
-next. In the other direction the runtime authenticates and screens mail
-before writing a notice describing it into the agent's namespace, and
+next. In the other direction the runtime authenticates and screens each
+message before writing a notice describing it into the agent's namespace, and
 withholds the bytes of anything it will not vouch for.</t>
         <t>The payoff, which the rest of this document formalizes, is the load-bearing
 invariant:</t>
@@ -325,8 +329,9 @@ peer tree (<xref target="sec-peer-origin"/>).</t>
         </li>
 
         <li>
-          <t><strong>Agent</strong> — the untrusted process whose email capability this protocol
-mediates. It holds no credential, has no send path of its own, and reaches
+          <t><strong>Agent</strong> — the untrusted process whose messaging capability this
+protocol mediates: email, and under the peer-origin profile, messages to other
+Agents. It holds no credential, has no send path of its own, and reaches
 the protocol only through its Connector. Nothing in this document places a
 requirement on the Agent, because no security property may depend on it.</t>
         </li>
@@ -427,10 +432,13 @@ host (<xref target="sec-peer-stmt"/>).</t>
         </li>
 
         <li>
-          <t><strong>Runtime</strong> — the trusted, credentialed, Agent-agnostic component that
-speaks the other half: it holds mail credentials, owns each Agent's
-identity, makes every policy decision, and is the only party that
-transmits or receives mail.</t>
+          <t><strong>Runtime</strong> — the trusted, credentialed, Agent-agnostic,
+store-and-forward messaging component that speaks the other half: it holds
+the messaging credentials, owns each Agent's identity, makes every policy
+decision, and is the only party that transmits or receives messages. It holds
+each message before forwarding it: an outbound message is copied into private
+staging and checked before anything is transmitted, and an inbound message is
+screened before a Notice describing it appears.</t>
         </li>
 
         <li>
@@ -489,7 +497,7 @@ No implementation may depend on that name or any other.</t>
               <td align="left">
                 <strong>Runtime</strong> (container)</td>
               <td align="left">trusted</td>
-              <td align="left">mail-send credentials, Agent identity, policy, the record of what was sent</td>
+              <td align="left">messaging credentials, Agent identity, policy, the record of what was sent</td>
               <td align="left">the mail provider, the Volume</td>
             </tr>
             <tr>
@@ -510,8 +518,8 @@ No implementation may depend on that name or any other.</t>
           </tbody>
         </table>
         <t>The Runtime is trusted by construction: it is the party holding the
-credentials, and a compromise of it is a compromise of the mail capability
-itself. The Connector is the interesting case. It runs Agent-side, is
+credentials, and a compromise of it is a compromise of the messaging
+capability itself. The Connector is the interesting case. It runs Agent-side, is
 reachable by whatever compromises the Agent, and is therefore treated as
 untrusted for every property that protects the Runtime, other Agents, or the
 outside world. Requirements this document places on a Connector fall into
@@ -6735,7 +6743,9 @@ this appendix (<xref target="sec-hist-versioning"/>).</t>
 Mailbox Access Protocol, and is renamed the Agent Mediated Messaging Protocol
 before its first submission: "mailbox access" named only its first channel,
 and the contract is a mediation seam for an Agent's correspondence, mail and
-peer traffic alike. The acronym AMAP was also already in use by an expired
+peer traffic alike. The abstract and the definitions of Agent and Runtime
+describe it that way, as a store-and-forward messaging runtime; email remains
+the only transport this document defines. The acronym AMAP was also already in use by an expired
 2003 individual draft. Nothing on the wire changes: no document carries the
 protocol's name, and the header fields of <xref target="sec-iana-headers"/>
 keep their names.</t>

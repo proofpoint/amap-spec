@@ -15,14 +15,15 @@ Abstract
 
    The Agent Mediated Messaging Protocol (AMMP) is a wire contract,
    carried over a filesystem namespace, between an untrusted per-agent
-   connector and a trusted, credentialed mail runtime.  It gives a
-   sandboxed AI agent the ability to send and receive email through a
-   runtime that does not trust it: every outbound message begins as an
-   inert request file that the runtime copies into private staging,
-   validates independently, and applies policy to before anything is
-   transmitted, and every inbound message is authenticated and screened
-   by the runtime before a notice describing it appears in the agent's
-   namespace.
+   connector and a trusted, credentialed, store-and-forward messaging
+   runtime.  It gives a sandboxed AI agent the ability to send and
+   receive messages (email, and under an optional profile, messages to
+   other agents) through a runtime that does not trust it: every
+   outbound message begins as an inert request file that the runtime
+   copies into private staging, validates independently, and applies
+   policy to before anything is transmitted, and every inbound message
+   is authenticated and screened by the runtime before a notice
+   describing it appears in the agent's namespace.
 
    This document specifies the directory layout and its filesystem
    obligations — ownership, write and delete rights, and the path,
@@ -49,7 +50,6 @@ About This Draft
 Discussion Venues
 
    This note is to be removed before publishing as an RFC.
-
 
 
 
@@ -237,22 +237,23 @@ Internet-Draft                    AMMP                      October 2026
      L.4.  3.0.0 — direction-aware tolerance, and six closed safety
            holes . . . . . . . . . . . . . . . . . . . . . . . . . . 143
      L.5.  2.3.0 — inbound byte access in force  . . . . . . . . . . 145
-     L.6.  2.2.0 — deletion rights, read-only inbound  . . . . . . . 145
+     L.6.  2.2.0 — deletion rights, read-only inbound  . . . . . . . 146
      L.7.  2.1.0 — the body spool, and three optional Result
            members . . . . . . . . . . . . . . . . . . . . . . . . . 146
      L.8.  2.0.0 — attachments, and contract_version required  . . . 146
-     L.9.  Fixture identifier normalization  . . . . . . . . . . . . 146
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . . 146
+     L.9.  Fixture identifier normalization  . . . . . . . . . . . . 147
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . . 147
 
 1.  Introduction — Motivation and Problem Statement
 
-   AI agents increasingly need email.  They are tasked over it, they
-   return results over it, and they correspond over it with people and
-   with systems that speak no other protocol.  An agent is nonetheless
-   an untrusted process: it can be prompt-injected by the very content
-   it is asked to read, it can be defective, and it can be compromised
-   outright.  Granting such a process email capability directly is
-   dangerous along three concrete axes.
+   AI agents increasingly need to correspond, by email above all.  They
+   are tasked over it, they return results over it, and they correspond
+   over it with people and with systems that speak no other protocol.
+   An agent is nonetheless an untrusted process: it can be prompt-
+   injected by the very content it is asked to read, it can be
+   defective, and it can be compromised outright.  Granting such a
+   process email capability directly is dangerous along three concrete
+   axes.
 
    *Inbound.* Delivered mail is untrusted content routed directly into
    the agent's reasoning.  A message body, a subject line, a sender
@@ -271,7 +272,6 @@ Internet-Draft                    AMMP                      October 2026
    abused by whatever compromises the agent.  Worse, an agent holding a
    credential has no identity of its own that a recipient — or its own
    operator — can verify independently of that credential.
-
 
 
 
@@ -308,16 +308,17 @@ Internet-Draft                    AMMP                      October 2026
 
 1.2.  The approach
 
-   AMMP interposes a *trusted runtime* between the agent and the mail
-   system.  The runtime holds every credential, owns the agent's sending
+   AMMP interposes a *trusted runtime* between the agent and the systems
+   that carry its messages, holding each message before forwarding it.
+   The runtime holds every credential, owns the agent's sending
    identity, and makes every policy decision.  The agent interacts with
    the runtime only through a channel that carries *no capability*: it
    writes an inert request file into a directory, and the runtime —
    independently, on its own schedule, over its own private copy of
    those bytes — decides what, if anything, happens next.  In the other
-   direction the runtime authenticates and screens mail before writing a
-   notice describing it into the agent's namespace, and withholds the
-   bytes of anything it will not vouch for.
+   direction the runtime authenticates and screens each message before
+   writing a notice describing it into the agent's namespace, and
+   withholds the bytes of anything it will not vouch for.
 
    The payoff, which the rest of this document formalizes, is the load-
    bearing invariant:
@@ -326,7 +327,6 @@ Internet-Draft                    AMMP                      October 2026
       speaking for it — behaving correctly.  Enforcement is entirely
       runtime-side.  A compromised agent or connector can at most write
       a well-formed request that the runtime then refuses.
-
 
 
 
@@ -537,16 +537,16 @@ Internet-Draft                    AMMP                      October 2026
       It does not hold write authority over the peer tree
       (Section 12.3).
 
-   *  *Agent* — the untrusted process whose email capability this
-      protocol mediates.  It holds no credential, has no send path of
-      its own, and reaches the protocol only through its Connector.
-      Nothing in this document places a requirement on the Agent,
-      because no security property may depend on it.
+   *  *Agent* — the untrusted process whose messaging capability this
+      protocol mediates: email, and under the peer-origin profile,
+      messages to other Agents.  It holds no credential, has no send
+      path of its own, and reaches the protocol only through its
+      Connector.  Nothing in this document places a requirement on the
+      Agent, because no security property may depend on it.
 
    *  *Binding Record* — the optional, informational artifact at the
       Volume root naming which mailbox the Volume is bound to
       (Section 9).
-
 
 
 
@@ -635,10 +635,14 @@ Internet-Draft                    AMMP                      October 2026
    *  *Result* — the Runtime-authored verdict for one consumed Submit
       Request (Section 6).
 
-   *  *Runtime* — the trusted, credentialed, Agent-agnostic component
-      that speaks the other half: it holds mail credentials, owns each
-      Agent's identity, makes every policy decision, and is the only
-      party that transmits or receives mail.
+   *  *Runtime* — the trusted, credentialed, Agent-agnostic, store-and-
+      forward messaging component that speaks the other half: it holds
+      the messaging credentials, owns each Agent's identity, makes every
+      policy decision, and is the only party that transmits or receives
+      messages.  It holds each message before forwarding it: an outbound
+      message is copied into private staging and checked before anything
+      is transmitted, and an inbound message is screened before a Notice
+      describing it appears.
 
    *  *Sidecar* — attachment bytes stored beside a Submit Request or a
       Notice, in a directory named after that artifact, with each blob
@@ -665,10 +669,6 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-
-
-
-
 Rapp & Adams              Expires 21 April 2027                [Page 12]
 
 Internet-Draft                    AMMP                      October 2026
@@ -681,7 +681,7 @@ Internet-Draft                    AMMP                      October 2026
     +=============+===============+====================+==============+
     | Actor       | Trust         | Holds              | Reaches      |
     +=============+===============+====================+==============+
-    | *Runtime*   | trusted       | mail-send          | the mail     |
+    | *Runtime*   | trusted       | messaging          | the mail     |
     | (container) |               | credentials, Agent | provider,    |
     |             |               | identity, policy,  | the Volume   |
     |             |               | the record of what |              |
@@ -702,7 +702,7 @@ Internet-Draft                    AMMP                      October 2026
                                   Table 1
 
    The Runtime is trusted by construction: it is the party holding the
-   credentials, and a compromise of it is a compromise of the mail
+   credentials, and a compromise of it is a compromise of the messaging
    capability itself.  The Connector is the interesting case.  It runs
    Agent-side, is reachable by whatever compromises the Agent, and is
    therefore treated as untrusted for every property that protects the
@@ -7657,14 +7657,14 @@ L.1.  draft-rapp-ammp-00 — brought to the IETF (contract 3.1.0)
       The reasoning that explained earlier version changes moved into
       this appendix (Appendix L.2).
 
-   *  *The protocol is AMMP.* It was AMAP, the Agent Mailbox Access
-      Protocol, and is renamed the Agent Mediated Messaging Protocol
-      before its first submission: "mailbox access" named only its first
-      channel, and the contract is a mediation seam for an Agent's
-      correspondence, mail and peer traffic alike.  The acronym AMAP was
-      also already in use by an expired 2003 individual draft.  Nothing
-      on the wire changes: no document carries the protocol's name, and
-      the header fields of Section 15.1 keep their names.
+
+
+
+
+
+
+
+
 
 
 
@@ -7673,6 +7673,18 @@ Rapp & Adams              Expires 21 April 2027               [Page 137]
 
 Internet-Draft                    AMMP                      October 2026
 
+
+   *  *The protocol is AMMP.* It was AMAP, the Agent Mailbox Access
+      Protocol, and is renamed the Agent Mediated Messaging Protocol
+      before its first submission: "mailbox access" named only its first
+      channel, and the contract is a mediation seam for an Agent's
+      correspondence, mail and peer traffic alike.  The abstract and the
+      definitions of Agent and Runtime describe it that way, as a store-
+      and-forward messaging runtime; email remains the only transport
+      this document defines.  The acronym AMAP was also already in use
+      by an expired 2003 individual draft.  Nothing on the wire changes:
+      no document carries the protocol's name, and the header fields of
+      Section 15.1 keep their names.
 
    *  *Editorial review for submission.* Terminology was alphabetized
       and Drop and Fail Closed became defined terms; requirements
@@ -7710,6 +7722,14 @@ L.2.  How the versioning rules came about
    regime, adding a member was not a safe additive change: a strict
    major-1 validator rejected the *whole document*, not just the new
    member.  Inbound, that was *silent total message loss* — an
+
+
+
+Rapp & Adams              Expires 21 April 2027               [Page 138]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    attachment-bearing email vanished instead of degrading.  Outbound, it
    was an accidental schema error rather than a designed refusal.  And
    there was no signal to gate on while contract_version stayed "1".
@@ -7722,14 +7742,6 @@ L.2.  How the versioning rules came about
    whole-document acceptance compatibility; the contract version tracked
    the fuller set of obligations, including narrower, disclosed
    producer-side tightenings.  Contract 3.0.0 was a major contract
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 138]
-
-Internet-Draft                    AMMP                      October 2026
-
-
    change — it moved fixtures between the valid and invalid sets, and
    added Runtime obligations that a strictly compliant earlier
    implementation did not meet — while the wire major stayed "2".
@@ -7766,6 +7778,14 @@ Internet-Draft                    AMMP                      October 2026
        exact against the fixture set.  Both statements were false: the
        content_ref index and prefix binding is not expressible in the
        schema dialect used here, and a fixture exists that is schema-
+
+
+
+Rapp & Adams              Expires 21 April 2027               [Page 139]
+
+Internet-Draft                    AMMP                      October 2026
+
+
        valid on its own and must nonetheless be dropped.  Section 7.1
        states two independent checks, and so does the Connector
        conformance class.
@@ -7775,16 +7795,6 @@ Internet-Draft                    AMMP                      October 2026
    minor change, which was unsound against the strictly validating
    consumers of the time.  The 2.1.0 entry below records what actually
    happened.
-
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 139]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    *Lessons from implementation.* Several rules in this document exist
    because an early implementation got them wrong: it trusted a req_id
@@ -7811,6 +7821,27 @@ L.3.  3.1.0 — the protocol is AMAP; the outbound extension space; the
 
    An additive *minor* bump; the wire major stays "2".
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Rapp & Adams              Expires 21 April 2027               [Page 140]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    *  *The signed cross-host peer statement and control notice*
       (2026-10-09, proposed, not yet reviewed; companion-document
       section 5 revision s5-r4).  Two new schemas (Appendix F): the
@@ -7832,15 +7863,6 @@ L.3.  3.1.0 — the protocol is AMAP; the outbound extension space; the
       character set forbids, so a receiver could verify a statement it
       could not then publish; one signed case minted such an id.  The
       grammar is narrowed (Appendix L.1), and the case was minted again.
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 140]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    *  *The fleet roster* (2026-09-24).  A new, optional artifact
       (Section 11, schema in Appendix H): one Runtime-written file
@@ -7869,6 +7891,13 @@ Internet-Draft                    AMMP                      October 2026
       is a companion document (spec/peer-origin.md, itself DRAFT), and
       its schema and fixtures may still change before it is settled.
 
+
+
+Rapp & Adams              Expires 21 April 2027               [Page 141]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    *  *Outbound extension space.* outbound/ext/<name>/ is defined as a
       Connector-owned side channel a Runtime MAY read by out-of-band
       agreement, with no shape specified and nothing security-relevant
@@ -7890,14 +7919,6 @@ Internet-Draft                    AMMP                      October 2026
       by peer-notice.schema.json (Appendix F): the deliver-notice layout
       with kind and mailbox fixed to peer, message.from a bare addr-
       spec, message identifiers in the notice-identifier character set,
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 141]
-
-Internet-Draft                    AMMP                      October 2026
-
-
       and the optional Runtime-asserted sender_exposure stamp with its
       required members.  The profile's prose is the companion document
       spec/peer-origin.md (v3.1.0 DRAFT).
@@ -7925,6 +7946,14 @@ Internet-Draft                    AMMP                      October 2026
       Questions from Runtime implementers reconciling against this
       document, each answered from the existing text and then stated: a
       Runtime knows the <agent-id> of every Namespace it serves and
+
+
+
+Rapp & Adams              Expires 21 April 2027               [Page 142]
+
+Internet-Draft                    AMMP                      October 2026
+
+
       rejects a request from a Namespace it cannot name (Section 4.1);
       outbound/ext/<name>/'s id is a lowercase single path segment
       (Section 4.1); a Runtime may be built from several trusted
@@ -7946,14 +7975,6 @@ Internet-Draft                    AMMP                      October 2026
       missing asserted_by, a missing last-delivery timestamp when
       exposure is asserted true, an inbox mailbox, a content_ref index
       mismatch, and a trailing-newline identifier.  The validator maps
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 142]
-
-Internet-Draft                    AMMP                      October 2026
-
-
       the peer- prefix to the new schema and applies the content_ref
       post-check to it.  Three existing fixtures had example strings
       normalised to example.* identities (one free-text body, two
@@ -7982,6 +8003,13 @@ L.4.  3.0.0 — direction-aware tolerance, and six closed safety holes
       authored artifact is now genuinely additive; adding any member to
       the submit-request is a major change.
 
+
+
+Rapp & Adams              Expires 21 April 2027               [Page 143]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    *  *...and for values.* The enum constraint was removed from
       message.sender_standing and message.provenance, the two explicitly
       advisory vocabularies, and a consumer must tolerate an
@@ -8002,14 +8030,6 @@ L.4.  3.0.0 — direction-aware tolerance, and six closed safety holes
    *  *Path discipline, write- and read-side both.* The write-side rule
       became *conjunctive* (Section 4.1), and a new read-side rule
       applies the equivalent discipline to every Agent-influenceable
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 143]
-
-Internet-Draft                    AMMP                      October 2026
-
-
       read.  A notice_id character-set pattern was added to the deliver-
       notice and inbound-message schemas so that every legal notice_id
       is also a legal content_ref prefix. *Disclosed cost:* notice_id
@@ -8038,6 +8058,14 @@ Internet-Draft                    AMMP                      October 2026
       nothing, and a stray claim of a second, message-specific Sidecar
       directory was corrected to match the layout tree.
 
+
+
+
+Rapp & Adams              Expires 21 April 2027               [Page 144]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    *  *Corrections shipped with this version*, rather than a tidied
       history: (i) the write rule described in an earlier revision as
       "strengthened" had in fact been weakened — the exclusive-create
@@ -8058,14 +8086,6 @@ Internet-Draft                    AMMP                      October 2026
       inbound-message; the withheld-body invalid fixture was deleted,
       having become schema-valid under the relaxed envelope (its name
       always over-claimed what additionalProperties alone tested); the
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 144]
-
-Internet-Draft                    AMMP                      October 2026
-
-
       bad-provenance fixture moved to the valid set as an unrecognized-
       value case; an invalid extra-member submit-request fixture was
       added to pin the closed side of the asymmetry, previously untested
@@ -8095,6 +8115,13 @@ L.5.  2.3.0 — inbound byte access in force
    shape major 2 already carried.  Nothing was tightened, and there is
    still no outbound content_ref.
 
+
+
+Rapp & Adams              Expires 21 April 2027               [Page 145]
+
+Internet-Draft                    AMMP                      October 2026
+
+
 L.6.  2.2.0 — deletion rights, read-only inbound
 
    A *permissive minor bump*: no wire member, no schema change, no
@@ -8109,18 +8136,6 @@ L.6.  2.2.0 — deletion rights, read-only inbound
    also pinned three previously implicit reason_code rules: setting one
    on every Result became a keyworded SHOULD, and a consumer must
    tolerate an unrecognized code and must not infer outcome from it.
-
-
-
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 145]
-
-Internet-Draft                    AMMP                      October 2026
-
 
 L.7.  2.1.0 — the body spool, and three optional Result members
 
@@ -8155,6 +8170,14 @@ L.8.  2.0.0 — attachments, and contract_version required
    version signal, rather than an unknown-member rejection, is what
    makes that refusal legible.
 
+
+
+
+Rapp & Adams              Expires 21 April 2027               [Page 146]
+
+Internet-Draft                    AMMP                      October 2026
+
+
 L.9.  Fixture identifier normalization
 
    Across these versions the fixture suite's identities were normalized
@@ -8171,32 +8194,9 @@ Authors' Addresses
    Email: drapp@proofpoint.com
 
 
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 146]
-
-Internet-Draft                    AMMP                      October 2026
-
-
    J. Trent Adams
    Proofpoint, Inc.
    Email: tadams@proofpoint.com
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
