@@ -55,7 +55,7 @@ language** — README's "What AMAP is not" says this normatively; keep it true.
 
 | | |
 |---|---|
-| Document | **`draft-rapp-amap-00`**, dated 2026-10-18; corresponds to contract 3.1.0 (the frozen files' titles) |
+| Document | **`draft-rapp-ammp-00`**, "The Agent Mediated Messaging Protocol (AMMP)", dated 2026-10-18; corresponds to contract 3.1.0 (the frozen files' titles). Renamed from AMAP on 2026-10-18; the repository, `draft/draft-amap.xml`, the `amap-*` names and the `AMAP-Peer-*` header fields are not renamed yet |
 | Wire `contract_version` | **`"2"`** — the draft's Versioning section says why it is not reset to `"1"` |
 | `README.md` claims | **121 fixtures** — matches the gate |
 | Actual gate result | **121 fixtures (42 valid, 79 invalid), 0 unexpected**, then **114 signed peer cases and 10 MIME cases, RFC 8032 vectors ok, 0 unexpected** |
@@ -84,7 +84,7 @@ The draft's JSON is never hand-copied. `draft/tools/sync_sources.py`
 `<sourcecode>` block, rewriting only that CDATA body and folding per RFC 8792.
 xml2rfc's own `src=` can't do it: 3.34.1 crashes on non-ASCII UTF-8 in a src
 file. Gates in `make -C draft`:
-- a byte comparison: `dist/draft-rapp-amap-00.xml` must equal the source (never edit `dist/`);
+- a byte comparison: `dist/draft-rapp-ammp-00.xml` must equal the source (never edit `dist/`);
 - `sync_sources.py`: blocks equal disk, and no schema or listed fixture lacks a block;
 - `check_render.py`: the same, plus roster counts, docName, no host paths;
 - `check_coverage.py`: every RFC 2119 sentence in the protocol sections
@@ -333,7 +333,7 @@ not defects:
 - **`fixtures/validate.py` and `fixtures/peer-signed/` code comments still cite
   `spec/contract.md` / `spec/peer-origin.md` section numbers.** They resolve,
   because the frozen files stay. (The schema descriptions were remapped to the
-  draft's section names for draft-rapp-amap-00.)
+  draft's section names for draft-rapp-ammp-00, then named AMAP.)
 - **CI changes are proposed, not applied.** `.github/workflows/` is read-only
   from agent sessions, so a workflow change is handed to the operator to apply.
 - **The `attestation` field name collides with IETF RATS usage** (RFC 9334):

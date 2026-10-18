@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://amap-spec/schemas/peer-notice.schema.json",
   "title": "peer-notice",
-  "description": "runtime -> connector: one notice per peer message placed in <agent-id>/peer/notices/. AMAP, section \"The Peer-Origin Profile (Optional)\". Same layout as deliver-notice with kind and mailbox pinned to \"peer\", message.from pinned to a bare addr-spec (the one runtime-asserted `from` in the protocol), message.id / in_reply_to / references pinned to the notice_id charset (the peer message id is bare on the wire; its Message-ID encoding exists only inside a mail header, never in an AMAP document), plus the optional runtime-asserted message.sender_exposure. Runtime-authored: envelope OPEN at every level per section \"Versioning\" — a consumer MUST ignore members it does not recognize. A document with kind \"peer\" found under inbound/notices/ fails deliver-notice.schema.json; a document with kind \"deliver\" found under peer/notices/ fails this schema: both are dropped under the drop rule of section \"Field semantics and obligations\" (the profile's cross-lock, section \"The Peer Tree\").",
+  "description": "runtime -> connector: one notice per peer message placed in <agent-id>/peer/notices/. AMMP, section \"The Peer-Origin Profile (Optional)\". Same layout as deliver-notice with kind and mailbox pinned to \"peer\", message.from pinned to a bare addr-spec (the one runtime-asserted `from` in the protocol), message.id / in_reply_to / references pinned to the notice_id charset (the peer message id is bare on the wire; its Message-ID encoding exists only inside a mail header, never in an AMMP document), plus the optional runtime-asserted message.sender_exposure. Runtime-authored: envelope OPEN at every level per section \"Versioning\" — a consumer MUST ignore members it does not recognize. A document with kind \"peer\" found under inbound/notices/ fails deliver-notice.schema.json; a document with kind \"deliver\" found under peer/notices/ fails this schema: both are dropped under the drop rule of section \"Field semantics and obligations\" (the profile's cross-lock, section \"The Peer Tree\").",
   "type": "object",
   "required": ["contract_version", "notice_id", "ts", "kind", "message"],
   "properties": {
@@ -16,7 +16,7 @@
       "properties": {
         "id": {
           "type": "string", "minLength": 1,
-          "description": "the peer message id: minted by the sending runtime on accepting the submit, returned to the sender as result.message_id, >=128 bits of entropy, globally unique and unguessable. Bare on the wire under the notice_id charset; when carried in a mail header it is encoded as <id@domain> and decoded again before it enters any AMAP document.",
+          "description": "the peer message id: minted by the sending runtime on accepting the submit, returned to the sender as result.message_id, >=128 bits of entropy, globally unique and unguessable. Bare on the wire under the notice_id charset; when carried in a mail header it is encoded as <id@domain> and decoded again before it enters any AMMP document.",
           "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*(?!\\n)$"
         },
         "from": {

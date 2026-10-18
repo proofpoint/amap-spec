@@ -8,7 +8,7 @@
 <rfc 
 	xmlns:xi="http://www.w3.org/2001/XInclude" 
 	ipr="trust200902" 
-	docName="draft-rapp-amap-00" 
+	docName="draft-rapp-ammp-00" 
 	category="std" 
 	submissionType="IETF" 
 	tocInclude="true" 
@@ -16,8 +16,8 @@
 	symRefs="true" 
 	version="3">
   <front>
-    <title abbrev="AMAP">The Agent Mailbox Access Protocol (AMAP)</title>
-    <seriesInfo name="Internet-Draft" value="draft-rapp-amap-00"/>
+    <title abbrev="AMMP">The Agent Mediated Messaging Protocol (AMMP)</title>
+    <seriesInfo name="Internet-Draft" value="draft-rapp-ammp-00"/>
     <author initials="D." surname="Rapp" fullname="Daniel Rapp">
       <organization>Proofpoint, Inc.</organization>
       <address>
@@ -33,7 +33,7 @@
     <date year="2026" month="October" day="18"/>
     <abstract>
 
-<t>The Agent Mailbox Access Protocol (AMAP) is a wire contract, carried over a
+<t>The Agent Mediated Messaging Protocol (AMMP) is a wire contract, carried over a
 filesystem namespace, between an untrusted per-agent connector and a trusted,
 credentialed mail runtime. It gives a sandboxed AI agent the ability to send
 and receive email through a runtime that does not trust it: every outbound
@@ -52,7 +52,7 @@ profile gives agent-to-agent traffic within one principal its own tree, and
 specifies how a Runtime signs and verifies that traffic when it travels
 between hosts as mail.</t>
 
-<t>AMAP is deliberately not a mail protocol: it neither defines nor replaces 
+<t>AMMP is deliberately not a mail protocol: it neither defines nor replaces 
 SMTP, IMAP, or provider-side infrastructure, and composes with them rather 
 than displacing them. Its single design center is that no security property
 depends on the agent — or on the connector speaking for it — behaving
@@ -114,11 +114,11 @@ should check.</t>
         <t>Adjacent agent protocols do not fill the gap, because they are solving a
 different problem: integration and interoperation <em>among credentialed
 participants</em>, rather than isolation of an <em>untrusted</em> one. <xref target="sec-3-4"/>
-positions AMAP against that landscape in detail.</t>
+positions AMMP against that landscape in detail.</t>
       </section>
       <section anchor="sec-the-approach">
         <name>The approach</name>
-        <t>AMAP interposes a <strong>trusted runtime</strong> between the agent and the mail system.
+        <t>AMMP interposes a <strong>trusted runtime</strong> between the agent and the mail system.
 The runtime holds every credential, owns the agent's sending identity, and
 makes every policy decision. The agent interacts with the runtime only
 through a channel that carries <strong>no capability</strong>: it writes an inert request
@@ -137,7 +137,7 @@ compromised agent or connector can at most write a well-formed request that
 the runtime then refuses.</t>
           </li>
         </ul>
-        <t>AMAP is the wire contract at exactly that trust boundary, and is
+        <t>AMMP is the wire contract at exactly that trust boundary, and is
 owned by neither side of it. That ownership choice is what allows a runtime
 and a connector built by different parties, on different schedules, to
 interoperate and to co-evolve against a versioned contract with an offline
@@ -190,13 +190,13 @@ particular agent harness, language, or tool interface.</t>
         <name>Non-goals</name>
         <ul spacing="normal">
           <li>
-            <t><strong>AMAP is not a mail transport.</strong> It neither defines nor replaces SMTP,
+            <t><strong>AMMP is not a mail transport.</strong> It neither defines nor replaces SMTP,
 IMAP, or any provider-side mail infrastructure. It describes what a runtime
 and a connector exchange <em>locally</em>; whatever the runtime does with a mail
 provider is out of scope.</t>
           </li>
           <li>
-            <t><strong>AMAP is not agent-to-agent RPC.</strong> The core contract is local to
+            <t><strong>AMMP is not agent-to-agent RPC.</strong> The core contract is local to
 one deployment's filesystem, between two components on either side of a
 single trust boundary. The optional peer-origin profile
 (<xref target="sec-peer"/>) lets Agents of one principal write to one another,
@@ -205,7 +205,7 @@ sending Runtime. The profile defines no call or return semantics, no
 discovery mechanism, and no transport of its own.</t>
           </li>
           <li>
-            <t><strong>AMAP is not a policy language.</strong> What a runtime's policy decides — which
+            <t><strong>AMMP is not a policy language.</strong> What a runtime's policy decides — which
 recipients are permitted, which content is held for review, how a sender's
 standing is computed — is deliberately out of scope. The wire defines only
 the shapes of requests and verdicts, never the computation that produces
@@ -219,7 +219,7 @@ wire-verifiable fact, this document says so (<xref target="sec-11-14"/>).</t>
       </section>
       <section anchor="sec-why-ietf" removeInRFC="true">
         <name>Why This Work Is Brought to the IETF</name>
-        <t>AMAP began as an implementation: a Runtime and Connectors built
+        <t>AMMP began as an implementation: a Runtime and Connectors built
 separately against a shared contract, with an offline conformance suite
 so that each side could be tested without the other. It has been exercised in
 deployments of several cooperating Agents from more than one vendor, but every
@@ -241,9 +241,9 @@ implementers and for interoperation testing across organizations.</t>
 organization, and by the people who operate mail at scale.</t>
           </li>
           <li>
-            <t><strong>Alignment with related work.</strong> AMAP deliberately adds no new
+            <t><strong>Alignment with related work.</strong> AMMP deliberately adds no new
 transport and no new identity scheme: email stays SMTP, and how an Agent's
-identity is established is left to work designed for that purpose. Where AMAP
+identity is established is left to work designed for that purpose. Where AMMP
 touches such work, it should follow it rather than invent its own.</t>
           </li>
         </ul>
@@ -590,9 +590,9 @@ threat.</t>
       <section anchor="sec-3-4">
         <name>Relationship to Other Agent Protocols (Informative)</name>
         <t><em>This subsection is informative. It contains no requirements and creates no
-dependency on any external protocol. Nothing here claims that AMAP replaces,
+dependency on any external protocol. Nothing here claims that AMMP replaces,
 subsumes, or competes with any protocol named below.</em></t>
-        <t>AMAP occupies a narrow position: it is the local seam at a single trust
+        <t>AMMP occupies a narrow position: it is the local seam at a single trust
 boundary, where one side holds every credential and the other holds none.
 The adjacent protocols in the agent ecosystem sit at different layers, and
 the common question of "why not use one of them here" has a specific answer
@@ -600,12 +600,12 @@ in each case.</t>
         <t><strong>Model Context Protocol (MCP)</strong> <xref target="MCP"/> connects an agent host to tools and
 context through JSON-RPC servers. It is an integration interface: live
 capabilities are exposed across it and exercised by the agent through it.
-That makes MCP complementary to AMAP rather than an alternative. A Connector
-often surfaces AMAP's operations to its Agent through MCP, or through
-whatever tool interface its harness uses natively; AMAP is the
+That makes MCP complementary to AMMP rather than an alternative. A Connector
+often surfaces AMMP's operations to its Agent through MCP, or through
+whatever tool interface its harness uses natively; AMMP is the
 capability-free seam sitting behind that surface. The contrast worth stating
 is exactly the one that motivates the two coexisting: an MCP-style interface
-grants live capability across the boundary it spans, while AMAP's channel
+grants live capability across the boundary it spans, while AMMP's channel
 deliberately grants none — the Agent-side surface can be as rich as the
 harness likes, because what crosses the trust boundary underneath it is an
 inert file. The current stable MCP specification revision is 2025-11-25; the
@@ -613,11 +613,11 @@ protocol originated at Anthropic.</t>
         <t><strong>Agent2Agent (A2A)</strong> <xref target="A2A"/> is networked agent-to-agent RPC between
 mutually authenticated services, with agent cards, tasks, and HTTP/SSE/JSON-RPC
 transport. It presumes both endpoints are credentialed participants that can
-authenticate to each other. AMAP's design center is the opposite: an
+authenticate to each other. AMMP's design center is the opposite: an
 untrusted agent that holds no credentials at all, with enforcement placed
 entirely on the trusted side of a local boundary. The two are orthogonal, and
 compose without friction — an agent that speaks A2A to its peers can use
-AMAP for its mail capability, and neither protocol needs to know about the
+AMMP for its mail capability, and neither protocol needs to know about the
 other. A2A is at v1.0 (v1.0.1, May 2026); it originated at Google and has
 been hosted as a Linux Foundation project since June 2025.</t>
         <t><strong>The two protocols abbreviated "ACP" are not the same protocol</strong>, and the
@@ -633,7 +633,7 @@ here: it merged into A2A under the Linux Foundation, announced in August
             <t>The <strong>Agent Client Protocol</strong> <xref target="ACP-CLIENT"/> is a distinct and currently
 active protocol at a different layer — an interface between a host or
 editor and an agent — originated by Zed Industries. It is unrelated to the
-merged Agent Communication Protocol and unrelated to AMAP.</t>
+merged Agent Communication Protocol and unrelated to AMMP.</t>
           </li>
         </ul>
         <t>The citation facts in this subsection were verified in July 2026. A reviewer
@@ -2109,14 +2109,14 @@ addressing.</t>
 message id when it accepts the submit. The id MUST be globally unique and
 unguessable, with at least 128 bits of entropy, and MUST be spelled under the
 <tt>notice_id</tt> character set (<tt>^[A-Za-z0-9_][A-Za-z0-9_.-]*$</tt>).
-It has exactly one spelling inside every AMAP document:
+It has exactly one spelling inside every AMMP document:
 <tt>message.id</tt>, <tt>message.in_reply_to</tt> and
 <tt>message.references[]</tt> on a Peer Notice, <tt>message_id</tt> on a
 peer-routed Result, and the reply key a sender submits all carry the bare id.
 When the id is carried in a mail header, it is encoded as
 <tt>&lt;id@domain&gt;</tt>, where <tt>domain</tt> is the sending Runtime's
 authority. The encoding is applied on the way into the header and removed on
-the way out, and MUST NOT appear in an AMAP document.</t>
+the way out, and MUST NOT appear in an AMMP document.</t>
         <t>The reverse edge and every ledger depend on two properties of the id:
 that it is unguessable, and that it has one spelling end to end. Bare
 32-character hexadecimal satisfies both, and so does unpadded base64url
@@ -4285,7 +4285,7 @@ NOTE: '\' line wrapping per RFC 8792
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://amap-spec/schemas/submit-request.schema.json",
   "title": "submit-request",
-  "description": "agent -> runtime: an inert outbound request. AMAP\
+  "description": "agent -> runtime: an inert outbound request. AMMP\
     , section \"Outbound: Submit Request\". Agent-authored: this doc\
     ument's envelope stays CLOSED (additionalProperties:false) at ev\
     ery level per the asymmetry of section \"Versioning\" — an unrec\
@@ -4385,7 +4385,7 @@ NOTE: '\' line wrapping per RFC 8792
   "$id": "https://amap-spec/schemas/result.schema.json",
   "title": "result",
   "description": "runtime -> agent: verdict for a submit-request. AM\
-    AP, section \"Outbound: Result\". Runtime-authored: this documen\
+    MP, section \"Outbound: Result\". Runtime-authored: this documen\
     t's envelope is OPEN (no additionalProperties:false) at every le\
     vel per the tolerance rule of section \"Versioning\" — a consume\
     r MUST ignore members it does not recognize; emitting an unrecog\
@@ -4452,7 +4452,7 @@ NOTE: '\' line wrapping per RFC 8792
   "$id": "https://amap-spec/schemas/deliver-notice.schema.json",
   "title": "deliver-notice",
   "description": "runtime -> connector: one notice per delivered mes\
-    sage. AMAP, section \"Inbound: Deliver Notice and Inbound Messag\
+    sage. AMMP, section \"Inbound: Deliver Notice and Inbound Messag\
     e\". Runtime-authored: this document's envelope is OPEN (no addi\
     tionalProperties:false) at every level per the tolerance rule o\
     f section \"Versioning\" — a consumer MUST ignore members it doe\
@@ -4559,7 +4559,7 @@ NOTE: '\' line wrapping per RFC 8792
   "description": "runtime -> connector: the full delivered message (\
     incl. body_text), spooled at inbound/messages/notice-<id>.json, \
     keyed on the runtime-minted notice-id (never the provider messag\
-    e.id). AMAP, section \"The Inbound Message (body spool)\". Runti\
+    e.id). AMMP, section \"The Inbound Message (body spool)\". Runti\
     me-authored: this document's envelope is OPEN (no additionalProp\
     erties:false) at every level per the tolerance rule of section \\
     "Versioning\" — a consumer MUST ignore members it does not recog\
@@ -4628,7 +4628,7 @@ NOTE: '\' line wrapping per RFC 8792
   "$id": "https://amap-spec/schemas/binding-record.schema.json",
   "title": "binding-record",
   "description": "runtime/provisioner -> volume root: identity.json\
-    , the mailbox<->volume binding record. AMAP, section \"Binding R\
+    , the mailbox<->volume binding record. AMMP, section \"Binding R\
     ecord\". INFORMATIONAL, NOT AUTHORITATIVE: the volume is agent-w\
     ritable, so a consumer MUST treat contents as untrusted data an\
     d MUST tolerate the file's absence. Unlike the other runtime-aut\
@@ -4670,13 +4670,13 @@ NOTE: '\' line wrapping per RFC 8792
   "$id": "https://amap-spec/schemas/peer-notice.schema.json",
   "title": "peer-notice",
   "description": "runtime -> connector: one notice per peer message \
-    placed in <agent-id>/peer/notices/. AMAP, section \"The Peer-Ori\
+    placed in <agent-id>/peer/notices/. AMMP, section \"The Peer-Ori\
     gin Profile (Optional)\". Same layout as deliver-notice with kin\
     d and mailbox pinned to \"peer\", message.from pinned to a bare \
     addr-spec (the one runtime-asserted `from` in the protocol), mes\
     sage.id / in_reply_to / references pinned to the notice_id chars\
     et (the peer message id is bare on the wire; its Message-ID enco\
-    ding exists only inside a mail header, never in an AMAP document\
+    ding exists only inside a mail header, never in an AMMP document\
     ), plus the optional runtime-asserted message.sender_exposure. R\
     untime-authored: envelope OPEN at every level per section \"Vers\
     ioning\" — a consumer MUST ignore members it does not recognize\
@@ -4705,7 +4705,7 @@ NOTE: '\' line wrapping per RFC 8792
     ult.message_id, >=128 bits of entropy, globally unique and ungue\
     ssable. Bare on the wire under the notice_id charset; when carri\
     ed in a mail header it is encoded as <id@domain> and decoded aga\
-    in before it enters any AMAP document.",
+    in before it enters any AMMP document.",
           "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*(?!\\n)$"
         },
         "from": {
@@ -4835,7 +4835,7 @@ NOTE: '\' line wrapping per RFC 8792
   "$id": "https://amap-spec/schemas/peer-statement.schema.json",
   "title": "peer-statement",
   "description": "runtime -> runtime: the signed statement that carr\
-    ies a peer message between hosts. AMAP, section \"Peer Traffic B\
+    ies a peer message between hosts. AMMP, section \"Peer Traffic B\
     etween Hosts\". The sending runtime signs the statement's exact \
     UTF-8 bytes with Ed25519 and ships both in one AMAP-Peer-Stateme\
     nt header field (section \"Carriage, and the Candidate the Verif\
@@ -5073,7 +5073,7 @@ NOTE: '\' line wrapping per RFC 8792
   "description": "runtime -> runtime: the signed control notice a re\
     ceiving runtime sends to a configured sending runtime about wha\
     t it did with an authenticated peer statement that it did not pl\
-    ace (refused, dropped, or demoted). AMAP, section \"Control Noti\
+    ace (refused, dropped, or demoted). AMMP, section \"Control Noti\
     ces\". Carried in an AMAP-Peer-Control header field with the sam\
     e k/s/b grammar as AMAP-Peer-Statement, signed with the same per\
     -runtime key; `kind` is \"control\", so a control notice never v\
@@ -5306,7 +5306,7 @@ NOTE: '\' line wrapping per RFC 8792
   "title": "directory",
   "description": "runtime -> connector: the router's most recent wor\
     d about which peers this agent may address, published per instan\
-    ce at <agent-id>/directory.json. AMAP, section \"The Peer Direct\
+    ce at <agent-id>/directory.json. AMMP, section \"The Peer Direct\
     ory\". ADVISORY, NEVER AUTHORITATIVE: an address's presence is n\
     ot a prediction that a submit to it will be accepted, nor its ab\
     sence a prediction of refusal — authorisation is evaluated by th\
@@ -5392,7 +5392,7 @@ NOTE: '\' line wrapping per RFC 8792
     ime's most recent word about which instances it has admitted, wr\
     itten once for the whole fleet to a location the deployment desi\
     gnates and exposes read-only to each agent it points at the rost\
-    er. AMAP, section \"The Fleet Roster\". EXISTENCE IS NOT AUTHORI\
+    er. AMMP, section \"The Fleet Roster\". EXISTENCE IS NOT AUTHORI\
     SATION: a member's presence says the instance exists, never tha\
     t this agent may address it or that a submission to it will be a\
     ccepted; authorisation is evaluated by the runtime at submit tim\
@@ -6710,7 +6710,7 @@ error — recorded here so that it is not rediscovered from scratch.</t>
     <section anchor="app-history" removeInRFC="true">
       <name>Historical Background</name>
       <t><em>(Informative.)</em></t>
-      <t>AMAP was specified and implemented before it was brought to the IETF.
+      <t>AMMP was specified and implemented before it was brought to the IETF.
 Its contract was versioned on its own scale, from 1.0.0 to 3.1.0, separately
 from the wire version that documents carry. This appendix records that
 history, newest first, because implementations were built against each
@@ -6719,7 +6719,7 @@ clearest as the story of what went wrong without them. An entry that turned
 out to be wrong is left standing, with a correction attached, rather than
 quietly rewritten.</t>
       <section anchor="sec-hist-00">
-        <name>draft-rapp-amap-00 — brought to the IETF (contract 3.1.0)</name>
+        <name>draft-rapp-ammp-00 — brought to the IETF (contract 3.1.0)</name>
         <ul spacing="normal">
           <li>
             <t><strong>One document.</strong> The peer-origin profile's prose, previously a
@@ -6729,6 +6729,16 @@ revisions of this document are draft revisions, and the wire version is
 <tt>contract_version</tt> (<xref target="sec-10-1"/>), which stays
 <tt>"2"</tt>. The reasoning that explained earlier version changes moved into
 this appendix (<xref target="sec-hist-versioning"/>).</t>
+          </li>
+          <li>
+            <t><strong>The protocol is AMMP.</strong> It was AMAP, the Agent
+Mailbox Access Protocol, and is renamed the Agent Mediated Messaging Protocol
+before its first submission: "mailbox access" named only its first channel,
+and the contract is a mediation seam for an Agent's correspondence, mail and
+peer traffic alike. The acronym AMAP was also already in use by an expired
+2003 individual draft. Nothing on the wire changes: no document carries the
+protocol's name, and the header fields of <xref target="sec-iana-headers"/>
+keep their names.</t>
           </li>
           <li>
             <t><strong>Editorial review for submission.</strong> Terminology was
@@ -6858,7 +6868,7 @@ reach at each step. The rules are the companion document's (<tt>spec/peer-origin
 section 5). Additive: nothing existing changes shape, and a deployment without
 cross-host peer traffic is unaffected. The 30 new fixtures (8 valid, 22 invalid)
 bring version 3.1.0 to 119 (42 valid, 77 invalid).</t>
-            <t><strong>Correction (draft-rapp-amap-00).</strong> The statement schema
+            <t><strong>Correction (draft-rapp-ammp-00).</strong> The statement schema
 accepted an <tt>id</tt> or <tt>in_reply_to</tt> beginning with "<tt>-</tt>",
 which the <tt>notice_id</tt> character set forbids, so a receiver could verify a
 statement it could not then publish; one signed case minted such an id. The

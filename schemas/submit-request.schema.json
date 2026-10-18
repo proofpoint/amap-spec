@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://amap-spec/schemas/submit-request.schema.json",
   "title": "submit-request",
-  "description": "agent -> runtime: an inert outbound request. AMAP, section \"Outbound: Submit Request\". Agent-authored: this document's envelope stays CLOSED (additionalProperties:false) at every level per the asymmetry of section \"Versioning\" — an unrecognized member here is a designed, legible `rejected` refusal, never a silent drop.",
+  "description": "agent -> runtime: an inert outbound request. AMMP, section \"Outbound: Submit Request\". Agent-authored: this document's envelope stays CLOSED (additionalProperties:false) at every level per the asymmetry of section \"Versioning\" — an unrecognized member here is a designed, legible `rejected` refusal, never a silent drop.",
   "type": "object",
   "required": ["contract_version", "req_id", "draft"],
   "additionalProperties": false,

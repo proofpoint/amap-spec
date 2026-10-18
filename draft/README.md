@@ -30,8 +30,8 @@ its revisions are draft revisions, and `-00` corresponds to contract 3.1.0.
 The wire `contract_version` is still `"2"`. The version history is the
 "Historical Background" appendix, which is removed before RFC publication.
 
-The build renders `dist/draft-rapp-amap-00.xml` (a byte copy of the source) and
-`dist/draft-rapp-amap-00.txt`, and on demand `.html` and `.pdf`.
+The build renders `dist/draft-rapp-ammp-00.xml` (a byte copy of the source) and
+`dist/draft-rapp-ammp-00.txt`, and on demand `.html` and `.pdf`.
 
 ## 2. What a tool writes, and what you write
 
@@ -55,7 +55,7 @@ folding long lines per RFC 8792 exactly as the old kramdown-rfc build did
   empty `<sourcecode type="json"><![CDATA[]]></sourcecode>` and run
   `make sync`. `make check` fails if a schema or listed fixture has no block.
 - **Never paste JSON into the XML by hand.** The check fails on any difference.
-- **Never edit `dist/draft-rapp-amap-00.xml`.** It is a byte copy of the source and
+- **Never edit `dist/draft-rapp-ammp-00.xml`.** It is a byte copy of the source and
   looks identical to it. A direct edit there is not lost silently: `make`
   leaves the edited copy alone and `make check` fails on the mismatch. Move the
   edit into `draft/draft-amap.xml`.
@@ -120,7 +120,7 @@ no longer needed.
 
 ## 5. What is committed, and what is not
 
-- **Committed:** `draft-amap.xml` (the source), `dist/draft-rapp-amap-00.xml` (its
+- **Committed:** `draft-amap.xml` (the source), `dist/draft-rapp-ammp-00.xml` (its
   copy) and `.txt`, `coverage.toml`, `fixtures.toml`, `examples/`, `bib/`.
 - **Gitignored:** `dist/*.html` and `dist/*.pdf`.
 - **Never written by the build:** `schemas/`, `fixtures/`, `spec/`.
@@ -163,10 +163,13 @@ to matter here. It is being put to counsel.
 Settled:
 
 - **Author affiliation is included** (`Proofpoint, Inc.`), per the approval.
-- **The draft name** is `draft-rapp-amap-00` (the editor, 2026-09-27: the
-  IETF convention for an individual submission, `draft-<author>-<topic>`).
-  Confirm it against datatracker before submission — the last rename happened
-  because the old acronym collided with an adopted working-group draft.
+- **The draft name** is `draft-rapp-ammp-00`, the Agent Mediated Messaging
+  Protocol (renamed from AMAP, the Agent Mailbox Access Protocol, on
+  2026-10-18, before first submission; the `draft-<author>-<topic>` form is the
+  editor's, 2026-09-27). Confirm it against datatracker before submission —
+  both earlier names collided with existing work. The repository, the source
+  file `draft-amap.xml`, and the `AMAP-Peer-*` header fields keep their names
+  for now.
 - **The date is pinned literally** (not derived from git) and must be bumped
   by hand when the content changes meaningfully — an Internet-Draft's date is
   a meaningful, deliberate signal, not a build artifact.

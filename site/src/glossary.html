@@ -1,7 +1,7 @@
 <!-- title: Glossary | description: The terms the AMAP specification uses, with where each is defined. -->
 <p class="eyebrow">Reference</p>
 <h1>Glossary</h1>
-<p class="lede">The terms used across this site and the AMAP specification. A reference such as "§ Inbound" names a section of <a href="https://github.com/proofpoint/amap-spec/tree/main/dist">the AMAP Internet-Draft</a> (<code>draft-rapp-amap-00</code>), including its optional peer-origin profile, "the profile" for short.</p>
+<p class="lede">The terms used across this site and the AMAP specification. A reference such as "§ Inbound" names a section of <a href="https://github.com/proofpoint/amap-spec/tree/main/dist">the AMAP Internet-Draft</a> (<code>draft-rapp-ammp-00</code>), including its optional peer-origin profile, "the profile" for short.</p>
 
 <dl class="glossary">
   <dt id="agent">Agent</dt>
@@ -26,7 +26,7 @@
   <dd>On an inbound attachment descriptor, the runtime's access grant to published bytes, in the form <code>&lt;notice_id&gt;.attachments/&lt;index&gt;</code>. It is present only for bytes the runtime asserts <code>clean</code>. A connector must never emit one outbound (§ Submit Request; § Inbound).</dd>
 
   <dt id="contract-version">contract_version</dt>
-  <dd>The wire major version carried in every document, currently <code>"2"</code>. It is separate from the specification's own SemVer (3.1.0 at <code>draft-rapp-amap-00</code>). Read it before schema validation: a mismatched major is a version refusal and fails closed (§ Versioning and Conformance).</dd>
+  <dd>The wire major version carried in every document, currently <code>"2"</code>. It is separate from the specification's own SemVer (3.1.0 at <code>draft-rapp-ammp-00</code>). Read it before schema validation: a mismatched major is a version refusal and fails closed (§ Versioning and Conformance).</dd>
 
   <dt id="deliver-notice">Deliver-notice</dt>
   <dd>The runtime's pointer-plus-summary for one delivered mail message, at <code>inbound/notices/notice-&lt;id&gt;.json</code>, with <code>kind: "deliver"</code> (§ Inbound).</dd>
