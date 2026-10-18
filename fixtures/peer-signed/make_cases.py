@@ -64,8 +64,14 @@ _n = [0]
 
 
 def nid() -> str:
+    # §5.1: never mint an id that starts with '-'. Re-mint from a suffixed seed
+    # instead, so the counter, and every other case's id, stays where it was.
     _n[0] += 1
-    return b64u(hashlib.sha256(f"case-id-{_n[0]}".encode()).digest()[:16])
+    i, k = b64u(hashlib.sha256(f"case-id-{_n[0]}".encode()).digest()[:16]), 0
+    while i.startswith("-"):
+        k += 1
+        i = b64u(hashlib.sha256(f"case-id-{_n[0]}-{k}".encode()).digest()[:16])
+    return i
 
 
 def stmt(**kw) -> dict:
@@ -549,7 +555,9 @@ def build():
     case("seq-store-loss-h-lost", "The store AND the high-water clock H are lost: no trustworthy bound "
          "exists, so peer admission closes. A candidate reaching check 7 is held in intake, not demoted. "
          "The operator records a bound B = 15:10 (at or after the largest receiver time before the "
-         "loss); the floor becomes B + F + 1 s = 15:15:01, admission reopens, and the held candidate is "
+         "loss); the floor becomes B + Fmax + 1 s = 15:15:01, where Fmax = F = 300 because the F history "
+         "is retained (only the store and H are lost; seq-store-loss-h-and-f-history-lost loses it too). "
+         "Admission reopens, and the held candidate is "
          "evaluated in order: its ts 15:00 is below the floor, so it is demoted. A statement at "
          "15:15:01 is then placed.",
          [{"now": "2026-10-09T15:00:00Z", "candidate": c, "expect": peer(st)},
@@ -771,6 +779,30 @@ def build():
     cc["fields"].append(["AMAP-Peer-Statement", cand(st)["fields"][1][1]])
     one("control-and-statement-together", "A message carrying both fields is neither: dropped.",
         cc, pre("drop", "header_count"), receiver=RA)
+    # Added after every other case, so that no earlier case's minted id moves.
+    st = stmt(ts="2026-10-09T15:00:00Z")
+    c = cand(st)
+    st2 = stmt(ts="2026-10-09T15:15:01Z")
+    st3 = stmt(ts="2026-10-09T15:25:01Z")
+    case("seq-store-loss-h-and-f-history-lost", "As seq-store-loss-h-lost, but the retained F history is "
+         "lost as well, so it cannot be proved: Fmax falls back to 900 (§5.5). The operator's bound "
+         "B = 15:10 gives the floor B + 900 + 1 s = 15:25:01. The held candidate (ts 15:00) and a "
+         "statement at 15:15:01, which seq-store-loss-h-lost places, are both demoted; a statement at "
+         "15:25:01 is placed.",
+         [{"now": "2026-10-09T15:00:00Z", "candidate": c, "expect": peer(st)},
+          {"event": "lose_store", "at": "2026-10-09T15:01:00Z", "h_lost": True, "f_history_lost": True,
+           "expect": {}},
+          {"now": "2026-10-09T15:02:00Z", "candidate": c, "expect": {"outcome": "held", "cause": "admission_closed"}},
+          {"event": "set_bound", "bound": "2026-10-09T15:10:00Z",
+           "expect": {"released": [ctl("mail", "ts_window", st)]}},
+          {"now": "2026-10-09T15:12:00Z", "candidate": cand(st2), "expect": ctl("mail", "ts_window", st2)},
+          {"now": "2026-10-09T15:22:00Z", "candidate": cand(st3), "expect": peer(st3)}],
+         patch={"now": "2026-10-09T15:00:00Z"})
+    st = stmt(id="-jolxe1b-p_EE9KjbbYnwQ")
+    one("mail-id-leading-dash", "A correctly signed statement whose id starts with '-'. §5.1 forbids "
+        "minting it (it is outside the notice_id charset of §4, so the receiver could not publish it), "
+        "and the schema rejects it: check 5(a), mail, demoted, with no control notice.",
+        cand(st), pre("mail", "statement_schema"))
 
 
 MIME = []
@@ -886,6 +918,30 @@ def build_mime():
                "body": {"charset": "utf-8", "octets_b64": b64(BODY.encode())}, "attachments": []})
 
 
+def build_mime_late():
+    # Added after every other MIME case, so that no earlier case's minted id moves.
+    st = stmt()
+    sb = sbytes(st)
+    hv = field("test1", sb, ed25519_ref.sign(SECRETS["test1"], sb)).strip()
+    folds, raw_len = 14, 12300
+    pad = raw_len - len(hv) - folds * 2
+    chunks = [hv[i * len(hv) // (folds + 1):(i + 1) * len(hv) // (folds + 1)] for i in range(folds + 1)]
+    sp = [pad // folds + (1 if i < pad % folds else 0) for i in range(folds)]
+    folded = chunks[0] + "".join("\r\n" + " " * sp[i] + chunks[i + 1] for i in range(folds))
+    assert len(folded) == raw_len and len(folded) - 2 * folds <= 12288 < len(folded)
+    assert max(len(line) for line in folded.split("\r\n")) + len("AMAP-Peer-Statement: ") <= 998
+    raw = (f"From: {PLANNER}\r\nTo: {BUILDER}\r\nSubject: Run the conformance suite\r\n"
+           f"Message-ID: <{st['id']}@{A}>\r\nAMAP-Peer-Statement: {folded}\r\nMIME-Version: 1.0\r\n"
+           "Content-Type: text/plain; charset=utf-8\r\nContent-Transfer-Encoding: base64\r\n\r\n"
+           + b64(BODY.encode()) + "\r\n").encode()
+    mime("oversize-counted-raw", f"A statement field body of {raw_len} octets as transmitted, folded "
+         f"{folds} times, so {raw_len - 2 * folds} octets once unfolded. §5.2's 12288-octet limit "
+         "applies to the field body as transmitted, before unfolding or trimming: it is carried as an "
+         "oversize marker (and fails check 1, mail, header_size), never unfolded and carried as text.",
+         raw, {"fields": [["Message-ID", f"<{st['id']}@{A}>"], ["AMAP-Peer-Statement", {"oversize": True}]],
+               "body": {"charset": "utf-8", "octets_b64": b64(BODY.encode())}, "attachments": []})
+
+
 def main() -> int:
     build()
     out = HERE / "cases"
@@ -899,6 +955,7 @@ def main() -> int:
             stale.unlink()
     _n[0] = 10_000
     build_mime()
+    build_mime_late()
     mdir = HERE / "mime"
     mdir.mkdir(exist_ok=True)
     keep = set()

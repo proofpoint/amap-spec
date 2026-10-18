@@ -1,0 +1,147 @@
+{
+  "description": "As seq-store-loss-h-lost, but the retained F history is lost as well, so it cannot be proved: Fmax falls back to 900 (§5.5). The operator's bound B = 15:10 gives the floor B + 900 + 1 s = 15:25:01. The held candidate (ts 15:00) and a statement at 15:15:01, which seq-store-loss-h-lost places, are both demoted; a statement at 15:25:01 is placed.",
+  "receiver_patch": {
+    "now": "2026-10-09T15:00:00Z"
+  },
+  "steps": [
+    {
+      "now": "2026-10-09T15:00:00Z",
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <Cc7ZeJ_FepgI9NShTaYpAg@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiJDYzdaZUpfRmVwZ0k5TlNoVGFZcEFnIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W119; b=g3zNl2Oe459Bp6BWLxOSauM19_aSueQn8vBnPwsJ78ki1tbPcbcNZfPArpCghFErp7w8h8r7nB6FxgEkl-ntCA"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "peer",
+        "publish": {
+          "id": "Cc7ZeJ_FepgI9NShTaYpAg",
+          "from": "planner@host-a.fleet.example",
+          "subject": "Run the conformance suite",
+          "body_text": "Please run the conformance suite on main and report the result.\n",
+          "attachments": []
+        }
+      }
+    },
+    {
+      "event": "lose_store",
+      "at": "2026-10-09T15:01:00Z",
+      "h_lost": true,
+      "f_history_lost": true,
+      "expect": {}
+    },
+    {
+      "now": "2026-10-09T15:02:00Z",
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <Cc7ZeJ_FepgI9NShTaYpAg@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiJDYzdaZUpfRmVwZ0k5TlNoVGFZcEFnIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MDA6MDBaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W119; b=g3zNl2Oe459Bp6BWLxOSauM19_aSueQn8vBnPwsJ78ki1tbPcbcNZfPArpCghFErp7w8h8r7nB6FxgEkl-ntCA"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "held",
+        "cause": "admission_closed"
+      }
+    },
+    {
+      "event": "set_bound",
+      "bound": "2026-10-09T15:10:00Z",
+      "expect": {
+        "released": [
+          {
+            "outcome": "mail",
+            "cause": "ts_window",
+            "control": {
+              "outcome": "demoted",
+              "cause": "ts_window",
+              "to": "amap.router@host-a.fleet.example",
+              "about": "Cc7ZeJ_FepgI9NShTaYpAg"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "now": "2026-10-09T15:12:00Z",
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <7OgYHGVoCjpA5N_dwkt8rA@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiI3T2dZSEdWb0NqcEE1Tl9kd2t0OHJBIiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MTU6MDFaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W119; b=j8OfqOMzgoNBnURt0fXunZvZbzyAfxRVFV4W-zwKPaUVehcqQbSOJyJvSGzkeC3rK9iKwe-Cwmnk6ccGuu9dDw"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "mail",
+        "cause": "ts_window",
+        "control": {
+          "outcome": "demoted",
+          "cause": "ts_window",
+          "to": "amap.router@host-a.fleet.example",
+          "about": "7OgYHGVoCjpA5N_dwkt8rA"
+        }
+      }
+    },
+    {
+      "now": "2026-10-09T15:22:00Z",
+      "candidate": {
+        "fields": [
+          [
+            "Message-ID",
+            " <mSAV9eAT_j6z3-xQ4BGSMw@host-a.fleet.example>"
+          ],
+          [
+            "AMAP-Peer-Statement",
+            " k=test1; s=eyJ2IjoxLCJrZXlfaWQiOiJ0ZXN0MSIsImtpbmQiOiJwZWVyIiwiaWQiOiJtU0FWOWVBVF9qNnozLXhRNEJHU013IiwiZnJvbSI6InBsYW5uZXJAaG9zdC1hLmZsZWV0LmV4YW1wbGUiLCJ0byI6ImJ1aWxkZXJAaG9zdC1jLmZsZWV0LmV4YW1wbGUiLCJ0cyI6IjIwMjYtMTAtMDlUMTU6MjU6MDFaIiwic3ViamVjdCI6IlJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUiLCJib2R5X3NoYTI1NiI6ImJhOTYyMGFmOTJjZDczM2RmY2YxNjY3YmUxZTMxNGNiMzc2MjhmZjViZDhmZWNiMjE4MDM3OGYxMmU4ZDY3MDUiLCJhdHRhY2htZW50cyI6W119; b=cc_y8Bsg9zHjMYDUT4X-p1hDeSbthwM7skd5xt-lknZ3ixpjqBV8i5UP7m8xpU4CtjFLatTLLk3LGSF-pil-DQ"
+          ]
+        ],
+        "body": {
+          "charset": "utf-8",
+          "octets_b64": "UGxlYXNlIHJ1biB0aGUgY29uZm9ybWFuY2Ugc3VpdGUgb24gbWFpbiBhbmQgcmVwb3J0IHRoZSByZXN1bHQuCg=="
+        },
+        "attachments": []
+      },
+      "expect": {
+        "outcome": "peer",
+        "publish": {
+          "id": "mSAV9eAT_j6z3-xQ4BGSMw",
+          "from": "planner@host-a.fleet.example",
+          "subject": "Run the conformance suite",
+          "body_text": "Please run the conformance suite on main and report the result.\n",
+          "attachments": []
+        }
+      }
+    }
+  ]
+}

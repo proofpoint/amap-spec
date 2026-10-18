@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://amap-spec/schemas/peer-statement.schema.json",
   "title": "peer-statement",
-  "description": "runtime -> runtime: the signed statement that carries a peer message between hosts. amap-spec v3.1.0 DRAFT, peer-origin profile (spec/peer-origin.md §5). The sending runtime signs the statement's exact UTF-8 bytes with Ed25519 and ships both in one AMAP-Peer-Statement header field (§5.2); the receiving runtime verifies the signature over the received bytes before parsing, then validates against this schema. CLOSED at every level, unlike the runtime-authored notices: these are signed bytes another runtime acts on, a member the receiver does not know is a member it cannot bind to what it publishes, and the version member `v` is the only evolution path. A statement that fails this schema fails verification, and the message is demoted to mail (§5.3, §5.4). Numbers are lexical integers (no fraction or exponent) and strings contain no unpaired surrogate (§5.1, checked at §5.3 5(b)); the schema cannot express either, nor calendar validity, interval order, the entropy of `id`, or any binding to the message: those are §5's verification steps.",
+  "description": "runtime -> runtime: the signed statement that carries a peer message between hosts. AMAP, section \"Peer Traffic Between Hosts\". The sending runtime signs the statement's exact UTF-8 bytes with Ed25519 and ships both in one AMAP-Peer-Statement header field (section \"Carriage, and the Candidate the Verifier Sees\"); the receiving runtime verifies the signature over the received bytes before parsing, then validates against this schema. CLOSED at every level, unlike the runtime-authored notices: these are signed bytes another runtime acts on, a member the receiver does not know is a member it cannot bind to what it publishes, and the version member `v` is the only evolution path. A statement that fails this schema fails verification, and the message is demoted to mail (sections \"Verification\" and \"Outcomes\"). Numbers are lexical integers (no fraction or exponent) and strings contain no unpaired surrogate (section \"The Statement\", checked at check 5(b) of section \"Verification\"); the schema cannot express either, nor calendar validity, interval order, the entropy of `id`, or any binding to the message: those are the verification steps of section \"Verification\".",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -33,14 +33,14 @@
     "id": {
       "type": "string",
       "minLength": 1,
-      "description": "the peer message id (§4), bare. A sending runtime mints it under ^[A-Za-z0-9_-]+$ (hex or base64url), so its Message-ID encoding <id@domain> is a valid msg-id (§5.1, §5.2); the receiver publishes it as message.id.",
-      "pattern": "^[A-Za-z0-9_-]+(?!\\n)$"
+      "description": "the peer message id (section \"Correlation and Replies\"), bare. A sending runtime mints it under ^[A-Za-z0-9_][A-Za-z0-9_-]*$ (hex, or base64url re-minted if it would start with '-'): the notice_id charset without '.', so its Message-ID encoding <id@domain> is a valid msg-id (section \"The Statement\"); the receiver publishes it as message.id.",
+      "pattern": "^[A-Za-z0-9_][A-Za-z0-9_-]*(?!\\n)$"
     },
     "in_reply_to": {
       "type": "string",
       "minLength": 1,
-      "description": "the peer message id this message answers (§4), bare, minted by the other runtime under the same pattern. Absent on a fresh task. Resolved against the receiver's ledger with the participants bound (§5.6).",
-      "pattern": "^[A-Za-z0-9_-]+(?!\\n)$"
+      "description": "the peer message id this message answers (section \"Correlation and Replies\"), bare, minted by the other runtime under the same pattern. Absent on a fresh task. Resolved against the receiver's ledger with the participants bound (section \"Correlation and Edges Between Hosts\").",
+      "pattern": "^[A-Za-z0-9_][A-Za-z0-9_-]*(?!\\n)$"
     },
     "from": {
       "type": "string",
@@ -51,12 +51,12 @@
     "to": {
       "type": "string",
       "minLength": 1,
-      "description": "bare addr-spec of the one receiving agent (§3: a peer message is addressed to one agent).",
+      "description": "bare addr-spec of the one receiving agent (section \"Addressing\": a peer message is addressed to one agent).",
       "pattern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+(?!\\n)$"
     },
     "ts": {
       "type": "string",
-      "description": "when the sending runtime signed: RFC 3339 UTC, whole seconds, upper-case T and Z, no offset. MUST be a real calendar instant (§5.1).",
+      "description": "when the sending runtime signed: RFC 3339 UTC, whole seconds, upper-case T and Z, no offset. MUST be a real calendar instant (section \"The Statement\").",
       "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z(?!\\n)$"
     },
     "subject": {
@@ -104,7 +104,7 @@
     "sender_exposure": {
       "type": "object",
       "additionalProperties": false,
-      "description": "§6, asserted by the sending runtime; omitted when it made no assessment. Timestamps in ts's format; window_start <= window_end; last_external_delivery_ts present iff external_mail_delivered is true, and then within the window; asserted_by is the signing runtime's configured runtime address (§5.1; §5.3 checks 5(b) and 8).",
+      "description": "section \"Sender Exposure\", asserted by the sending runtime; omitted when it made no assessment. Timestamps in ts's format; window_start <= window_end; last_external_delivery_ts present iff external_mail_delivered is true, and then within the window; asserted_by is the signing runtime's configured runtime address (section \"The Statement\"; checks 5(b) and 8 of section \"Verification\").",
       "required": [
         "asserted_by",
         "external_mail_delivered",
@@ -159,7 +159,7 @@
     },
     "sender_since": {
       "type": "string",
-      "description": "OPTIONAL (§5.9): when the sending runtime first enrolled the sending agent's identity (as that runtime defines identity), from its durable registry; same format as ts and not later than ts. A runtime assertion, not a sender claim. Never reset for a continuation of the same identity (restart, rebind, re-creation, key rotation); a new enrolment starts a new value. A receiver enforcing a sender age keeps the last value per (runtime, from) and refuses an earlier one as inconsistent. Absence means NOT ASSERTED, never 'new'.",
+      "description": "OPTIONAL (section \"Optional: Sender Age, and Deployment Admission Policy\"): when the sending runtime first enrolled the sending agent's identity (as that runtime defines identity), from its durable registry; same format as ts and not later than ts. A runtime assertion, not a sender claim. Never reset for a continuation of the same identity (restart, rebind, re-creation, key rotation); a new enrolment starts a new value. A receiver enforcing a sender age keeps the last value per (runtime, from) and refuses an earlier one as inconsistent. Absence means NOT ASSERTED, never 'new'.",
       "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z(?!\\n)$"
     }
   }

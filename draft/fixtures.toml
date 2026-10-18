@@ -42,7 +42,7 @@ pins   = "The body spool for a delivered message is keyed on the Runtime-minted 
 file   = "valid/result-attachments-held.json"
 anchor = "fx-result-attachments-held"
 title  = "Valid Result — a policy hold with per-attachment diagnostics"
-pins   = "`attachments[i].index == i` on a Result, contiguous and unique over 0..n-1; per-attachment entries are diagnostic detail under one governing top-level outcome and never license a partial send ([](#sec-6-1))."
+pins   = "`attachments[i].index == i` on a Result, contiguous and unique over 0..n-1; per-attachment entries are diagnostic detail under one governing top-level outcome and do not license a partial send ([](#sec-6-1))."
 
 [[fixture]]
 file   = "invalid/notice-attachment-ref-index-mismatch.json"
@@ -55,7 +55,7 @@ why_fails = "content_ref names a different notice's Sidecar directory and a non-
 file   = "valid/notice-unknown-member.json"
 anchor = "fx-notice-unknown-member"
 title  = "Valid Deliver Notice carrying an unrecognized member"
-pins   = "The Runtime-authored envelope is OPEN as of document version 3.0.0: a consumer MUST ignore a member it does not recognize, at every level ([](#sec-10-1))."
+pins   = "The Runtime-authored envelope is OPEN: a consumer MUST ignore a member it does not recognize, at every level ([](#sec-10-1))."
 
 [[fixture]]
 file   = "invalid/request-extra-field.json"
@@ -68,7 +68,7 @@ why_fails = "additionalProperties: false at the top level of the submit-request 
 file   = "invalid/peer-kind-deliver.json"
 anchor = "fx-peer-kind-deliver"
 title  = "Invalid peer notice — a deliver-kind document under the peer tree"
-pins   = "Origin class comes from the tree a notice arrived in, never from a self-declared field: a kind: \"deliver\" document found under peer/notices/ fails the peer-notice schema, the profile's cross-lock (spec/peer-origin.md)."
+pins   = "Origin class comes from the tree a notice arrived in, never from a self-declared field: a kind: \"deliver\" document found under peer/notices/ fails the peer-notice schema, the profile's cross-lock ([](#sec-peer-tree))."
 why_fails = "kind is const \"peer\" in the peer-notice schema; a document carrying \"deliver\" fails that const check."
 
 [[fixture]]
@@ -76,4 +76,11 @@ file = "valid/identity-basic.json"
 anchor = "fx-identity-basic"
 title = "A Binding Record"
 placement = "body"
-pins = "The Binding Record names which mailbox a Volume is bound to; it is informational and never consulted for enforcement (Section 9)."
+pins = "The Binding Record names which mailbox a Volume is bound to; it is informational and never consulted for enforcement."
+
+[[fixture]]
+file = "valid/peer-exposure-true.json"
+anchor = "fx-peer-exposure-true"
+title = "A Peer Notice asserting sender exposure"
+placement = "body"
+pins = "sender_exposure is a Runtime assertion about delivery to the sender, over an explicit window; its absence means not assessed ([](#sec-peer-exposure))."

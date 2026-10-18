@@ -53,7 +53,9 @@ def _equal(P, Q) -> bool:
 def _recover_x(y: int, sign: int):
     if y >= p:
         return None
-    x2 = (y * y - 1) * pow(d * y * y + 1, p - 2, p)
+    # Reduce x² mod p before testing it for zero. Unreduced, y = p - 1 with the
+    # sign bit set (the "negative zero" encoding of x = 0) decodes to x = p.
+    x2 = (y * y - 1) * pow(d * y * y + 1, p - 2, p) % p
     if x2 == 0:
         return None if sign else 0
     x = pow(x2, (p + 3) // 8, p)

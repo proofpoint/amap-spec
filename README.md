@@ -14,10 +14,11 @@ implementation: a trusted mail runtime implements one half, an untrusted
 per-agent connector implements the other, and the two can be built by different
 people and versioned independently.
 
-**Current version: 3.1.0 (DRAFT)** (wire `contract_version` `"2"` - the contract's
-own SemVer and the wire major track different things as of 3.0.0; see
-the draft's Versioning and Conformance section).
-Conformance gate: **119 fixtures**, 0 unexpected, plus the signed peer cases in `fixtures/peer-signed/`.
+**Current revision: `draft-rapp-amap-00`**, which corresponds to contract
+3.1.0 (wire `contract_version` `"2"` - the contract's own SemVer and the wire
+major track different things as of 3.0.0; see the draft's Versioning and
+Conformance section). The draft has not been submitted.
+Conformance gate: **121 fixtures**, 0 unexpected, plus the signed peer cases in `fixtures/peer-signed/`.
 
 ## Motivation
 
@@ -129,12 +130,14 @@ which actions are allowed.
 ```
 draft/draft-amap.xml  the normative prose, as an IETF Internet-Draft - actors,
                       invariant, directory layout, message shapes, correlation,
-                      versioning; hand-edited, and the source of dist/
+                      versioning, and the optional peer-origin profile;
+                      hand-edited, and the source of dist/
 schemas/              JSON Schema (2020-12) for each message
 fixtures/             golden valid + invalid artifacts, and the validator
 dist/                 the draft rendered: draft-rapp-amap-00.txt to read, .xml to submit
 spec/contract.md      FROZEN - the prose the draft was reconciled against
-spec/peer-origin.md   the peer-origin profile (DRAFT), canonical for the peer lane
+spec/peer-origin.md   FROZEN - the peer-origin profile's prose before it moved
+                      into the draft
 ```
 
 The Internet-Draft (`draft/draft-amap.xml`), together with `schemas/` and
@@ -191,8 +194,8 @@ The contract remains a draft. Review and implementation experience are welcome,
 particularly on the trust boundary, independently enforced obligations, and
 interoperability between separately developed runtimes and connectors.
 
-The version history is the draft's Change Log; the history before 2026-09-24
-is in the frozen `spec/contract.md`, section 7.
+The version history is the draft's Historical Background appendix; the
+history before 2026-09-24 is in the frozen `spec/contract.md`, section 7.
 
 ## Contributing
 

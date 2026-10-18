@@ -9,8 +9,8 @@ specification is mounted read-only in this container at:
                           Cite it by section number.
   schemas/                JSON Schema documents the spec's artifacts must validate against
   fixtures/               canonical example artifacts, valid and invalid
-  spec/peer-origin.md     the peer-origin profile (DRAFT): still normative for the
-                          peer lane, which the draft covers only by its schema
+  spec/peer-origin.md     FROZEN history: the peer-origin profile's prose before the
+                          draft took it in. Not authoritative.
   spec/contract.md        FROZEN history: the text the draft replaced. Not authoritative.
   CONFORMANCE.md          this file
 ```
@@ -20,6 +20,8 @@ hand-edited as `draft/draft-amap.xml` in the amap-spec repository and rendered t
 `dist/`. `spec/contract.md` is frozen: it says so in its first lines, and its
 header maps each of its old sections to the draft's. Do not conform to it, or
 cite it, as current. Where it and the draft differ, the draft is right.
+The same now holds for the peer lane: the draft's "The Peer-Origin Profile
+(Optional)" section is canonical, and `spec/peer-origin.md` is frozen.
 
 These are **live bind mounts of the amap-spec checkout on the host**, read-only.
 They are not a snapshot: a change the operator renders appears here immediately,
@@ -37,7 +39,7 @@ rather than inventing one.
 from memory of what amap "usually" does, and do not infer a rule from other
 code in this workspace — other code may itself be non-conformant. The draft at
 `~/.amap-spec/dist/draft-rapp-amap-00.txt`, with `schemas/` and `fixtures/`, is the
-only authority here, plus `spec/peer-origin.md` for the peer lane.
+only authority here, for the peer lane as well as the mail lane.
 
 **When you touch a spec-governed surface, verify conformance rather than
 asserting it.** In order of strength:
@@ -47,8 +49,8 @@ asserting it.** In order of strength:
 2. Diff the behaviour against the matching example in `~/.amap-spec/fixtures/`,
    including the *invalid* fixtures: a component that accepts an invalid fixture
    is non-conformant even when every valid one passes.
-3. Quote the normative sentence from the draft (or, for the peer lane,
-   `spec/peer-origin.md`) that your change satisfies, with its section number.
+3. Quote the normative sentence from the draft that your change satisfies,
+   with its section number.
 
 **Report the conformance status you actually established.** If you validated,
 say so and name the schema. If you did not, say that instead — "conforms to the
@@ -68,4 +70,5 @@ need different handling, so name which one you believe it is:
 `~/.amap-spec/dist/draft-rapp-amap-00.txt` is absent, the feature is not installed,
 the operator's checkout has moved, or this sandbox launched before the `dist`
 mount existed and needs a relaunch. Say so and stop, rather than falling back to
-the frozen `spec/contract.md` or guessing at the spec's content.
+the frozen `spec/contract.md` or `spec/peer-origin.md`, or guessing at the
+spec's content.

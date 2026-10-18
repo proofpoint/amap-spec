@@ -1,5 +1,41 @@
 # amap-spec — peer-origin profile, v3.1.0 DRAFT
 
+> **FROZEN, 2026-10-18. Superseded by the Internet-Draft
+> [`draft/draft-amap.xml`](../draft/draft-amap.xml), section "The Peer-Origin
+> Profile (Optional)".** The draft is now the canonical prose for the peer lane,
+> as it already was for the core contract (`spec/contract.md`, frozen
+> 2026-09-24). This file is kept unchanged below as the record of the text the
+> draft's profile section was written from: section 5 revision s5-r4. **Do not
+> edit it.** A change to the profile goes into the draft XML, and into
+> `schemas/` and `fixtures/` if a shape or an acceptance rule moves
+> (`WORKFLOWS.md`).
+>
+> The draft carries changes this file does not: the statement and control id
+> grammar narrowed to `^[A-Za-z0-9_][A-Za-z0-9_-]*$` (this file's §5.1 accepts a
+> leading `-`); canonical point decoding before the small-order check (§5.7);
+> the 12288-octet limit counted on the field body as transmitted (§5.2); Fmax
+> after the loss of H taken from retained F history if provable, else 900
+> (§5.5); intake division an implementation choice (§5.10); and the delivery
+> failure notice's runtime address spelled `amap.router` (this file's §4 says
+> `amp.router`); and the revision label is gone, so an implementation names the
+> draft revision it implements instead of an s5 revision. The draft's "Historical Background" appendix records them.
+>
+> Where each section went, by the draft's section names:
+>
+> | This file | Draft section (under "The Peer-Origin Profile (Optional)") |
+> |---|---|
+> | §0 Scope | Scope; the RPC line is also in Non-goals |
+> | §1 The `peer` tree | The Peer Tree |
+> | §2 Origin class follows the tree | Origin Class Follows the Tree |
+> | §3 Addressing | Addressing |
+> | §4 Correlation and results | Correlation and Replies |
+> | §5 Cross-host: signed peer traffic | Peer Traffic Between Hosts |
+> | §5.1–§5.10 | The Statement; Carriage, and the Candidate the Verifier Sees; Verification; Outcomes; The Replay Store, Windows and Recovery; Correlation and Edges Between Hosts; Keys; Control Notices; Optional: Sender Age, and Deployment Admission Policy; The Intake Location |
+> | §6 `sender_exposure` | Sender Exposure |
+> | §7 Delivery outcomes, retention, deletion, presentation | Delivery Outcomes, Retention, Deletion and Presentation |
+> | §8 Conformance | Versioning and Conformance: Conformance (the peer-origin sub-classes); the Conformance Suite appendix |
+> | §9 Required vs. optional | Versioning and Conformance: Required versus optional |
+
 An **optional profile** of the volume contract (`spec/contract.md`, "core").
 It gives same-principal agent-to-agent traffic its own inbound tree, `peer/`,
 and states what that tree asserts, who may write it, how peers are addressed,
