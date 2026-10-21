@@ -86,7 +86,7 @@ make -C draft reproducible    # two text renders, byte-compared
   (Architecture through Versioning and Conformance, including the Peer
   Directory, the Fleet Roster and the peer-origin profile) has a class in
   `coverage.toml` (fixture, operational, informative). The 128 sentences
-  present at the switch were an unclassified **baseline**; 115 of the 294 now
+  present at the switch were an unclassified **baseline**; 113 of the 295 now
   in scope are still unclassified. Classify them as you review them, and never
   add a new unclassified entry. `--emit` prints stubs for new sentences.
 - `fixtures/validate.py`: the conformance suite.
@@ -137,21 +137,20 @@ and both authors' email addresses. The draft is ready for submission and **has
 not been submitted.** The history of each gate is kept below, because each was
 a binding legal statement rather than an editorial choice.
 
-**PENDING, 2026-10-02: the editor's review changed two gated values.** His
-edits (taken verbatim as canonical) set `submissionType="IETF"` and
-`category="std"` (Intended status: Standards Track), in place of
-`independent` and `info`. The IETF stream is the one that leads to Dispatch, a
-BoF and a working group, which is the path the editor proposes; the
-Independent stream does not go to a working group. These are rights
-statements, not editorial choices: **they are pending the owner's confirmation
-with counsel, and nothing may be submitted until that is recorded here.** If
-counsel declines, revert those two attributes and record why.
+**CONFIRMED, 2026-10-21: `submissionType="IETF"` and `category="std"`.** The
+editor's review (2026-10-02) had set those two values (Intended status:
+Standards Track) in place of `independent` and `info`; the IETF stream is the
+one that leads to Dispatch, a BoF and a working group, which is the path the
+editor proposes. The owner confirmed both values on 2026-10-21, in session, and
+the editor is submitting the -00 on that basis. The IANA change controller in
+the draft reads `IETF` accordingly. They remain rights statements: any later
+change is the owner's, not an editorial choice.
 
 - **`ipr`**: settled 2026-09-21 as `trust200902` (below).
-- **`submissionType`**: `independent` (the Independent Submissions Editor), as
-  confirmed 2026-09-24. The alternative is the IETF stream, via a working
-  group, which the full BCP 78 grant keeps possible. **The editor proposed
-  `IETF` on 2026-09-27; pending, as above.**
+- **`submissionType`**: `IETF`, confirmed 2026-10-21 (above). It was
+  `independent` (the Independent Submissions Editor) from 2026-09-24 until the
+  editor proposed `IETF` on 2026-09-27; the full BCP 78 grant made either
+  possible.
 
 Separately and independently, **BCP 79 (RFC 8179) imposes a patent-disclosure
 obligation** on contributors: patents or applications known to be potentially
