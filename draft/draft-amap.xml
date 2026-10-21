@@ -121,6 +121,12 @@ positions AMMP against that landscape in detail.</t>
       </section>
       <section anchor="sec-the-approach">
         <name>The approach</name>
+        <t>The premise is isolation. The agent runs in a sandbox, and the only
+path from that sandbox to its correspondence is the one this document
+specifies. Isolation is what makes an agent safe to connect, and it is also
+what makes it operable: a process that is contained can be replaced, replayed
+and audited as a unit. This document specifies what crosses the boundary, not
+the sandbox itself.</t>
         <t>AMMP interposes a <strong>trusted runtime</strong> between the agent and the systems
 that carry its messages, holding each message before forwarding it.
 The runtime holds every credential, owns the agent's sending identity, and
@@ -278,7 +284,13 @@ attestation of platform state, and the member may need another name.</t>
             <t><strong>Identity between Runtimes.</strong> The peer-origin profile signs
 traffic between hosts with Ed25519 keys configured per Runtime
 (<xref target="sec-peer-keys"/>). Whether that identity should instead be carried
-by an existing workload-identity or message-signing mechanism is open.</t>
+by an existing mechanism is open, and the candidates differ in what they would
+replace: a workload-identity system such as SPIFFE would replace the configured
+keys (distribution and attestation), while a standard signed envelope such as
+JWS with EdDSA (RFC 7515, RFC 8037) or COSE (RFC 9052) would replace the
+statement's own encoding, which is close to a detached JWS already. DKIM and
+ARC sign on behalf of a mail domain rather than a Runtime, so they neither
+bind a message to the issuing Runtime nor carry the statement's members.</t>
           </li>
           <li>
             <t><strong>Document structure.</strong> Whether the peer-origin profile belongs
@@ -446,6 +458,15 @@ decision, and is the only party that transmits or receives messages. It holds
 each message before forwarding it: an outbound message is copied into private
 staging and checked before anything is transmitted, and an inbound message is
 screened before a Notice describing it appears.</t>
+        </li>
+
+        <li>
+          <t><strong>Sandbox</strong> — the isolation boundary within which an Agent and its
+Connector run. The Runtime mounts the Agent's Namespace into it and nothing
+else of the Volume; no credential, send path or other messaging capability
+exists inside it. This document does not specify the sandbox mechanism: it
+presumes one, and every property it states holds only as well as the Sandbox
+holds.</t>
         </li>
 
         <li>
