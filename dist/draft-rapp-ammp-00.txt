@@ -308,6 +308,13 @@ Internet-Draft                    AMMP                      October 2026
 
 1.2.  The approach
 
+   The premise is isolation.  The agent runs in a sandbox, and the only
+   path from that sandbox to its correspondence is the one this document
+   specifies.  Isolation is what makes an agent safe to connect, and it
+   is also what makes it operable: a process that is contained can be
+   replaced, replayed and audited as a unit.  This document specifies
+   what crosses the boundary, not the sandbox itself.
+
    AMMP interposes a *trusted runtime* between the agent and the systems
    that carry its messages, holding each message before forwarding it.
    The runtime holds every credential, owns the agent's sending
@@ -323,13 +330,6 @@ Internet-Draft                    AMMP                      October 2026
    The payoff, which the rest of this document formalizes, is the load-
    bearing invariant:
 
-      No security property depends on the agent — or on the connector
-      speaking for it — behaving correctly.  Enforcement is entirely
-      runtime-side.  A compromised agent or connector can at most write
-      a well-formed request that the runtime then refuses.
-
-
-
 
 
 
@@ -337,6 +337,11 @@ Rapp & Adams              Expires 24 April 2027                 [Page 6]
 
 Internet-Draft                    AMMP                      October 2026
 
+
+      No security property depends on the agent — or on the connector
+      speaking for it — behaving correctly.  Enforcement is entirely
+      runtime-side.  A compromised agent or connector can at most write
+      a well-formed request that the runtime then refuses.
 
    AMMP is the wire contract at exactly that trust boundary, and is
    owned by neither side of it.  That ownership choice is what allows a
@@ -380,11 +385,6 @@ Internet-Draft                    AMMP                      October 2026
 
    *  *Portability across agent runtimes.* Nothing in the contract
       presumes a particular agent harness, language, or tool interface.
-
-
-
-
-
 
 
 
@@ -483,18 +483,18 @@ Internet-Draft                    AMMP                      October 2026
    *  *Identity between Runtimes.* The peer-origin profile signs traffic
       between hosts with Ed25519 keys configured per Runtime
       (Section 12.6.7).  Whether that identity should instead be carried
-      by an existing workload-identity or message-signing mechanism is
-      open.
+      by an existing mechanism is open, and the candidates differ in
+      what they would replace: a workload-identity system such as SPIFFE
+      would replace the configured keys (distribution and attestation),
+      while a standard signed envelope such as JWS with EdDSA (RFC 7515,
+      RFC 8037) or COSE (RFC 9052) would replace the statement's own
+      encoding, which is close to a detached JWS already.  DKIM and ARC
+      sign on behalf of a mail domain rather than a Runtime, so they
+      neither bind a message to the issuing Runtime nor carry the
+      statement's members.
 
    *  *Document structure.* Whether the peer-origin profile belongs in
       this document or in a companion document.
-
-   *  *Internationalized addresses.* Addresses are restricted to a
-      narrow ASCII addr-spec (Section 5.1), and internationalized
-      addresses are out of scope for now.
-
-   *  *A consumption signal.* Whether a Connector should be able to tell
-      its Runtime that a Notice has been handled (Appendix K).
 
 
 
@@ -505,6 +505,13 @@ Rapp & Adams              Expires 24 April 2027                 [Page 9]
 
 Internet-Draft                    AMMP                      October 2026
 
+
+   *  *Internationalized addresses.* Addresses are restricted to a
+      narrow ASCII addr-spec (Section 5.1), and internationalized
+      addresses are out of scope for now.
+
+   *  *A consumption signal.* Whether a Connector should be able to tell
+      its Runtime that a Notice has been handled (Appendix K).
 
 2.  Conventions and Terminology
 
@@ -547,13 +554,6 @@ Internet-Draft                    AMMP                      October 2026
    *  *Binding Record* — the optional, informational artifact at the
       Volume root naming which mailbox the Volume is bound to
       (Section 9).
-
-
-
-
-
-
-
 
 
 
@@ -648,6 +648,13 @@ Internet-Draft                    AMMP                      October 2026
       is transmitted, and an inbound message is screened before a Notice
       describing it appears.
 
+   *  *Sandbox* — the isolation boundary within which an Agent and its
+      Connector run.  The Runtime mounts the Agent's Namespace into it
+      and nothing else of the Volume; no credential, send path or other
+      messaging capability exists inside it.  This document does not
+      specify the sandbox mechanism: it presumes one, and every property
+      it states holds only as well as the Sandbox holds.
+
    *  *Sidecar* — attachment bytes stored beside a Submit Request or a
       Notice, in a directory named after that artifact, with each blob
       named by a 0-based ordinal.
@@ -660,19 +667,16 @@ Internet-Draft                    AMMP                      October 2026
       a message be sent (Section 5).  It is inert: it carries no
       capability and effects nothing by existing.
 
-   *  *Tree* — one of the Runtime-owned inbound-class subtrees of a
-      Namespace: inbound/, and, under the peer-origin profile, peer/.
-      Each Tree is an Origin Class.
-
-
-
-
 
 
 Rapp & Adams              Expires 24 April 2027                [Page 12]
 
 Internet-Draft                    AMMP                      October 2026
 
+
+   *  *Tree* — one of the Runtime-owned inbound-class subtrees of a
+      Namespace: inbound/, and, under the peer-origin profile, peer/.
+      Each Tree is an Origin Class.
 
    *  *Volume* — the runtime-owned filesystem tree carrying this
       protocol, containing one Namespace per Agent plus an optional
@@ -717,10 +721,6 @@ Internet-Draft                    AMMP                      October 2026
    document places on a Connector fall into two distinct classes, and
    the difference matters when reading them:
 
-   *  *Well-formedness and liveness obligations* — emit valid documents,
-      tolerate a missing artifact, do not crash on hostile input.  A
-      Connector that violates one harms itself and its own Agent, not
-      any other party.
 
 
 
@@ -729,6 +729,11 @@ Rapp & Adams              Expires 24 April 2027                [Page 13]
 
 Internet-Draft                    AMMP                      October 2026
 
+
+   *  *Well-formedness and liveness obligations* — emit valid documents,
+      tolerate a missing artifact, do not crash on hostile input.  A
+      Connector that violates one harms itself and its own Agent, not
+      any other party.
 
    *  *Obligations that protect an Agent from its own inbox* — the
       untrusted-content posture of Section 7.  These are necessarily
@@ -771,11 +776,6 @@ Internet-Draft                    AMMP                      October 2026
    The Runtime mounts each Agent's Namespace into that Agent's sandbox,
    and the Agent's entire protocol surface is that directory.  This is a
    deliberate choice of medium, with three consequences.
-
-
-
-
-
 
 
 
