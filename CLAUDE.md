@@ -36,13 +36,11 @@ language** — README's "What AMAP is not" says this normatively; keep it true.
   the tree was "a preparation for publication, not a grant of it" — true when
   written, superseded now.)*
 - **Approved to publish is not the same as submitted.** The counsel gates are
-  CLEAR (operator-confirmed 2026-09-24): `ipr="trust200902"` (settled
-  2026-09-21, the full BCP 78 grant), `submissionType="independent"`, and an
-  email for each author. The draft is **ready for submission and has not been
-  submitted.** **PENDING (2026-10-02):** the editor's review set
-  `submissionType="IETF"` and `category="std"`; those await the owner's
-  confirmation with counsel (`draft/README.md`, "Counsel gates"). Do not
-  submit, and do not change them either way, until that is recorded. Any future change to those values, to the author list, or to a
+  CLEAR: `ipr="trust200902"` (settled 2026-09-21, the full BCP 78 grant),
+  `submissionType="IETF"` and `category="std"` (the editor's values,
+  owner-confirmed 2026-10-21), and an email for each author. The draft is
+  **ready for submission**; the editor is submitting the -00 (`draft/README.md`,
+  "Counsel gates"). Any future change to those values, to the author list, or to a
   BCP 79 disclosure is a rights statement, not an editorial choice: do not
   make one on your own initiative. The history is in `draft/README.md` under
   "Counsel gates". Note the draft ASSERTS it is submitted under BCP 78/79,
@@ -51,11 +49,11 @@ language** — README's "What AMAP is not" says this normatively; keep it true.
   one.
 - Keep shipped text free of absolute host paths and personal identifiers.
 
-## Version state (as of the -00 prepared for the editor's review, 2026-10-18)
+## Version state (as of the -00 handed to the editor for submission, 2026-10-21)
 
 | | |
 |---|---|
-| Document | **`draft-rapp-ammp-00`**, "The Agent Mediated Messaging Protocol (AMMP)", dated 2026-10-18; corresponds to contract 3.1.0 (the frozen files' titles). Renamed from AMAP on 2026-10-18; the repository, `draft/draft-amap.xml`, the `amap-*` names and the `AMAP-Peer-*` header fields are not renamed yet |
+| Document | **`draft-rapp-ammp-00`**, "The Agent Mediated Messaging Protocol (AMMP)", dated 2026-10-21; corresponds to contract 3.1.0 (the frozen files' titles). Renamed from AMAP on 2026-10-18; the repository, `draft/draft-amap.xml`, the `amap-*` names and the `AMAP-Peer-*` header fields are not renamed yet |
 | Wire `contract_version` | **`"2"`** — the draft's Versioning section says why it is not reset to `"1"` |
 | `README.md` claims | **121 fixtures** — matches the gate |
 | Actual gate result | **121 fixtures (42 valid, 79 invalid), 0 unexpected**, then **114 signed peer cases and 10 MIME cases, RFC 8032 vectors ok, 0 unexpected** |
@@ -272,7 +270,7 @@ Changes enter this repo from both ends and the rules are not symmetric.
 **`draft/coverage.toml` is the guard, and its baseline is not an allowlist.**
 Every normative sentence in the protocol sections needs a class: fixture,
 operational or informative. The 128 sentences present at the switch were
-marked `baseline = true` and unclassified; 115 remain. Rewording a baseline
+marked `baseline = true` and unclassified; 113 remain. Rewording a baseline
 sentence changes its hash, so the reworded sentence gets its real class. Working that list down is real
 progress. **Never add an unclassified entry** to silence a new-sentence
 failure: give the sentence its real class, which is the point of the gate.
@@ -328,7 +326,7 @@ for that class's behavioral obligations is not conformance.**
 Nothing is currently known-wrong. Known-open items — deliberate, tracked, and
 not defects:
 
-- **`draft/coverage.toml` has a 115-sentence unclassified baseline.**
+- **`draft/coverage.toml` has a 113-sentence unclassified baseline.**
   Classifying each (fixture, operational, informative) is real progress.
 - **`fixtures/validate.py` and `fixtures/peer-signed/` code comments still cite
   `spec/contract.md` / `spec/peer-origin.md` section numbers.** They resolve,

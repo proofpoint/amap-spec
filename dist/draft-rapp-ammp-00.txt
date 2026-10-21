@@ -5,7 +5,7 @@
 Network Working Group                                            D. Rapp
 Internet-Draft                                                  T. Adams
 Intended status: Standards Track                        Proofpoint, Inc.
-Expires: 21 April 2027                                   18 October 2026
+Expires: 24 April 2027                                   21 October 2026
 
 
               The Agent Mediated Messaging Protocol (AMMP)
@@ -53,7 +53,7 @@ Discussion Venues
 
 
 
-Rapp & Adams              Expires 21 April 2027                 [Page 1]
+Rapp & Adams              Expires 24 April 2027                 [Page 1]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -77,7 +77,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 21 April 2027.
+   This Internet-Draft will expire on 24 April 2027.
 
 Copyright Notice
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Rapp & Adams              Expires 21 April 2027                 [Page 2]
+Rapp & Adams              Expires 24 April 2027                 [Page 2]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -145,15 +145,15 @@ Internet-Draft                    AMMP                      October 2026
        12.6.1.  The Statement  . . . . . . . . . . . . . . . . . . .  53
        12.6.2.  Carriage, and the Candidate the Verifier Sees  . . .  54
        12.6.3.  Verification . . . . . . . . . . . . . . . . . . . .  57
-       12.6.4.  Outcomes . . . . . . . . . . . . . . . . . . . . . .  58
+       12.6.4.  Outcomes . . . . . . . . . . . . . . . . . . . . . .  59
        12.6.5.  The Replay Store, Windows and Recovery . . . . . . .  60
        12.6.6.  Correlation and Edges Between Hosts  . . . . . . . .  63
        12.6.7.  Keys . . . . . . . . . . . . . . . . . . . . . . . .  64
-       12.6.8.  Control Notices  . . . . . . . . . . . . . . . . . .  65
+       12.6.8.  Control Notices  . . . . . . . . . . . . . . . . . .  66
        12.6.9.  Optional: Sender Age, and Deployment Admission
                Policy  . . . . . . . . . . . . . . . . . . . . . . .  67
        12.6.10. The Intake Location  . . . . . . . . . . . . . . . .  68
-     12.7.  Sender Exposure  . . . . . . . . . . . . . . . . . . . .  68
+     12.7.  Sender Exposure  . . . . . . . . . . . . . . . . . . . .  69
      12.8.  Delivery Outcomes, Retention, Deletion and
             Presentation . . . . . . . . . . . . . . . . . . . . . .  70
    13. Versioning and Conformance  . . . . . . . . . . . . . . . . .  71
@@ -161,50 +161,50 @@ Internet-Draft                    AMMP                      October 2026
      13.2.  Required versus optional . . . . . . . . . . . . . . . .  74
      13.3.  Conformance  . . . . . . . . . . . . . . . . . . . . . .  77
    14. Security Considerations . . . . . . . . . . . . . . . . . . .  80
-     14.1.  Path authority and traversal . . . . . . . . . . . . . .  80
+     14.1.  Path authority and traversal . . . . . . . . . . . . . .  81
 
 
 
-Rapp & Adams              Expires 21 April 2027                 [Page 3]
+Rapp & Adams              Expires 24 April 2027                 [Page 3]
 
 Internet-Draft                    AMMP                      October 2026
 
 
      14.2.  Symlinks, descriptors, and open discipline . . . . . . .  81
      14.3.  Time-of-check to time-of-use, and ingest by copy . . . .  82
-     14.4.  Concurrency  . . . . . . . . . . . . . . . . . . . . . .  82
+     14.4.  Concurrency  . . . . . . . . . . . . . . . . . . . . . .  83
      14.5.  Attribution spoofing . . . . . . . . . . . . . . . . . .  83
      14.6.  Untrusted content  . . . . . . . . . . . . . . . . . . .  83
      14.7.  Recipient policy and header injection  . . . . . . . . .  84
-     14.8.  The outbound digest is not a trust boundary  . . . . . .  84
+     14.8.  The outbound digest is not a trust boundary  . . . . . .  85
      14.9.  Confirmation-oracle avoidance  . . . . . . . . . . . . .  85
      14.10. Byte-absence and artifact-absence as the access gate . .  85
      14.11. Fail-closed version handling, and the cost of
              tolerance . . . . . . . . . . . . . . . . . . . . . . .  86
      14.12. Inbound integrity and the writability of the inbound
-             tree  . . . . . . . . . . . . . . . . . . . . . . . . .  86
+             tree  . . . . . . . . . . . . . . . . . . . . . . . . .  87
      14.13. Retention, deletion, and lost verdicts . . . . . . . . .  87
      14.14. What is wire-verifiable, and what is a Runtime
              obligation  . . . . . . . . . . . . . . . . . . . . . .  87
-     14.15. The extension space, and outcomes as claims  . . . . . .  88
+     14.15. The extension space, and outcomes as claims  . . . . . .  89
      14.16. Special-use domain names . . . . . . . . . . . . . . . .  89
      14.17. The Peer-Origin Profile  . . . . . . . . . . . . . . . .  89
-   15. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  90
-     15.1.  Message Header Fields  . . . . . . . . . . . . . . . . .  90
+   15. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  91
+     15.1.  Message Header Fields  . . . . . . . . . . . . . . . . .  91
      15.2.  Possible Future Registries . . . . . . . . . . . . . . .  91
    16. References  . . . . . . . . . . . . . . . . . . . . . . . . .  91
      16.1.  Normative References . . . . . . . . . . . . . . . . . .  91
      16.2.  Informative References . . . . . . . . . . . . . . . . .  93
-   Appendix A.  Submit-Request Schema  . . . . . . . . . . . . . . .  93
-   Appendix B.  Result Schema  . . . . . . . . . . . . . . . . . . .  95
+   Appendix A.  Submit-Request Schema  . . . . . . . . . . . . . . .  94
+   Appendix B.  Result Schema  . . . . . . . . . . . . . . . . . . .  96
    Appendix C.  Deliver-Notice Schema  . . . . . . . . . . . . . . .  97
    Appendix D.  Inbound-Message Schema . . . . . . . . . . . . . . .  99
-   Appendix E.  Binding-Record Schema  . . . . . . . . . . . . . . . 100
-   Appendix F.  Peer-Origin Profile Schemas  . . . . . . . . . . . . 101
-   Appendix G.  Peer-Directory Schema  . . . . . . . . . . . . . . . 114
-   Appendix H.  Fleet-Roster Schema  . . . . . . . . . . . . . . . . 116
-   Appendix I.  Golden Examples  . . . . . . . . . . . . . . . . . . 118
-     I.1.  Valid Submit Request with attachments . . . . . . . . . . 118
+   Appendix E.  Binding-Record Schema  . . . . . . . . . . . . . . . 101
+   Appendix F.  Peer-Origin Profile Schemas  . . . . . . . . . . . . 102
+   Appendix G.  Peer-Directory Schema  . . . . . . . . . . . . . . . 115
+   Appendix H.  Fleet-Roster Schema  . . . . . . . . . . . . . . . . 117
+   Appendix I.  Golden Examples  . . . . . . . . . . . . . . . . . . 119
+     I.1.  Valid Submit Request with attachments . . . . . . . . . . 119
      I.2.  Valid Deliver Notice with a clean attachment
            Descriptor  . . . . . . . . . . . . . . . . . . . . . . . 119
      I.3.  Valid Inbound Message . . . . . . . . . . . . . . . . . . 120
@@ -221,7 +221,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                 [Page 4]
+Rapp & Adams              Expires 24 April 2027                 [Page 4]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -236,11 +236,11 @@ Internet-Draft                    AMMP                      October 2026
            the peer-origin profile . . . . . . . . . . . . . . . . . 140
      L.4.  3.0.0 — direction-aware tolerance, and six closed safety
            holes . . . . . . . . . . . . . . . . . . . . . . . . . . 143
-     L.5.  2.3.0 — inbound byte access in force  . . . . . . . . . . 145
+     L.5.  2.3.0 — inbound byte access in force  . . . . . . . . . . 146
      L.6.  2.2.0 — deletion rights, read-only inbound  . . . . . . . 146
      L.7.  2.1.0 — the body spool, and three optional Result
            members . . . . . . . . . . . . . . . . . . . . . . . . . 146
-     L.8.  2.0.0 — attachments, and contract_version required  . . . 146
+     L.8.  2.0.0 — attachments, and contract_version required  . . . 147
      L.9.  Fixture identifier normalization  . . . . . . . . . . . . 147
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . . 147
 
@@ -277,7 +277,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                 [Page 5]
+Rapp & Adams              Expires 24 April 2027                 [Page 5]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -333,7 +333,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                 [Page 6]
+Rapp & Adams              Expires 24 April 2027                 [Page 6]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -389,7 +389,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                 [Page 7]
+Rapp & Adams              Expires 24 April 2027                 [Page 7]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -445,7 +445,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                 [Page 8]
+Rapp & Adams              Expires 24 April 2027                 [Page 8]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -501,7 +501,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                 [Page 9]
+Rapp & Adams              Expires 24 April 2027                 [Page 9]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -557,7 +557,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 10]
+Rapp & Adams              Expires 24 April 2027                [Page 10]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -597,6 +597,11 @@ Internet-Draft                    AMMP                      October 2026
       delivered message's body text and headers, spooled under a
       Notice's identifier and fetched on demand (Section 7.3).
 
+   *  *Lane* — one class of traffic between an Agent and its Runtime, or
+      between two Agents: the mail lane (inbound/ and outbound mail)
+      and, under the peer-origin profile, the peer lane (peer/).  The
+      Peer Directory states, per peer, which lanes are open.
+
    *  *Namespace* — the per-Agent subtree <volume-root>/<agent-id>/,
       mounted into that Agent's sandbox.  It is the unit of isolation
       and the sole authority for attributing an artifact to an Agent.
@@ -605,18 +610,17 @@ Internet-Draft                    AMMP                      October 2026
       announcing that a message was delivered to the Agent's mailbox
       (Section 7).  It is a pointer and summary, not the message.
 
-   *  *Ordinal* — the integer naming a Sidecar blob.  It equals the
-      index of the corresponding Descriptor in its array, and is the
-      sole binding authority between a Descriptor and its bytes.
 
 
 
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 11]
+Rapp & Adams              Expires 24 April 2027                [Page 11]
 
 Internet-Draft                    AMMP                      October 2026
 
+
+   *  *Ordinal* — the integer naming a Sidecar blob.  It equals the
+      index of the corresponding Descriptor in its array, and is the
+      sole binding authority between a Descriptor and its bytes.
 
    *  *Origin Class* — the class of origin a consumer assigns to an
       inbound document, derived only from the Tree it was read from:
@@ -660,19 +664,22 @@ Internet-Draft                    AMMP                      October 2026
       Namespace: inbound/, and, under the peer-origin profile, peer/.
       Each Tree is an Origin Class.
 
+
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 12]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    *  *Volume* — the runtime-owned filesystem tree carrying this
       protocol, containing one Namespace per Agent plus an optional
       Binding Record at its root.  Its mount path is a deployment
       choice; this document writes <volume-root>/ for it and nothing in
       the protocol derives from its name.  No implementation may depend
       on that name or any other.
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 12]
-
-Internet-Draft                    AMMP                      October 2026
-
 
 3.  Architecture and Trust Model
 
@@ -682,7 +689,7 @@ Internet-Draft                    AMMP                      October 2026
     | Actor       | Trust         | Holds              | Reaches      |
     +=============+===============+====================+==============+
     | *Runtime*   | trusted       | messaging          | the mail     |
-    | (container) |               | credentials, Agent | provider,    |
+    | (host-side) |               | credentials, Agent | provider,    |
     |             |               | identity, policy,  | the Volume   |
     |             |               | the record of what |              |
     |             |               | was sent           |              |
@@ -715,20 +722,19 @@ Internet-Draft                    AMMP                      October 2026
       Connector that violates one harms itself and its own Agent, not
       any other party.
 
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 13]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    *  *Obligations that protect an Agent from its own inbox* — the
       untrusted-content posture of Section 7.  These are necessarily
       Connector-implemented, because the Connector is the only component
       on the Agent's side of the boundary, and they are stated as such
       rather than as properties the Runtime relies on.
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 13]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    No requirement in this document places a Runtime-side, other-Agent-
    side, or outside-world safety property in a Connector's hands.  The
@@ -766,6 +772,20 @@ Internet-Draft                    AMMP                      October 2026
    and the Agent's entire protocol surface is that directory.  This is a
    deliberate choice of medium, with three consequences.
 
+
+
+
+
+
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 14]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    *Writing a file carries no capability.* It invokes nothing.  There is
    no callee to authenticate, no session to hijack, no method whose mere
    reachability is a grant.  The request exists as bytes until a trusted
@@ -773,18 +793,6 @@ Internet-Draft                    AMMP                      October 2026
    act of enqueuing is itself the privileged act and every security
    property depends on the authorization check in front of it being
    correct and unbypassable.
-
-
-
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 14]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    *Isolation is structural rather than enforced by policy.* A Connector
    scoped to <volume-root>/<agent-id>/ cannot name another Agent's
@@ -826,31 +834,29 @@ Internet-Draft                    AMMP                      October 2026
    surface.  The contrast worth stating is exactly the one that
    motivates the two coexisting: an MCP-style interface grants live
    capability across the boundary it spans, while AMMP's channel
-   deliberately grants none — the Agent-side surface can be as rich as
-   the harness likes, because what crosses the trust boundary underneath
-   it is an inert file.  The current stable MCP specification revision
-   is 2025-11-25; the protocol originated at Anthropic.
-
-   *Agent2Agent (A2A)* [A2A] is networked agent-to-agent RPC between
-   mutually authenticated services, with agent cards, tasks, and
-   HTTP/SSE/JSON-RPC transport.  It presumes both endpoints are
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 15]
+Rapp & Adams              Expires 24 April 2027                [Page 15]
 
 Internet-Draft                    AMMP                      October 2026
 
 
+   deliberately grants none — the Agent-side surface can be as rich as
+   the harness likes, because what crosses the trust boundary underneath
+   it is an inert file.  MCP originated at Anthropic.
+
+   *Agent2Agent (A2A)* [A2A] is networked agent-to-agent RPC between
+   mutually authenticated services, with agent cards, tasks, and
+   HTTP/SSE/JSON-RPC transport.  It presumes both endpoints are
    credentialed participants that can authenticate to each other.
    AMMP's design center is the opposite: an untrusted agent that holds
    no credentials at all, with enforcement placed entirely on the
    trusted side of a local boundary.  The two are orthogonal, and
    compose without friction — an agent that speaks A2A to its peers can
    use AMMP for its mail capability, and neither protocol needs to know
-   about the other.  A2A is at v1.0 (v1.0.1, May 2026); it originated at
-   Google and has been hosted as a Linux Foundation project since June
-   2025.
+   about the other.  A2A originated at Google and is hosted by the Linux
+   Foundation.
 
    *The two protocols abbreviated "ACP" are not the same protocol*, and
    the collision is worth disambiguating in a document a reviewer may
@@ -866,10 +872,6 @@ Internet-Draft                    AMMP                      October 2026
       between a host or editor and an agent — originated by Zed
       Industries.  It is unrelated to the merged Agent Communication
       Protocol and unrelated to AMMP.
-
-   The citation facts in this subsection were verified in July 2026.  A
-   reviewer preparing this document for publication at a later date is
-   advised to re-verify them rather than relying on this text.
 
 3.5.  Runtimes Built from Several Components (Informative)
 
@@ -888,15 +890,16 @@ Internet-Draft                    AMMP                      October 2026
 
    Some existing obligations are easy to lose when the work is divided:
 
-   *  exactly one Result per consumed request, including when an inner
-      component fails or never answers (Section 6.1);
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 16]
+Rapp & Adams              Expires 24 April 2027                [Page 16]
 
 Internet-Draft                    AMMP                      October 2026
 
+
+   *  exactly one Result per consumed request, including when an inner
+      component fails or never answers (Section 6.1);
 
    *  accepted only once the provider has accepted the message for relay
       (Section 6.1);
@@ -946,10 +949,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 17]
+Rapp & Adams              Expires 24 April 2027                [Page 17]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -1005,7 +1005,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 18]
+Rapp & Adams              Expires 24 April 2027                [Page 18]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -1061,7 +1061,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 19]
+Rapp & Adams              Expires 24 April 2027                [Page 19]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -1117,7 +1117,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 20]
+Rapp & Adams              Expires 24 April 2027                [Page 20]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -1173,7 +1173,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 21]
+Rapp & Adams              Expires 24 April 2027                [Page 21]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -1229,7 +1229,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 22]
+Rapp & Adams              Expires 24 April 2027                [Page 22]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -1245,8 +1245,9 @@ Internet-Draft                    AMMP                      October 2026
    resolves only within the notices/ directory of the tree the enclosing
    document was read from.  Write authority per tree is distinct and
    MUST be structurally enforced; it MUST NOT depend on configuration
-   the writer itself reads. inbound/ is the one tree this document
-   defines; a profile MAY define others.
+   the writer itself reads. inbound/ is the one tree the core protocol
+   defines; a profile, such as the peer-origin profile of Section 12,
+   MAY define others.
 
    *Inbound is Runtime-owned, and read-only is a valid posture.* The
    inbound/ tree is Runtime-owned end to end.  A Runtime MAY expose it
@@ -1281,15 +1282,15 @@ Internet-Draft                    AMMP                      October 2026
    is an identifier, never a name to be parsed, resolved, or matched
    against a repository or path.* Because it is also a path segment in
    an Agent-writable tree, <name> MUST be a single path segment of 1 to
-   64 characters drawn from lowercase ASCII letters, digits, hyphen and
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 23]
+Rapp & Adams              Expires 24 April 2027                [Page 23]
 
 Internet-Draft                    AMMP                      October 2026
 
 
+   64 characters drawn from lowercase ASCII letters, digits, hyphen and
    underscore, beginning with a letter or digit, so that it names the
    same directory on case-sensitive and case-insensitive filesystems
    alike.  This document specifies no shape for anything under it; it
@@ -1337,15 +1338,15 @@ Internet-Draft                    AMMP                      October 2026
    |                       |           |reading the|from max(pending,  |
    |                       |           |matching   |processed,         |
    |                       |           |Result     |results) + 1, so a |
-   |                       |           |           |Connector that     |
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 24]
+Rapp & Adams              Expires 24 April 2027                [Page 24]
 
 Internet-Draft                    AMMP                      October 2026
 
 
+   |                       |           |           |Connector that     |
    |                       |           |           |deletes here (or   |
    |                       |           |           |in results/) MUST  |
    |                       |           |           |preserve req_id    |
@@ -1393,15 +1394,15 @@ Internet-Draft                    AMMP                      October 2026
    |                       |           |delete per |disappearance of   |
    |                       |           |the        |these artifacts: a |
    |                       |           |optional   |read against a     |
-   |                       |           |processed/ |missing one        |
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 25]
+Rapp & Adams              Expires 24 April 2027                [Page 25]
 
 Internet-Draft                    AMMP                      October 2026
 
 
+   |                       |           |processed/ |missing one        |
    |                       |           |convention,|returns "not       |
    |                       |           |but MUST   |resolved"          |
    |                       |           |NOT depend |(Section 7.3).     |
@@ -1452,8 +1453,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-
-Rapp & Adams              Expires 21 April 2027                [Page 26]
+Rapp & Adams              Expires 24 April 2027                [Page 26]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -1509,7 +1509,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 27]
+Rapp & Adams              Expires 24 April 2027                [Page 27]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -1546,14 +1546,29 @@ Internet-Draft                    AMMP                      October 2026
       the composed message itself; identity is Runtime-owned, and the
       Agent does *not* choose its sending identity.
 
-   *  *draft.subject* and *draft.body_text* are REQUIRED and MAY be
-      empty strings. body_text is *plain text*; this document defines no
-      alternative body representation.
+   *  *draft.to* is REQUIRED and carries at least one recipient;
+      *draft.cc* is OPTIONAL and MAY be empty. *draft.subject* and
+      *draft.body_text* are REQUIRED and MAY be empty strings. body_text
+      is *plain text*; this document defines no alternative body
+      representation.
 
    *  *draft.reply_to_message_id* (OPTIONAL, nullable) names the message
       this draft replies to, as an [RFC5322] message identifier.  It is
       composed directly into an In-Reply-To: header, which is why it
       carries a control-character pattern in the schema (below).
+
+
+
+
+
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 28]
+
+Internet-Draft                    AMMP                      October 2026
+
 
    *  *Recipient policy is a Runtime decision.* The Agent's chosen
       draft.to and draft.cc are *not* inherently trusted.  Allowlisting,
@@ -1561,14 +1576,6 @@ Internet-Draft                    AMMP                      October 2026
       evaluated Runtime-side.  A populated allowlist plus a fresh
       recipient is an exfiltration surface that the Runtime, not the
       Connector, must close.
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 28]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    *  *Recipient syntax and header-injection discipline.* Each draft.to
       and draft.cc element is exactly one bare addr-spec: no display
@@ -1612,19 +1619,18 @@ Internet-Draft                    AMMP                      October 2026
       it. attachments: [] is valid and is equivalent to the member being
       absent; the Sidecar directory MUST then be absent.
 
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 29]
+
+Internet-Draft                    AMMP                      October 2026
+
+
       sha256 here is an integrity and deduplication aid, *not an
       outbound trust boundary*: the Agent controls both the bytes and
       the hash, so a mismatch catches corruption, never a hostile Agent.
       Its value to the Runtime is that it detects an inconsistent
       request, not that it authenticates one.
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 29]
-
-Internet-Draft                    AMMP                      October 2026
-
 
 6.  Outbound: Result
 
@@ -1668,19 +1674,19 @@ Internet-Draft                    AMMP                      October 2026
       and no signal in this protocol distinguishes "not yet" from
       "never."
 
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 30]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    *  *outcome* (REQUIRED) is one of accepted, queued_for_human, or
       rejected.  This is a *closed vocabulary*: it gates which
       processing path a document takes, so a consumer cannot safely
       treat an unrecognized value as opaque, and introducing a new value
       is a major change (Section 13.1).
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 30]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    *  *Any policy miss — allowlist, rate limit, DLP hold, halt — MUST
       produce queued_for_human.* A Runtime MUST NOT send such a request,
@@ -1722,21 +1728,21 @@ Internet-Draft                    AMMP                      October 2026
    *  *job_id* (OPTIONAL, nullable) is a provider-side job identifier,
       opaque to this protocol.
 
+
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 31]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    *  *attestation* (OPTIONAL) is the identity stamp the Runtime applied
       to the outbound message.  Its form is self-stamp or verifiable,
       distinguishing a stamp a stranger cannot verify from one that can
       be verified independently.  A Connector _surfaces_ an attestation,
       and does not verify it; verification is a Runtime concern.
-
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 31]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    *  *attachments[]* (OPTIONAL) carries one diagnostic entry per
       submitted attachment: index, an outcome of accepted, dlp_held,
@@ -1783,13 +1789,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 32]
+Rapp & Adams              Expires 24 April 2027                [Page 32]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -1845,7 +1845,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 33]
+Rapp & Adams              Expires 24 April 2027                [Page 33]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -1901,7 +1901,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 34]
+Rapp & Adams              Expires 24 April 2027                [Page 34]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -1942,22 +1942,22 @@ Internet-Draft                    AMMP                      October 2026
       the Runtime published.  A Connector MUST also convey that an
       attachment's filename and media_type are sender-chosen display
       strings on the mail tree; on a tree whose sender the Runtime
-      authenticated it SHOULD, and MUST where the attachment was relayed
-      rather than authored by that sender.  On the mail tree a Connector
-      MUST additionally convey that the sender is not authenticated
-      beyond whatever standing the Runtime has already summarized —
-      carried in sender_standing and verdict, named here as the locus
-      and not as vocabulary to repeat to a reader — and that
-      message.from is sender-chosen text.  These are obligations about
-      substance, not vocabulary: a Connector satisfies them with any
-      wording its reader can act on without consulting this document,
-      and they MUST be satisfiable by a literal string the Connector
-      carries, requiring no lookup or computation when a body is
-      presented.
+      authenticated it SHOULD.  On the mail tree a Connector MUST
+      additionally convey that the sender is not authenticated beyond
+      whatever standing the Runtime has already summarized — carried in
+      sender_standing and verdict, named here as the locus and not as
+      vocabulary to repeat to a reader — and that message.from is
+      sender-chosen text.  These are obligations about substance, not
+      vocabulary: a Connector satisfies them with any wording its reader
+      can act on without consulting this document, and they MUST be
+      satisfiable by a literal string the Connector carries, requiring
+      no lookup or computation when a body is presented.
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 35]
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 35]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -2013,7 +2013,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 36]
+Rapp & Adams              Expires 24 April 2027                [Page 36]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -2069,7 +2069,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 37]
+Rapp & Adams              Expires 24 April 2027                [Page 37]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -2125,7 +2125,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 38]
+Rapp & Adams              Expires 24 April 2027                [Page 38]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -2181,7 +2181,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 39]
+Rapp & Adams              Expires 24 April 2027                [Page 39]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -2237,7 +2237,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 40]
+Rapp & Adams              Expires 24 April 2027                [Page 40]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -2267,9 +2267,9 @@ Internet-Draft                    AMMP                      October 2026
 
    *  Required members, if the file is present, are agent_id, address,
       and provisioned_ts. label is OPTIONAL. contract_version is
-      OPTIONAL here — the one artifact where it is — because the file is
-      not a protocol artifact a consumer must parse to function; if
-      present it is pinned to "2".
+      OPTIONAL here, as it is on the Peer Directory (Section 10),
+      because the file is not a protocol artifact a consumer must parse
+      to function; if present it is pinned to "2".
 
    *  This artifact's envelope is *closed* (additionalProperties:
       false), for a different reason than the Submit Request's is:
@@ -2293,7 +2293,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 41]
+Rapp & Adams              Expires 24 April 2027                [Page 41]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -2349,7 +2349,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 42]
+Rapp & Adams              Expires 24 April 2027                [Page 42]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -2405,19 +2405,19 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 43]
+Rapp & Adams              Expires 24 April 2027                [Page 43]
 
 Internet-Draft                    AMMP                      October 2026
 
 
 11.  The Fleet Roster
 
-   A Runtime MAY publish a fleet roster: a single file, written once for
-   the whole fleet, naming the instances the Runtime has admitted.  The
-   Peer Directory (Section 10) answers which peers an Agent may address;
-   the roster answers only which instances exist.  It is a separate
-   artifact, and no obligation of Section 10 applies to it except where
-   this section states one.
+   A Runtime MAY publish a fleet roster: a single file, written for the
+   whole fleet rather than per instance, naming the instances the
+   Runtime has admitted.  The Peer Directory (Section 10) answers which
+   peers an Agent may address; the roster answers only which instances
+   exist.  It is a separate artifact, and no obligation of Section 10
+   applies to it except where this section states one.
 
    *  *Existence is not authorisation.* A member's presence says the
       instance exists.  It does not say this Agent may address it, and
@@ -2461,7 +2461,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 44]
+Rapp & Adams              Expires 24 April 2027                [Page 44]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -2517,7 +2517,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 45]
+Rapp & Adams              Expires 24 April 2027                [Page 45]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -2573,7 +2573,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 46]
+Rapp & Adams              Expires 24 April 2027                [Page 46]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -2629,7 +2629,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 47]
+Rapp & Adams              Expires 24 April 2027                [Page 47]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -2666,7 +2666,8 @@ Internet-Draft                    AMMP                      October 2026
    the component reads.  The prescribed operational check is a write
    attempt against peer/ from inside the admitting component, which MUST
    fail.  The rule is one-directional: a component holding peer write
-   authority MAY write inbound/, as demotion requires (Section 12.6.4).
+   authority MAY write inbound/, as the delivery failure notice of
+   Section 12.5 requires.
 
    A Runtime MUST NOT write a notice into peer/ on the basis of any
    claim the message makes about itself.  It MAY write there only when
@@ -2684,8 +2685,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-
-Rapp & Adams              Expires 21 April 2027                [Page 48]
+Rapp & Adams              Expires 24 April 2027                [Page 48]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -2741,7 +2741,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 49]
+Rapp & Adams              Expires 24 April 2027                [Page 49]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -2782,10 +2782,10 @@ Internet-Draft                    AMMP                      October 2026
    message.in_reply_to and message.references[] on a Peer Notice,
    message_id on a peer-routed Result, and the reply key a sender
    submits all carry the bare id.  When the id is carried in a mail
-   header, it is encoded as <id@domain>, where domain is the sending
-   Runtime's authority.  The encoding is applied on the way into the
-   header and removed on the way out, and MUST NOT appear in an AMMP
-   document.
+   header, it is encoded as <id@domain>, where domain is the domain of
+   the sender's address (Section 12.6.3).  The encoding is applied on
+   the way into the header and removed on the way out, and MUST NOT
+   appear in an AMMP document.
 
    The reverse edge and every ledger depend on two properties of the id:
    that it is unguessable, and that it has one spelling end to end.
@@ -2797,7 +2797,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027                [Page 50]
+Rapp & Adams              Expires 24 April 2027                [Page 50]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -2838,10 +2838,32 @@ Internet-Draft                    AMMP                      October 2026
    task_id remains an optional, Runtime-minted thread handle
    (Section 8).
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 51]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    *Reverse edges.* The authorization graph is directed, yet a reply
    must be able to flow from B to A when only A to B is declared.  A
    Runtime permits a reverse message when its reply key names a peer
-   message that the Runtime itself issued or placed, within a configured
+   message in the opposite direction that the Runtime itself issued or
+   placed (at submission, one it placed for the submitting Agent; at
+   reception, one it issued to the replying Agent), within a configured
    window.  This consults a member, but checks it against state the
    Runtime minted, which is the posture Section 8 takes for threading:
    correlation, not trust.  Because ids are unguessable, the key is not
@@ -2849,14 +2871,6 @@ Internet-Draft                    AMMP                      October 2026
    and a reply to a reply under the id the Runtime issued for it, are
    conformant.  This document does not fix the window's length; it
    requires only that the window exists and is configured.
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 51]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    *An unresolved reply key is refused, not stripped.* A reply key
    (in_reply_to, or else draft.reply_to_message_id) that the Runtime
@@ -2892,6 +2906,14 @@ Internet-Draft                    AMMP                      October 2026
    only its correlation claim failed, and routing it as mail would be a
    third silent transformation.
 
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 52]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    *Two things called a result.* A _work result_ is the responder's
    content for the requester, described above.  A _delivery outcome_ is
    mechanical feedback from a Connector to its Runtime (delivered, held,
@@ -2906,13 +2928,6 @@ Internet-Draft                    AMMP                      October 2026
    Runtime alone.  Such a notice MUST NOT be placed in peer/, and MUST
    NOT quote or forward any text from the receiving Connector's outcome
    file.
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 52]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    The Runtime is never an allowed peer sender, so this keeps it out of
    every Connector's peer policy.  The mail tree's untrusted-content
@@ -2945,6 +2960,16 @@ Internet-Draft                    AMMP                      October 2026
    is defined, and whatever serialization the sender chose is the one
    that is signed.
 
+
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 53]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    The peer-statement schema (Appendix F) pins the statement: version v
    1, closed at every level, with the members v, key_id, kind ("peer"),
    id, in_reply_to (optional), from, to, ts, subject, body_sha256 (the
@@ -2959,16 +2984,6 @@ Internet-Draft                    AMMP                      October 2026
    it publishes, and v is the path for evolution.  The schema states the
    shapes.  The following rules, which JSON Schema cannot express, are
    also part of the statement:
-
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 53]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    *  *Formats.* ts, sender_since and the timestamps in sender_exposure
       are [RFC3339] date-times in UTC, in whole seconds, with the Z
@@ -3003,6 +3018,14 @@ Internet-Draft                    AMMP                      October 2026
 
    *The header field.*
 
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 54]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    AMAP-Peer-Statement: k=<key_id>; s=<statement>; b=<signature>
 
    *  s is the statement's bytes, and b is the 64-byte signature over
@@ -3015,16 +3038,6 @@ Internet-Draft                    AMMP                      October 2026
 
    *  The field name is matched case-insensitively.  The sending Runtime
       MUST emit exactly one such field.
-
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 54]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    *  The sender MUST fold the field so that no line exceeds 998 octets
       (Section 2.1.1 of [RFC5322]), and SHOULD fold at 78.  It may
@@ -3059,6 +3072,16 @@ Internet-Draft                    AMMP                      October 2026
    *  *Body.* The first leaf of type text/plain whose Content-
       Disposition [RFC2183] is not attachment is the body.
 
+
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 55]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    *  *Attachments.* Every other leaf, in walk order, is an attachment:
       a text/html alternative, an inline image, or a second text/plain
       part.
@@ -3074,14 +3097,6 @@ Internet-Draft                    AMMP                      October 2026
    *  *Field bodies.* The body of each AMAP-Peer-Statement, AMAP-Peer-
       Control and Message-ID field, in message order.  The admitting
       component MAY unfold a field body or trim its surrounding
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 55]
-
-Internet-Draft                    AMMP                      October 2026
-
-
       whitespace, and MUST NOT otherwise alter it.  A field body over
       12288 octets MUST be carried as an _oversize_ marker, and MUST NOT
       be truncated.  The 12288-octet limit applies to the field body as
@@ -3116,6 +3131,13 @@ Internet-Draft                    AMMP                      October 2026
    (Section 12.6.6).  The byte sniffing, caps and disposition rules of
    Section 7.2 still apply to the attachment bytes.
 
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 56]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    *Comparisons.* Addresses (from, to, the edge graph, the ledger and
    Runtime addresses) compare the local part exactly and the domain
    case-insensitively in ASCII.  Ids compare exactly, because they are
@@ -3126,17 +3148,6 @@ Internet-Draft                    AMMP                      October 2026
    *Logging.* A receiver MUST NOT log a raw header field value
    unescaped.  Fields are supplied by the attacker, and k is validated
    against the key_id pattern before it is used for anything.
-
-
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 56]
-
-Internet-Draft                    AMMP                      October 2026
-
 
 12.6.3.  Verification
 
@@ -3173,6 +3184,16 @@ Internet-Draft                    AMMP                      October 2026
         k. (b) Every rule of Section 12.6.1 that the schema cannot
         express holds.
 
+
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 57]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    6.   *Key domain.* The domain of from is one of the domains
         configured for the Runtime that owns the key.  A key vouches
         only for its own Runtime's domains (Section 12.4).
@@ -3185,14 +3206,6 @@ Internet-Draft                    AMMP                      October 2026
    8.   *Exposure asserter.* If sender_exposure is present, asserted_by
         is the configured Runtime address of the Runtime that owns the
         key.
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 57]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    9.   *Body.* The body decodes under the charset rule of
         Section 12.6.2, and its digest equals body_sha256.  The verifier
@@ -3229,6 +3242,14 @@ Internet-Draft                    AMMP                      October 2026
    published; a persisted refusal or drop MUST NOT be published,
    whatever happens afterwards.
 
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 58]
+
+Internet-Draft                    AMMP                      October 2026
+
+
 12.6.4.  Outcomes
 
    +============+========================================+=============+
@@ -3242,20 +3263,16 @@ Internet-Draft                    AMMP                      October 2026
    |            | closed (Section 12.6.5); not yet       |             |
    |            | disposed of.                           |             |
    +------------+----------------------------------------+-------------+
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 58]
-
-Internet-Draft                    AMMP                      October 2026
-
-
    | mail, no   | No AMAP-Peer-Statement field.          | none        |
    | statement  |                                        |             |
    +------------+----------------------------------------+-------------+
-   | mail,      | A failure of check 1, 3, 4, 5,         | SHOULD, for |
-   | demoted    | 6, 7, 8, 9, 10 or 11.                  | 5(b) and 6  |
-   |            |                                        | to 11       |
+   | mail,      | A failure of check 1 (other than       | SHOULD, for |
+   | demoted    | the both-fields drop below), 3,        | 5(b) and 6  |
+   |            | 4, 5, 6, 7, 8, 9, 10 or 11.            | to 11       |
+   +------------+----------------------------------------+-------------+
+   | drop: both | An AMAP-Peer-Statement and an          | none        |
+   | fields     | AMAP-Peer-Control field in one         |             |
+   |            | message (Section 12.6.8).              |             |
    +------------+----------------------------------------+-------------+
    | drop:      | Check 2 (a known statement) or         | SHOULD, for |
    | duplicate  | check 12 (a known id).                 | check 12    |
@@ -3281,6 +3298,14 @@ Internet-Draft                    AMMP                      October 2026
    *Mail, demoted.* Demotion is a classification, not a delivery.  The
    candidate goes to ordinary mail admission and the deployment's lane
    policy; where that policy gives the pair no mail lane, it is not
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 59]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    delivered.  The demoted notice MUST NOT carry sender_exposure, the
    statement or the signature, and carries the mail-admission verdict
    the admitting component attached.  Mail admission MUST NOT treat an
@@ -3295,16 +3320,6 @@ Internet-Draft                    AMMP                      October 2026
 
    *Who is told.* A Control Notice (Section 12.6.8) MUST be sent only
    when every one of these holds; a configured k alone is never enough:
-
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 59]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    *  checks 1 to 5(a) passed, so the statement is authenticated by a
       currently valid configured key and is well-formed enough to name.
@@ -3325,9 +3340,8 @@ Internet-Draft                    AMMP                      October 2026
    A "dropped, duplicate" notice (check 12) tells the sender that a
    record with that id already exists.  That record's disposition may
    have been placement or refusal: the notice proves a prior
-   reservation, not that the task failed.  Whether the sending Agent
-   learns of an outcome is the sending Runtime's business
-   (Section 12.6.8).
+   reservation, not that the task failed.  Whether and how the sending
+   Agent learns of an outcome is governed by Section 12.6.8.
 
 12.6.5.  The Replay Store, Windows and Recovery
 
@@ -3336,6 +3350,17 @@ Internet-Draft                    AMMP                      October 2026
 
    *  *F*, the allowance for clock skew, defaults to 300 seconds and
       MUST NOT exceed 900.
+
+
+
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 60]
+
+Internet-Draft                    AMMP                      October 2026
+
 
    *  *P*, the past window, defaults to 3600 seconds, and MUST be at
       least 300 and at most 86400.  A message that arrives later than P
@@ -3354,23 +3379,15 @@ Internet-Draft                    AMMP                      October 2026
    key, so that rotating a key never resets it.  Each record holds the
    scope, the id and ts; the SHA-256 digest of the statement bytes; the
    notice_id minted at reservation; a state, which is reserved, decided
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 60]
-
-Internet-Draft                    AMMP                      October 2026
-
-
    or done; and, once decided, the _disposition_: placement, or a
    refusal or drop with its cause (and policy_code), and whether a
    Control Notice is still pending.
 
    *Recording.* The receiver records a candidate at check 12, after
-   every binding check has passed.  A candidate that fails a binding
-   check records nothing, so a mangled copy cannot suppress the intact
-   one that follows.  Misrouted and refused candidates are recorded too,
-   so that their replays are dropped quietly instead of being evaluated
+   checks 1 to 11 have passed.  A candidate that fails any of them
+   records nothing, so a mangled copy cannot suppress the intact one
+   that follows.  Misrouted and refused candidates are recorded too, so
+   that their replays are dropped quietly instead of being evaluated
    again each time.  Control Notices (Section 12.6.8) use the same
    store.
 
@@ -3392,6 +3409,15 @@ Internet-Draft                    AMMP                      October 2026
        queued.  Only then is the record done.  Placement is idempotent:
        a notice that is already present is not written again.
 
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 61]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    A copy that arrives while another copy is reserved or decided matches
    it at check 2, and is dropped.  On restart, the receiver MUST finish
    every record that is not done, exactly once, by resuming its
@@ -3407,16 +3433,6 @@ Internet-Draft                    AMMP                      October 2026
 
    *  a decided refusal or drop is not published: its pending control
       notice is queued, once, and the record is marked done.
-
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 61]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    An implementation MUST survive a crash at each of these points: after
    reservation, after the decision, after a notice is placed, after a
@@ -3446,33 +3462,24 @@ Internet-Draft                    AMMP                      October 2026
    freshness demotes.  The permission is kept for portability, not as a
    recommendation.
 
+
+
+
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 62]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    *Recovery.* The store and H MUST survive a restart.  If the receiver
    loses the store, or cannot show that a restored store is complete, it
    MUST restore this barrier: no statement that could already have been
    accepted under the lost coverage may be admitted again, including at
    the boundary, under a clock that stepped back, and under the largest
    F that was ever in effect.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 62]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    *  *With H intact*, the receiver sets floor to one second after
       max(C, H) + Fmax, persisted before admission resumes.  C is the
@@ -3514,21 +3521,21 @@ Internet-Draft                    AMMP                      October 2026
    and an expiry, the configured reply window (Section 12.5).  The
    ledger is scoped to peer messages: a mail notice id never resolves.
 
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 63]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    *Resolution.* A verified statement carrying in_reply_to resolves only
    if a record exists whose id equals in_reply_to, whose local Agent
    equals to, whose remote Agent equals from, and which has not expired.
    Possession of an id is not authority: an id presented by another
    Agent on the same host, or by any Agent on another host, does not
    resolve.
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 63]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    *Permission.* A resolved reply to a record this Runtime issued is a
    reverse message, and is permitted without an edge (Section 12.5).  A
@@ -3570,6 +3577,15 @@ Internet-Draft                    AMMP                      October 2026
    A sending Runtime SHOULD make its key ids globally unique, for
    example by deriving them from a fingerprint of the public key.
 
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 64]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    These are configuration-time checks, a gate separate from
    verification.  A bare Ed25519 implementation will construct and
    verify under a small-order or non-canonical key; the key loader, not
@@ -3577,14 +3593,6 @@ Internet-Draft                    AMMP                      October 2026
    demonstrate the refusal through its loader, and MUST NOT count
    passing the vectors marked for rejection at verification as covering
    it.
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 64]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    *Rotation.* A receiver MUST support at least two concurrent keys per
    peer.  A rotation proceeds as follows:
@@ -3625,6 +3633,15 @@ Internet-Draft                    AMMP                      October 2026
    configuration (Appendix J).  An implementation MUST pass both kinds
    through the implementation it ships.
 
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 65]
+
+Internet-Draft                    AMMP                      October 2026
+
+
 12.6.8.  Control Notices
 
    A receiving Runtime tells a configured sending Runtime what it did
@@ -3632,15 +3649,6 @@ Internet-Draft                    AMMP                      October 2026
    The peer-control schema (Appendix F) pins it: version v 1, closed,
    with the members v, key_id, kind ("control"), id, from, to, ts,
    about, outcome, cause, and policy_code (with cause policy).
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 65]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    *Form.* A Control Notice is carried in an AMAP-Peer-Control header
    field with the k, s and b grammar of Section 12.6.2, signed with the
@@ -3677,26 +3685,32 @@ Internet-Draft                    AMMP                      October 2026
    and about names a ledger record that this Runtime issued to an Agent
    in the signer's domains.
 
-   *What it does.* It gives the issuing Agent a failure notice authored
-   by the Runtime in inbound/ (the delivery failure notice of
+
+
+
+
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 66]
+
+Internet-Draft                    AMMP                      October 2026
+
+
+   *What it does.* It SHOULD give the issuing Agent a failure notice
+   authored by the Runtime in inbound/ (the delivery failure notice of
    Section 12.5), with no text from the Control Notice except the
-   vocabulary values.  The failure notice is owed from the moment the
-   record is reserved, and the record is done only once the failure
-   notice is durable; a crash in between is finished by recovery, once.
+   vocabulary values.  Where it does, the failure notice is owed from
+   the moment the record is reserved, and the record is done only once
+   the failure notice is durable; a crash in between is finished by
+   recovery, once.
 
    *One per message.* An issued record receives at most one failure
    notice.  A later Control Notice about the same about, under a
    different id, is dropped.  A "dropped, duplicate" report means that a
    record for the message exists at the receiver, whose disposition may
    have been placement; it is not proof that the task failed.
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 66]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    *Failures.* A Control Notice that fails any rule is dropped and
    logged: it MUST NOT be placed, handed to mail admission, or answered.
@@ -3727,6 +3741,19 @@ Internet-Draft                    AMMP                      October 2026
       clock minus sender_since, so a few minutes of skew change nothing
       under a policy measured in hours.
 
+
+
+
+
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 67]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    *  *Continuity.* The sending Runtime MUST NOT reset it for a
       continuation of the same identity: a restart, a rebinding, a re-
       creation or a key rotation keeps the value.  A new enrollment of
@@ -3746,13 +3773,6 @@ Internet-Draft                    AMMP                      October 2026
    means "not asserted", and a receiver MUST NOT read it as "new" or as
    "old enough".  A deployment that requires it refuses its absence with
    its own policy_code.
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 67]
-
-Internet-Draft                    AMMP                      October 2026
-
 
 12.6.10.  The Intake Location
 
@@ -3779,36 +3799,29 @@ Internet-Draft                    AMMP                      October 2026
    itself, are implementation choices; this section constrains only the
    properties above.
 
+
+
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 68]
+
+Internet-Draft                    AMMP                      October 2026
+
+
 12.7.  Sender Exposure
 
    The split between Runtime assertions and sender claims (Section 7.1)
    applies: disposition, verdict and sender_standing are Runtime
-   assertions, while from, subject and body_text are sender claims.  An
-   exposure record belongs on the assertion side.  It records
-   _delivery_, not _reading_: a Runtime can know that it delivered
-   external mail to the sender's Namespace, but cannot know what the
-   sender did with it.
+   assertions, while subject and body_text (and, on the mail tree, from)
+   are sender claims.  An exposure record belongs on the assertion side.
+   It records _delivery_, not _reading_: a Runtime can know that it
+   delivered external mail to the sender's Namespace, but cannot know
+   what the sender did with it.
 
    A Peer Notice asserting exposure, with the stamp in
    message.sender_exposure:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 68]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    {
      "contract_version": "2",
@@ -3843,6 +3856,16 @@ Internet-Draft                    AMMP                      October 2026
       absence when the boolean is false is stated here, not in the
       schema.
 
+
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 69]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    *  *Shape.* A boolean over an explicit window, plus the most recent
       timestamp.  There is no count, because a count would assert a
       precision that a measure of delivery lacks. derived_from is
@@ -3858,14 +3881,6 @@ Internet-Draft                    AMMP                      October 2026
       there only same-principal Agent mail and its own delivery failure
       notices, SHOULD assert false.  Notices the Runtime authors in the
       mail tree (the delivery failure notices of Section 12.5) are not
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 69]
-
-Internet-Draft                    AMMP                      October 2026
-
-
       external mail, and MUST NOT make the boolean true.  Moving
       window_start forward to the moment the Runtime's assessment began
       (for example, an instance's approval time after a reset) keeps the
@@ -3899,28 +3914,29 @@ Internet-Draft                    AMMP                      October 2026
       agreed out of band with its Runtime, under the stable Connector id
       that Section 4.1 requires.  Section 4.1 carries the one normative
       rule: an outcome is a claim by the receiving side, never proof of
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 70]
+
+Internet-Draft                    AMMP                      October 2026
+
+
       delivery or of non-delivery, and the Runtime's own delivery record
       is authoritative over it (Section 14.15).  If a second Connector
       needs outcomes, that is the point at which to define a shape for
       them in this profile.
 
    *  *Retention.* The record is the audit log, not the spool.  The
-      Runtime logs every Peer Notice it places (id, from, to, tree,
-      exposure, signature verdict, demotion cause) to the per-Agent
-      audit/log.jsonl it owns, and to its own store of record.  Spool
-      retention for peer/ follows the mail row of the deletion table
-      (Section 4.2) unchanged.
+      Runtime logs every candidate it disposes of (id, from, to, tree,
+      exposure, signature verdict, and any demotion or refusal cause) to
+      the per-Agent audit/log.jsonl it owns, and to its own store of
+      record.  Spool retention for peer/ follows the mail row of the
+      deletion table (Section 4.2) unchanged.
 
    *  *Deletion rights.* The deletion table (Section 4.2) applies to
       peer/ artifacts exactly as to inbound ones: written by the
       Runtime, and deleted by the Runtime only.
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 70]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    *  *Presentation.* A Connector presenting a peer body MUST meet the
       presentation obligations of Section 7.1, with one prohibition and
@@ -3952,6 +3968,16 @@ Internet-Draft                    AMMP                      October 2026
    closed* — refuse to process the artifact — and MUST NOT silently mis-
    parse it.
 
+
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 71]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    *Version-check ordering.* A consumer MUST implement the version check
    by reading contract_version *before* any schema validation, comparing
    majors as non-negative decimal integers.  An absent major, a lower
@@ -3970,14 +3996,6 @@ Internet-Draft                    AMMP                      October 2026
    Runtime version-refusing a Submit Request MAY carry that refusal on
    the ordinary request-rejection path — a top-level rejected Result
    with reason_code: "unsupported_contract_version" (Section 6.1) — and,
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 71]
-
-Internet-Draft                    AMMP                      October 2026
-
-
    per the conformance classes below, MUST do so for the version-absent
    request fixture.  That is still a distinct, legible outcome rather
    than a fold into the malformed-request case: reason_code is exactly
@@ -4008,6 +4026,14 @@ Internet-Draft                    AMMP                      October 2026
       does not recognize, at every level of the document, and MUST NOT
       reject, drop, or fail the artifact on their account.  Strictness
       in this direction defends nothing: the producer is trusted by
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 72]
+
+Internet-Draft                    AMMP                      October 2026
+
+
       construction, and in the one posture where an attacker can author
       a Notice — a writable inbound tree — that attacker can author a
       fully schema-valid one, so strictness is not the defense there.
@@ -4025,14 +4051,6 @@ Internet-Draft                    AMMP                      October 2026
       member; the validator is the trusted Runtime; and a refusal is a
       _legible, per-request_ rejected Result, never a silent loss.  A
       Runtime MUST reject a request carrying unrecognized members.
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 72]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    *  *Consequently:* adding an optional member to a Runtime-authored
       artifact is additive and needs no new wire major; adding any
@@ -4064,6 +4082,14 @@ Internet-Draft                    AMMP                      October 2026
    so a new value in any of them is a behavioral fork a consumer cannot
    safely treat as opaque.  Introducing one requires a new wire major.
 
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 73]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    *When the wire major changes, and when it does not.* The wire major
    exists to force a legible, fail-closed refusal where a _whole
    document_ that a counterpart already accepts would otherwise be
@@ -4082,14 +4108,6 @@ Internet-Draft                    AMMP                      October 2026
    implementations exchanged an earlier, incompatible shape under "1":
    it had no attachments, and its envelopes were closed.  Reusing "1"
    for this document's shapes would give one major two incompatible
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 73]
-
-Internet-Draft                    AMMP                      October 2026
-
-
    meanings, and would defeat the fail-closed rule above exactly where
    it is needed: a consumer of the old shape would accept a document it
    cannot process. "2" is also what current implementations emit and
@@ -4107,13 +4125,26 @@ Internet-Draft                    AMMP                      October 2026
 13.2.  Required versus optional
 
    contract_version is REQUIRED on the Submit Request, the Deliver
-   Notice, the Result, the Peer Notice and the Fleet Roster.  It is
-   OPTIONAL on the Binding Record (Section 9.1) and the Peer Directory,
-   and the signed Peer Statement and Control Notice carry their own
-   version member, v, instead.  The rest of this table reflects what
-   implementations emit today; specified-but-unbuilt enrichment stays
-   optional, and tightening any of it to required would be a future
-   major bump.
+   Notice, the Inbound Message, the Result, the Peer Notice and the
+   Fleet Roster.  It is OPTIONAL on the Binding Record (Section 9.1) and
+   the Peer Directory, and the signed Peer Statement and Control Notice
+   carry their own version member, v, instead.  The rest of this table
+   reflects what implementations emit today; specified-but-unbuilt
+   enrichment stays optional, and tightening any of it to required would
+   be a future major bump.
+
+
+
+
+
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 74]
+
+Internet-Draft                    AMMP                      October 2026
+
 
    +===================+=====================+=========================+
    | Artifact          | Required            | Optional (specified;    |
@@ -4138,14 +4169,6 @@ Internet-Draft                    AMMP                      October 2026
    | *submit-request*  | contract_version,   | agent_id, ts,           |
    |                   | req_id, draft{to,   | in_reply_to,            |
    |                   | subject, body_text} | draft.{cc,              |
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 74]
-
-Internet-Draft                    AMMP                      October 2026
-
-
    |                   |                     | reply_to_message_id},   |
    |                   |                     | draft.attachments[]     |
    |                   |                     | (items require          |
@@ -4171,6 +4194,14 @@ Internet-Draft                    AMMP                      October 2026
    |                   | body_text           |                         |
    +-------------------+---------------------+-------------------------+
    | *binding-record*  | _(the file itself   | label;                  |
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 75]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    |                   | is OPTIONAL —       | contract_version        |
    |                   | Section 9)_; if     | (optional — if          |
    |                   | present: agent_id,  | present, pinned to      |
@@ -4194,14 +4225,6 @@ Internet-Draft                    AMMP                      October 2026
    |                   | message{id, from,   | attachments};           |
    |                   | subject, preview,   | in_reply_to is          |
    |                   | mailbox: "peer"}    | REQUIRED on a reply     |
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 75]
-
-Internet-Draft                    AMMP                      October 2026
-
-
    |                   |                     | (Section 12.5).  The    |
    |                   |                     | body spool and          |
    |                   |                     | Sidecars are as for     |
@@ -4227,6 +4250,14 @@ Internet-Draft                    AMMP                      October 2026
    |                   | about, outcome,     |                         |
    |                   | cause; carried in   |                         |
    |                   | exactly one AMAP-   |                         |
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 76]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    |                   | Peer-Control field  |                         |
    |                   | with the tags k, s  |                         |
    |                   | and b               |                         |
@@ -4247,16 +4278,6 @@ Internet-Draft                    AMMP                      October 2026
    inbound/notices/processed/ is an OPTIONAL *directory convention*
    (Section 4.1), not a protocol artifact: it carries no schema, and no
    fixture exists or is needed for it.
-
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 76]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    Emission of contract_version on the artifacts that require it is
    mandatory.  An implementation not yet emitting it has an
@@ -4285,6 +4306,14 @@ Internet-Draft                    AMMP                      October 2026
    *Runtime conformance class.* An implementation claiming Runtime
    conformance:
 
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 77]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    *  MUST produce Deliver Notice documents valid against the deliver-
       notice schema (Appendix C) and Result documents valid against the
       result schema (Appendix B); MAY produce Inbound Message documents,
@@ -4304,15 +4333,6 @@ Internet-Draft                    AMMP                      October 2026
       Connector conformance run depends on it never having to special-
       case.  It MUST also confirm that any Binding Record it writes
       satisfies the valid identity-* shape.
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 77]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    *  MUST uphold the filesystem and policy obligations of Sections 4
       through 8 that no document validator can observe.  Appendix J
@@ -4342,6 +4362,14 @@ Internet-Draft                    AMMP                      October 2026
       Section 7.1's drop rule is *two independent conditions, not a
       closure over schema validation*. "Fails schema validation for any
       reason other than an unrecognized member" (check 1) covers eleven
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 78]
+
+Internet-Draft                    AMMP                      October 2026
+
+
       of the twelve other invalid notice-* fixtures — missing-required-
       member, wrong-kind, enum, pattern, and conditional violations
       alike.  The twelfth is schema-valid on its own, producing zero
@@ -4359,16 +4387,6 @@ Internet-Draft                    AMMP                      October 2026
 
    *  MUST return "not resolved" for a body whose Inbound Message is
       absent, and MUST NOT attempt any fallback fetch (Section 7.3).
-
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 78]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    *  MUST tolerate a Binding Record that is absent, and MUST NOT crash
       or otherwise misbehave on one that is hostile or malformed
@@ -4400,6 +4418,14 @@ Internet-Draft                    AMMP                      October 2026
       schema, and MUST NOT emit a peer document into inbound/
       (Section 12.2);
 
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 79]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    *  MUST uphold the operational obligations of the profile: the write-
       authority partition, proven by the write probe, and verification
       placement (Section 12.3); a Runtime-asserted peer from
@@ -4414,17 +4440,6 @@ Internet-Draft                    AMMP                      October 2026
 
    An implementation claiming *Connector + peer-origin* conformance, in
    addition to the Connector class:
-
-
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 79]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    *  MUST accept every valid peer-* fixture and MUST reject every
       invalid peer-* fixture when read from peer/notices/, and MUST
@@ -4456,6 +4471,17 @@ Internet-Draft                    AMMP                      October 2026
    Section 3.2 — enforcement is Runtime-side, and no property depends on
    the Agent or its Connector behaving.
 
+
+
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 80]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    The threat actor assumed throughout is a *fully compromised Agent*
    with write access to its own Namespace, running as a uid that owns
    the files it creates, able to act concurrently with the Runtime, and
@@ -4474,14 +4500,6 @@ Internet-Draft                    AMMP                      October 2026
    The same reasoning is why inbound Sidecar directories and the body
    spool are keyed on the Runtime-minted notice identifier rather than
    the provider message.id: the provider identifier is external,
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 80]
-
-Internet-Draft                    AMMP                      October 2026
-
-
    arbitrary, and not character-set-safe, and using one as a path
    component would hand the choice of path to the sender.  The schemas
    pin notice_id and req_id to character sets that are safe as path
@@ -4512,6 +4530,14 @@ Internet-Draft                    AMMP                      October 2026
    *  Pinning the whole chain correctly still says nothing about the
       final filename.  Every Runtime-written filename in the layout tree
       is predictable or observable to the Agent, so a pre-planted
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 81]
+
+Internet-Draft                    AMMP                      October 2026
+
+
       symlink at that name receives the Runtime's write with the
       Runtime's privileges unless the final open refuses to follow it
       and, where the file is newly created, refuses to reuse an existing
@@ -4529,14 +4555,6 @@ Internet-Draft                    AMMP                      October 2026
    stalls the Runtime's drain indefinitely — a denial of service that
    the exclusive-create branch happens to refuse for free, and that this
    branch must refuse explicitly.
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 81]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    The read side mirrors all of it (Section 4.1): per-component no-
    follow opens or an equivalently pinned walk, a non-blocking open, an
@@ -4568,6 +4586,14 @@ Internet-Draft                    AMMP                      October 2026
    post-publish change as malformed, but nothing depends on the
    Connector honoring it.
 
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 82]
+
+Internet-Draft                    AMMP                      October 2026
+
+
 14.4.  Concurrency
 
    Every atomicity guarantee in this protocol — the .tmp-then-rename
@@ -4581,18 +4607,6 @@ Internet-Draft                    AMMP                      October 2026
    mechanism lives outside this protocol, and an implementation that
    does not provide one is not conformant, because behavior under
    violation is unspecified rather than merely degraded.
-
-
-
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 82]
-
-Internet-Draft                    AMMP                      October 2026
-
 
 14.5.  Attribution spoofing
 
@@ -4628,6 +4642,14 @@ Internet-Draft                    AMMP                      October 2026
    sender_standing and verdict, or, on a Peer Notice, the message.from
    the Runtime asserts (Section 12.4).
 
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 83]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    *An attachment filename is an injection payload.* A Descriptor is
    metadata about a file the Agent may never receive the bytes of, and a
    clean Disposition asserts something about _bytes_, never about the
@@ -4642,13 +4664,6 @@ Internet-Draft                    AMMP                      October 2026
    obey body content, and this document deliberately does not define
    what an Agent should do with a message — that is Connector and
    deployment policy.
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 83]
-
-Internet-Draft                    AMMP                      October 2026
-
 
 14.7.  Recipient policy and header injection
 
@@ -4674,6 +4689,23 @@ Internet-Draft                    AMMP                      October 2026
    legitimate [RFC5322] addresses cannot be expressed under this
    document.
 
+
+
+
+
+
+
+
+
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 84]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    Header injection is the second half.  Any Agent-authored string that
    reaches the composed message can attempt to introduce a header
    boundary with CR, LF, or NUL.  The schema patterns are the first line
@@ -4695,16 +4727,6 @@ Internet-Draft                    AMMP                      October 2026
    evidence about the content's safety, and MUST apply its own policy —
    sniffing the bytes, applying type and size rules — to the staged copy
    regardless.
-
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 84]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    The inbound direction is weaker still and is labelled as such:
    inbound size_bytes is provider-declared and advisory, not Runtime-
@@ -4732,6 +4754,14 @@ Internet-Draft                    AMMP                      October 2026
    exists only where bytes were published.  An Agent that ignores every
    Disposition it is shown still cannot read what was never written.
 
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 85]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    The same shape appears for bodies: a withheld or never-delivered
    message is simply not spooled, and a read against a missing artifact
    returns "not resolved," with no fallback fetch available to the
@@ -4748,19 +4778,6 @@ Internet-Draft                    AMMP                      October 2026
    Descriptor could name another Notice's Sidecar directory — including
    one belonging to a different delivery whose bytes the Agent was never
    granted.
-
-
-
-
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 85]
-
-Internet-Draft                    AMMP                      October 2026
-
 
 14.11.  Fail-closed version handling, and the cost of tolerance
 
@@ -4789,6 +4806,18 @@ Internet-Draft                    AMMP                      October 2026
    value in any of them as opaque would let a producer's new value
    silently select a consumer's default path.
 
+
+
+
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 86]
+
+Internet-Draft                    AMMP                      October 2026
+
+
 14.12.  Inbound integrity and the writability of the inbound tree
 
    A read-only inbound mount is the mechanism that makes a delivered
@@ -4809,14 +4838,6 @@ Internet-Draft                    AMMP                      October 2026
    elsewhere (Section 4.1).  A Connector that crashes on a read-only
    inbound tree is broken against any Runtime enforcing inbound
    integrity.
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 86]
-
-Internet-Draft                    AMMP                      October 2026
-
 
 14.13.  Retention, deletion, and lost verdicts
 
@@ -4844,6 +4865,15 @@ Internet-Draft                    AMMP                      October 2026
    reviewer assessing an implementation must check them another way
    (Appendix J lists them too):
 
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 87]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    *  Sidecar file existence, and the binding between an ordinal and a
       directory entry on disk.
 
@@ -4866,14 +4896,6 @@ Internet-Draft                    AMMP                      October 2026
 
    *  A Connector's tolerance of a read-only inbound tree.
 
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 87]
-
-Internet-Draft                    AMMP                      October 2026
-
-
    *  Ingest by copy.
 
    *  Write-side path discipline, in all three of its conjunctive legs.
@@ -4893,6 +4915,20 @@ Internet-Draft                    AMMP                      October 2026
    Agent contributes is inert until a Runtime acts on it, and that
    whatever the Runtime asserts is legible and attributable to the
    Runtime.
+
+
+
+
+
+
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 88]
+
+Internet-Draft                    AMMP                      October 2026
+
 
 14.15.  The extension space, and outcomes as claims
 
@@ -4914,21 +4950,6 @@ Internet-Draft                    AMMP                      October 2026
    extension space, because an inbound tree is a Runtime assertion about
    origin (Section 7.1) and a Connector cannot know what a vendor-named
    assertion means.
-
-
-
-
-
-
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 88]
-
-Internet-Draft                    AMMP                      October 2026
-
 
 14.16.  Special-use domain names
 
@@ -4956,6 +4977,15 @@ Internet-Draft                    AMMP                      October 2026
    verification (Section 12.3) exist to prevent that, and are checked by
    a write probe rather than by configuration review.
 
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 89]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    *Key compromise.* A Runtime's signing key speaks for every Agent in
    that Runtime's domains.  An attacker holding it can place peer
    messages, as any of those Agents, at every Runtime that configures
@@ -4978,14 +5008,6 @@ Internet-Draft                    AMMP                      October 2026
    *Parsing hostile input.* The verifier reads data an attacker chose.
    It verifies the signature over the exact bytes received before
    parsing anything, defines no canonicalization (so there is no second
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 89]
-
-Internet-Draft                    AMMP                      October 2026
-
-
    parse to disagree with the first), refuses duplicate JSON member
    names, and receives the message already reduced to a candidate
    (Section 12.6.2), so that it never parses MIME itself.  Oversize and
@@ -5013,6 +5035,13 @@ Internet-Draft                    AMMP                      October 2026
    integrity and origin, not confidentiality; a deployment that needs
    confidentiality between hosts has to obtain it from the transport.
 
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 90]
+
+Internet-Draft                    AMMP                      October 2026
+
+
 15.  IANA Considerations
 
 15.1.  Message Header Fields
@@ -5034,16 +5063,7 @@ Internet-Draft                    AMMP                      October 2026
 
                     Table 6: Header field registrations
 
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 90]
-
-Internet-Draft                    AMMP                      October 2026
-
-
-   Change controller: to be confirmed with the stream in which this
-   document is published.
+   Change controller: IETF.
 
 15.2.  Possible Future Registries
 
@@ -5064,6 +5084,19 @@ Internet-Draft                    AMMP                      October 2026
               Hash Standard (SHS)", FIPS PUB 180-4,
               DOI 10.6028/NIST.FIPS.180-4, August 2015,
               <https://doi.org/10.6028/NIST.FIPS.180-4>.
+
+
+
+
+
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 91]
+
+Internet-Draft                    AMMP                      October 2026
+
 
    [JSON-SCHEMA-2020-12]
               Wright, A., Ed., Andrews, H., Ed., Hutton, B., Ed., and G.
@@ -5086,17 +5119,6 @@ Internet-Draft                    AMMP                      October 2026
               Part Three: Message Header Extensions for Non-ASCII Text",
               RFC 2047, DOI 10.17487/RFC2047, November 1996,
               <https://www.rfc-editor.org/info/rfc2047>.
-
-
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 91]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -5122,6 +5144,16 @@ Internet-Draft                    AMMP                      October 2026
               10646", STD 63, RFC 3629, DOI 10.17487/RFC3629, November
               2003, <https://www.rfc-editor.org/info/rfc3629>.
 
+
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 92]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    [RFC4648]  Josefsson, S., "The Base16, Base32, and Base64 Data
               Encodings", RFC 4648, DOI 10.17487/RFC4648, October 2006,
               <https://www.rfc-editor.org/info/rfc4648>.
@@ -5143,16 +5175,6 @@ Internet-Draft                    AMMP                      October 2026
               Interchange Format", STD 90, RFC 8259,
               DOI 10.17487/RFC8259, December 2017,
               <https://www.rfc-editor.org/info/rfc8259>.
-
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 92]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    [RFC8792]  Watsen, K., Auerswald, E., Farrel, A., and Q. Wu,
               "Handling Long Lines in Content of Internet-Drafts and
@@ -5181,6 +5203,13 @@ Internet-Draft                    AMMP                      October 2026
               DOI 10.17487/RFC2033, October 1996,
               <https://www.rfc-editor.org/info/rfc2033>.
 
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 93]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    [RFC3864]  Klyne, G., Nottingham, M., and J. Mogul, "Registration
               Procedures for Message Header Fields", BCP 90, RFC 3864,
               DOI 10.17487/RFC3864, September 2004,
@@ -5202,13 +5231,6 @@ Appendix A.  Submit-Request Schema
    closed at every level: an unrecognized member is a hard rejection,
    surfaced as a rejected Result rather than as a silent drop
    (Section 13.1).
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 93]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    NOTE: '\' line wrapping per RFC 8792
 
@@ -5236,6 +5258,14 @@ Internet-Draft                    AMMP                      October 2026
          "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*(?!\\n)$"
        },
        "agent_id": { "type": "string", "minLength": 1, "pattern": "^[^\\
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 94]
+
+Internet-Draft                    AMMP                      October 2026
+
+
        u0000-\u001f\u007f]*(?!\\n)$" },
        "ts": { "type": "string", "minLength": 1, "pattern": "^[^\u0000-\
        \u001f\u007f]*(?!\\n)$" },
@@ -5258,14 +5288,6 @@ Internet-Draft                    AMMP                      October 2026
                "pattern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9\
        .-]+(?!\\n)$"
              },
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 94]
-
-Internet-Draft                    AMMP                      October 2026
-
-
              "minItems": 1
            },
            "cc": {
@@ -5292,6 +5314,14 @@ Internet-Draft                    AMMP                      October 2026
                  "filename":   { "type": "string", "minLength": 1, "pat\
        tern": "^[^\u0000-\u001f\u007f]*(?!\\n)$" },
                  "media_type": { "type": "string", "minLength": 1, "pat\
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 95]
+
+Internet-Draft                    AMMP                      October 2026
+
+
        tern": "^[^\u0000-\u001f\u007f]*(?!\\n)$" },
                  "size_bytes": { "type": "integer", "minimum": 0 },
                  "sha256":     { "type": "string", "pattern": "^[a-f0-9\
@@ -5314,13 +5344,6 @@ Appendix B.  Result Schema
    (Section 13.1).  The attachments[i].index == i binding stated in
    Section 6.1 is not expressible here and is enforced as a named post-
    check by the conformance gate (Appendix J).
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 95]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    NOTE: '\' line wrapping per RFC 8792
 
@@ -5347,6 +5370,14 @@ Internet-Draft                    AMMP                      October 2026
        "reason_code": { "type": "string", "minLength": 1 },
        "ts": { "type": "string", "minLength": 1 },
        "recipients": { "type": "array", "items": { "type": "string" } },
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 96]
+
+Internet-Draft                    AMMP                      October 2026
+
+
        "message_id": { "type": ["string", "null"] },
        "job_id": { "type": ["string", "null"] },
        "attestation": {
@@ -5370,14 +5401,6 @@ Internet-Draft                    AMMP                      October 2026
                           "enum": ["accepted", "dlp_held", "rejected_ty\
        pe", "too_large"] },
              "detail":  { "type": ["string", "null"] }
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 96]
-
-Internet-Draft                    AMMP                      October 2026
-
-
            }
          }
        }
@@ -5403,6 +5426,14 @@ Appendix C.  Deliver-Notice Schema
      "title": "deliver-notice",
      "description": "runtime -> connector: one notice per delivered mes\
        sage. AMMP, section \"Inbound: Deliver Notice and Inbound Messag\
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 97]
+
+Internet-Draft                    AMMP                      October 2026
+
+
        e\". Runtime-authored: this document's envelope is OPEN (no addi\
        tionalProperties:false) at every level per the tolerance rule o\
        f section \"Versioning\" — a consumer MUST ignore members it doe\
@@ -5426,14 +5457,6 @@ Appendix C.  Deliver-Notice Schema
            "subject": { "type": "string" },
            "preview": { "type": "string" },
            "mailbox": { "type": "string", "minLength": 1 },
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 97]
-
-Internet-Draft                    AMMP                      October 2026
-
-
            "task_id": { "type": "string", "minLength": 1 },
            "thread_id": { "type": "string" },
            "in_reply_to": { "type": "string" },
@@ -5459,6 +5482,14 @@ Internet-Draft                    AMMP                      October 2026
              "type": "object",
              "properties": {
                "auth": { "type": "string" },
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 98]
+
+Internet-Draft                    AMMP                      October 2026
+
+
                "screen": { "type": "string" },
                "entitlement": { "type": "string" }
              }
@@ -5482,14 +5513,6 @@ Internet-Draft                    AMMP                      October 2026
                                   "pattern": "^[A-Za-z0-9_.-]+\\.attach\
        ments/(0|[1-9][0-9]*)(?!\\n)$" }
                },
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 98]
-
-Internet-Draft                    AMMP                      October 2026
-
-
                "allOf": [
                  { "if": { "required": ["content_ref"] },
                    "then": { "properties": { "disposition": { "const": \
@@ -5513,6 +5536,15 @@ Appendix D.  Inbound-Message Schema
    artifact defined in Section 7.3.  Runtime-authored and open at every
    level.  Its Descriptor rules, including the clean-gating
    conditionals, match the deliver-notice schema's.
+
+
+
+
+
+Rapp & Adams              Expires 24 April 2027                [Page 99]
+
+Internet-Draft                    AMMP                      October 2026
+
 
    NOTE: '\' line wrapping per RFC 8792
 
@@ -5538,14 +5570,6 @@ Appendix D.  Inbound-Message Schema
        "body_text": { "type": "string" },
        "id": { "type": "string" },
        "date": { "type": "string" },
-
-
-
-Rapp & Adams              Expires 21 April 2027                [Page 99]
-
-Internet-Draft                    AMMP                      October 2026
-
-
        "from": { "type": "string" },
        "to": { "type": "string" },
        "cc": { "type": "string" },
@@ -5570,6 +5594,14 @@ Internet-Draft                    AMMP                      October 2026
        s/(0|[1-9][0-9]*)(?!\\n)$" }
            },
            "allOf": [
+
+
+
+Rapp & Adams              Expires 24 April 2027               [Page 100]
+
+Internet-Draft                    AMMP                      October 2026
+
+
              { "if": { "required": ["content_ref"] },
                "then": { "properties": { "disposition": { "const": "cle\
        an" } } } },
@@ -5590,17 +5622,6 @@ Appendix E.  Binding-Record Schema
    artifact defined in Section 9.  This envelope is closed, for the
    reason given in Section 9.1 — an anti-secret-leak lint rather than a
    compatibility surface.
-
-
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 100]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    NOTE: '\' line wrapping per RFC 8792
 
@@ -5630,6 +5651,13 @@ Internet-Draft                    AMMP                      October 2026
 
                Figure 14: schemas/binding-record.schema.json
 
+
+
+Rapp & Adams              Expires 24 April 2027               [Page 101]
+
+Internet-Draft                    AMMP                      October 2026
+
+
 Appendix F.  Peer-Origin Profile Schemas
 
    _(Normative.)_ JSON Schema 2020-12 [JSON-SCHEMA-2020-12].  The first
@@ -5650,14 +5678,6 @@ Appendix F.  Peer-Origin Profile Schemas
      "description": "runtime -> connector: one notice per peer message \
        placed in <agent-id>/peer/notices/. AMMP, section \"The Peer-Ori\
        gin Profile (Optional)\". Same layout as deliver-notice with kin\
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 101]
-
-Internet-Draft                    AMMP                      October 2026
-
-
        d and mailbox pinned to \"peer\", message.from pinned to a bare \
        addr-spec (the one runtime-asserted `from` in the protocol), mes\
        sage.id / in_reply_to / references pinned to the notice_id chars\
@@ -5686,6 +5706,14 @@ Internet-Draft                    AMMP                      October 2026
          "properties": {
            "id": {
              "type": "string", "minLength": 1,
+
+
+
+Rapp & Adams              Expires 24 April 2027               [Page 102]
+
+Internet-Draft                    AMMP                      October 2026
+
+
              "description": "the peer message id: minted by the sendin\
        g runtime on accepting the submit, returned to the sender as res\
        ult.message_id, >=128 bits of entropy, globally unique and ungue\
@@ -5706,14 +5734,6 @@ Internet-Draft                    AMMP                      October 2026
            "subject": { "type": "string" },
            "preview": { "type": "string" },
            "mailbox": { "const": "peer" },
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 102]
-
-Internet-Draft                    AMMP                      October 2026
-
-
            "task_id": { "type": "string", "minLength": 1 },
            "thread_id": { "type": "string" },
            "in_reply_to": {
@@ -5742,6 +5762,14 @@ Internet-Draft                    AMMP                      October 2026
            },
            "verdict": {
              "type": "object",
+
+
+
+Rapp & Adams              Expires 24 April 2027               [Page 103]
+
+Internet-Draft                    AMMP                      October 2026
+
+
              "properties": {
                "auth": { "type": "string" },
                "screen": { "type": "string" },
@@ -5762,14 +5790,6 @@ Internet-Draft                    AMMP                      October 2026
        ern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+(?!\\n)$\
        " },
                "external_mail_delivered": { "type": "boolean" },
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 103]
-
-Internet-Draft                    AMMP                      October 2026
-
-
                "window_start": { "type": "string", "minLength": 1 },
                "window_end": { "type": "string", "minLength": 1 },
                "last_external_delivery_ts": { "type": "string", "minLen\
@@ -5798,6 +5818,14 @@ Internet-Draft                    AMMP                      October 2026
        9]{64}(?!\\n)$" },
                  "disposition": { "type": "string",
                                   "enum": ["clean", "stripped", "quaran\
+
+
+
+Rapp & Adams              Expires 24 April 2027               [Page 104]
+
+Internet-Draft                    AMMP                      October 2026
+
+
        tined", "unscanned"] },
                  "content_ref": { "type": "string",
                                   "pattern": "^[A-Za-z0-9_.-]+\\.attach\
@@ -5817,14 +5845,6 @@ Internet-Draft                    AMMP                      October 2026
        }
      }
    }
-
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 104]
-
-Internet-Draft                    AMMP                      October 2026
-
 
                  Figure 15: schemas/peer-notice.schema.json
 
@@ -5854,6 +5874,14 @@ Internet-Draft                    AMMP                      October 2026
        : these are signed bytes another runtime acts on, a member the r\
        eceiver does not know is a member it cannot bind to what it publ\
        ishes, and the version member `v` is the only evolution path. A \
+
+
+
+Rapp & Adams              Expires 24 April 2027               [Page 105]
+
+Internet-Draft                    AMMP                      October 2026
+
+
        statement that fails this schema fails verification, and the mes\
        sage is demoted to mail (sections \"Verification\" and \"Outcome\
        s\"). Numbers are lexical integers (no fraction or exponent) an\
@@ -5874,14 +5902,6 @@ Internet-Draft                    AMMP                      October 2026
        "ts",
        "subject",
        "body_sha256",
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 105]
-
-Internet-Draft                    AMMP                      October 2026
-
-
        "attachments"
      ],
      "properties": {
@@ -5910,6 +5930,14 @@ Internet-Draft                    AMMP                      October 2026
          "pattern": "^[A-Za-z0-9_][A-Za-z0-9_-]*(?!\\n)$"
        },
        "in_reply_to": {
+
+
+
+Rapp & Adams              Expires 24 April 2027               [Page 106]
+
+Internet-Draft                    AMMP                      October 2026
+
+
          "type": "string",
          "minLength": 1,
          "description": "the peer message id this message answers (sect\
@@ -5930,14 +5958,6 @@ Internet-Draft                    AMMP                      October 2026
        "to": {
          "type": "string",
          "minLength": 1,
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 106]
-
-Internet-Draft                    AMMP                      October 2026
-
-
          "description": "bare addr-spec of the one receiving agent (sec\
        tion \"Addressing\": a peer message is addressed to one agent).",
          "pattern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+(?\
@@ -5966,6 +5986,14 @@ Internet-Draft                    AMMP                      October 2026
        "attachments": {
          "type": "array",
          "description": "one entry per attachment, in order; empty whe\
+
+
+
+Rapp & Adams              Expires 24 April 2027               [Page 107]
+
+Internet-Draft                    AMMP                      October 2026
+
+
        n there are none.",
          "items": {
            "type": "object",
@@ -5986,14 +6014,6 @@ Internet-Draft                    AMMP                      October 2026
                "minimum": 0
              },
              "filename": {
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 107]
-
-Internet-Draft                    AMMP                      October 2026
-
-
                "type": "string",
                "minLength": 1
              },
@@ -6022,6 +6042,14 @@ Internet-Draft                    AMMP                      October 2026
          ],
          "properties": {
            "asserted_by": {
+
+
+
+Rapp & Adams              Expires 24 April 2027               [Page 108]
+
+Internet-Draft                    AMMP                      October 2026
+
+
              "type": "string",
              "minLength": 1,
              "pattern": "^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Za-z0-9.-\
@@ -6042,14 +6070,6 @@ Internet-Draft                    AMMP                      October 2026
            },
            "last_external_delivery_ts": {
              "type": "string",
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 108]
-
-Internet-Draft                    AMMP                      October 2026
-
-
              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:\
        [0-9]{2}Z(?!\\n)$"
            },
@@ -6078,6 +6098,14 @@ Internet-Draft                    AMMP                      October 2026
            ]
          }
        },
+
+
+
+Rapp & Adams              Expires 24 April 2027               [Page 109]
+
+Internet-Draft                    AMMP                      October 2026
+
+
        "sender_since": {
          "type": "string",
          "description": "OPTIONAL (section \"Optional: Sender Age, and \
@@ -6097,14 +6125,6 @@ Internet-Draft                    AMMP                      October 2026
    }
 
                Figure 16: schemas/peer-statement.schema.json
-
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 109]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    A receiving Runtime reports what it did with a statement it did not
    place (refused, dropped or demoted) to the configured sending Runtime
@@ -6134,6 +6154,14 @@ Internet-Draft                    AMMP                      October 2026
        sued to the notice's signer; that is the receiving runtime's che\
        ck (section \"Control Notices\").",
      "type": "object",
+
+
+
+Rapp & Adams              Expires 24 April 2027               [Page 110]
+
+Internet-Draft                    AMMP                      October 2026
+
+
      "additionalProperties": false,
      "required": [
        "v",
@@ -6154,14 +6182,6 @@ Internet-Draft                    AMMP                      October 2026
        },
        "key_id": {
          "type": "string",
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 110]
-
-Internet-Draft                    AMMP                      October 2026
-
-
          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}(?!\\n)$"
        },
        "kind": {
@@ -6190,6 +6210,14 @@ Internet-Draft                    AMMP                      October 2026
        },
        "ts": {
          "type": "string",
+
+
+
+Rapp & Adams              Expires 24 April 2027               [Page 111]
+
+Internet-Draft                    AMMP                      October 2026
+
+
          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9\
        ]{2}Z(?!\\n)$"
        },
@@ -6210,14 +6238,6 @@ Internet-Draft                    AMMP                      October 2026
          "description": "why, from the outcome table of section \"Outco\
        mes\". `policy` is a deployment refusal (for example a first-sig\
        ht quarantine), named further by policy_code.",
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 111]
-
-Internet-Draft                    AMMP                      October 2026
-
-
          "enum": [
            "statement_value",
            "key_domain",
@@ -6246,6 +6266,14 @@ Internet-Draft                    AMMP                      October 2026
        {
          "if": {
            "required": [
+
+
+
+Rapp & Adams              Expires 24 April 2027               [Page 112]
+
+Internet-Draft                    AMMP                      October 2026
+
+
              "policy_code"
            ]
          },
@@ -6266,14 +6294,6 @@ Internet-Draft                    AMMP                      October 2026
            },
            "required": [
              "cause"
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 112]
-
-Internet-Draft                    AMMP                      October 2026
-
-
            ]
          },
          "then": {
@@ -6302,6 +6322,14 @@ Internet-Draft                    AMMP                      October 2026
                  "policy"
                ]
              }
+
+
+
+Rapp & Adams              Expires 24 April 2027               [Page 113]
+
+Internet-Draft                    AMMP                      October 2026
+
+
            }
          }
        },
@@ -6322,14 +6350,6 @@ Internet-Draft                    AMMP                      October 2026
                "enum": [
                  "duplicate",
                  "misrouted"
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 113]
-
-Internet-Draft                    AMMP                      October 2026
-
-
                ]
              }
            }
@@ -6358,6 +6378,14 @@ Internet-Draft                    AMMP                      October 2026
                  "body_digest",
                  "attachment_count",
                  "attachment_digest",
+
+
+
+Rapp & Adams              Expires 24 April 2027               [Page 114]
+
+Internet-Draft                    AMMP                      October 2026
+
+
                  "message_id"
                ]
              }
@@ -6376,15 +6404,6 @@ Appendix G.  Peer-Directory Schema
    publish at <agent-id>/directory.json.  The document is Runtime-
    authored and therefore open (Section 13.1), and it is advisory: the
    schema pins its shape, never what it predicts.
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 114]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    NOTE: '\' line wrapping per RFC 8792
 
@@ -6415,6 +6434,14 @@ Internet-Draft                    AMMP                      October 2026
      ],
      "properties": {
        "contract_version": {
+
+
+
+Rapp & Adams              Expires 24 April 2027               [Page 115]
+
+Internet-Draft                    AMMP                      October 2026
+
+
          "const": "2"
        },
        "router": {
@@ -6434,14 +6461,6 @@ Internet-Draft                    AMMP                      October 2026
        },
        "delegate_to": {
          "type": "array",
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 115]
-
-Internet-Draft                    AMMP                      October 2026
-
-
          "description": "sorted addresses this agent may task — the aut\
        horisation graph transposed for this instance. Always present; e\
        mpty when the lane is closed. Never this agent's own address, an\
@@ -6469,6 +6488,16 @@ Internet-Draft                    AMMP                      October 2026
 
                   Figure 18: schemas/directory.schema.json
 
+
+
+
+
+
+Rapp & Adams              Expires 24 April 2027               [Page 116]
+
+Internet-Draft                    AMMP                      October 2026
+
+
 Appendix H.  Fleet-Roster Schema
 
    _(Normative.)_ JSON Schema 2020-12; governs the fleet roster defined
@@ -6490,14 +6519,6 @@ Appendix H.  Fleet-Roster Schema
        SATION: a member's presence says the instance exists, never tha\
        t this agent may address it or that a submission to it will be a\
        ccepted; authorisation is evaluated by the runtime at submit tim\
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 116]
-
-Internet-Draft                    AMMP                      October 2026
-
-
        e and only the result reports what happened. NOT A SOURCE OF TH\
        E READER'S IDENTITY: the reader's own address may appear, and at\
        tribution stays the namespace a file arrived in. A runtime MUST \
@@ -6525,6 +6546,14 @@ Internet-Draft                    AMMP                      October 2026
        !\\n)$"
        },
        "written_at": {
+
+
+
+Rapp & Adams              Expires 24 April 2027               [Page 117]
+
+Internet-Draft                    AMMP                      October 2026
+
+
          "type": "string",
          "minLength": 1,
          "description": "RFC 3339, the publishing runtime's clock. The \
@@ -6546,14 +6575,6 @@ Internet-Draft                    AMMP                      October 2026
        ship is unknown (the previous file is left to age instead). The \
        router is never a member.",
          "items": {
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 117]
-
-Internet-Draft                    AMMP                      October 2026
-
-
            "type": "object",
            "required": [
              "address",
@@ -6581,34 +6602,29 @@ Internet-Draft                    AMMP                      October 2026
      }
    }
 
+
+
+
+Rapp & Adams              Expires 24 April 2027               [Page 118]
+
+Internet-Draft                    AMMP                      October 2026
+
+
                    Figure 19: schemas/roster.schema.json
 
 Appendix I.  Golden Examples
 
    _(Normative.)_ The documents below are reproduced byte-verbatim from
    the conformance suite (Appendix J).  They are a small selection
-   covering each artifact type and three rejections; the suite itself is
-   the authority.  The selection is configured in draft/fixtures.toml,
-   not hardcoded in this document's build tooling, and one further
-   example — a Binding Record — is shown inline at Section 9 instead of
-   being repeated here.
+   covering the core artifact types and three rejections; the suite
+   itself is the authority.  One further example — a Binding Record — is
+   shown inline at Section 9 instead of being repeated here.
 
 I.1.  Valid Submit Request with attachments
 
    Sidecar blobs are named by array index (req-<id>.attachments/<i>); no
    content_ref may appear on a request and the schema rejects one
    (Section 5.1).
-
-
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 118]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    NOTE: '\' line wrapping per RFC 8792
 
@@ -6645,23 +6661,7 @@ I.2.  Valid Deliver Notice with a clean attachment Descriptor
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 119]
+Rapp & Adams              Expires 24 April 2027               [Page 119]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -6717,7 +6717,7 @@ I.3.  Valid Inbound Message
 
 
 
-Rapp & Adams              Expires 21 April 2027               [Page 120]
+Rapp & Adams              Expires 24 April 2027               [Page 120]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -6773,7 +6773,7 @@ I.5.  Invalid Deliver Notice — a content_ref that fails the binding
 
 
 
-Rapp & Adams              Expires 21 April 2027               [Page 121]
+Rapp & Adams              Expires 24 April 2027               [Page 121]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -6829,7 +6829,7 @@ I.7.  Invalid Submit Request carrying an unrecognized member
 
 
 
-Rapp & Adams              Expires 21 April 2027               [Page 122]
+Rapp & Adams              Expires 24 April 2027               [Page 122]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -6885,7 +6885,7 @@ Appendix J.  Conformance Suite
 
 
 
-Rapp & Adams              Expires 21 April 2027               [Page 123]
+Rapp & Adams              Expires 24 April 2027               [Page 123]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -6941,7 +6941,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027               [Page 124]
+Rapp & Adams              Expires 24 April 2027               [Page 124]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -6997,7 +6997,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027               [Page 125]
+Rapp & Adams              Expires 24 April 2027               [Page 125]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -7053,7 +7053,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027               [Page 126]
+Rapp & Adams              Expires 24 April 2027               [Page 126]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -7109,7 +7109,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027               [Page 127]
+Rapp & Adams              Expires 24 April 2027               [Page 127]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -7165,7 +7165,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027               [Page 128]
+Rapp & Adams              Expires 24 April 2027               [Page 128]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -7221,7 +7221,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027               [Page 129]
+Rapp & Adams              Expires 24 April 2027               [Page 129]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -7277,7 +7277,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027               [Page 130]
+Rapp & Adams              Expires 24 April 2027               [Page 130]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -7333,7 +7333,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027               [Page 131]
+Rapp & Adams              Expires 24 April 2027               [Page 131]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -7351,8 +7351,9 @@ Internet-Draft                    AMMP                      October 2026
    *How a fixture is mapped to a schema.* By filename prefix — request-
    to the submit-request schema, notice- to deliver-notice, result- to
    result, message- to inbound-message, identity- to binding-record, and
-   peer- to peer-notice, statement- to peer-statement, and control- to
-   peer-control (Appendix F).
+   peer- to peer-notice, statement- to peer-statement, control- to peer-
+   control (Appendix F), directory- to peer-directory (Appendix G) and
+   roster- to roster (Appendix H).
 
    *What the validator checks.* Schema validation in the JSON Schema
    2020-12 dialect [JSON-SCHEMA-2020-12], over the subset of keywords
@@ -7388,8 +7389,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-
-Rapp & Adams              Expires 21 April 2027               [Page 132]
+Rapp & Adams              Expires 24 April 2027               [Page 132]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -7408,13 +7408,14 @@ Internet-Draft                    AMMP                      October 2026
 
    The cost is disclosed rather than discovered: *lookahead-less engines
    cannot compile these patterns at all.* RE2 (Go's regexp), Rust's
-   regex crate, and POSIX ERE reject (?! outright, so the three schemas
-   carrying the guard fail to load rather than validating loosely.
-   Those engines already treat $ as strict end-of-string and never had
-   the gap, so an implementer on one of them should strip the lookahead
-   — not add a check outside the pattern, which would be both
-   unnecessary and not what breaks.  The failure is loud (a compile
-   error, never silent acceptance).
+   regex crate, and POSIX ERE reject (?! outright, so the eight schemas
+   carrying the guard (every schema except result and binding-record)
+   fail to load rather than validating loosely.  Those engines already
+   treat $ as strict end-of-string and never had the gap, so an
+   implementer on one of them should strip the lookahead — not add a
+   check outside the pattern, which would be both unnecessary and not
+   what breaks.  The failure is loud (a compile error, never silent
+   acceptance).
 
    *What a green run proves.* That every document shape this protocol
    defines is accepted or rejected as specified, by an implementation's
@@ -7444,8 +7445,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-
-Rapp & Adams              Expires 21 April 2027               [Page 133]
+Rapp & Adams              Expires 24 April 2027               [Page 133]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -7501,7 +7501,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027               [Page 134]
+Rapp & Adams              Expires 24 April 2027               [Page 134]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -7557,7 +7557,7 @@ Appendix K.  A Deferred Seam-Visible "Handled" Signal (Non-Normative)
 
 
 
-Rapp & Adams              Expires 21 April 2027               [Page 135]
+Rapp & Adams              Expires 24 April 2027               [Page 135]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -7613,7 +7613,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027               [Page 136]
+Rapp & Adams              Expires 24 April 2027               [Page 136]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -7669,7 +7669,7 @@ L.1.  draft-rapp-ammp-00 — brought to the IETF (contract 3.1.0)
 
 
 
-Rapp & Adams              Expires 21 April 2027               [Page 137]
+Rapp & Adams              Expires 24 April 2027               [Page 137]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -7725,7 +7725,7 @@ L.2.  How the versioning rules came about
 
 
 
-Rapp & Adams              Expires 21 April 2027               [Page 138]
+Rapp & Adams              Expires 24 April 2027               [Page 138]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -7781,7 +7781,7 @@ Internet-Draft                    AMMP                      October 2026
 
 
 
-Rapp & Adams              Expires 21 April 2027               [Page 139]
+Rapp & Adams              Expires 24 April 2027               [Page 139]
 
 Internet-Draft                    AMMP                      October 2026
 
@@ -7819,28 +7819,10 @@ Internet-Draft                    AMMP                      October 2026
 L.3.  3.1.0 — the protocol is AMAP; the outbound extension space; the
       peer-origin profile
 
-   An additive *minor* bump; the wire major stays "2".
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 140]
-
-Internet-Draft                    AMMP                      October 2026
-
+   An additive *minor* bump; the wire major stays "2".  The entries
+   below are as recorded at the time: the companion document they cite
+   is now Section 12, and the items marked proposed were adopted in
+   draft-rapp-ammp-00 (Appendix L.1).
 
    *  *The signed cross-host peer statement and control notice*
       (2026-10-09, proposed, not yet reviewed; companion-document
@@ -7852,6 +7834,14 @@ Internet-Draft                    AMMP                      October 2026
       fixtures/peer-signed/, RFC 8032 vectors with negative cases, MIME
       selection cases, and signed sequences of candidates and events
       with the outcome a receiver MUST reach at each step.  The rules
+
+
+
+Rapp & Adams              Expires 24 April 2027               [Page 140]
+
+Internet-Draft                    AMMP                      October 2026
+
+
       are the companion document's (spec/peer-origin.md, section 5).
       Additive: nothing existing changes shape, and a deployment without
       cross-host peer traffic is unaffected.  The 30 new fixtures (8
@@ -7891,13 +7881,6 @@ Internet-Draft                    AMMP                      October 2026
       is a companion document (spec/peer-origin.md, itself DRAFT), and
       its schema and fixtures may still change before it is settled.
 
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 141]
-
-Internet-Draft                    AMMP                      October 2026
-
-
    *  *Outbound extension space.* outbound/ext/<name>/ is defined as a
       Connector-owned side channel a Runtime MAY read by out-of-band
       agreement, with no shape specified and nothing security-relevant
@@ -7907,6 +7890,14 @@ Internet-Draft                    AMMP                      October 2026
       Runtime that reads it; the wording it replaced ("a Connector or
       deployment name") permitted a repository name to leak into a wire-
       visible path.  The reference Claude Code Connector chose claude-
+
+
+
+Rapp & Adams              Expires 24 April 2027               [Page 141]
+
+Internet-Draft                    AMMP                      October 2026
+
+
       code as its id; ids are chosen by each Connector, and this
       document neither lists nor registers them.  One normative
       clarification sits beside it: an outcome written there is a claim
@@ -7942,18 +7933,31 @@ Internet-Draft                    AMMP                      October 2026
       this document was reconciled against and was lost in the
       reconciliation, along with its fixtures from the count below.
 
-   *  *Clarifications from implementation* (proposed, 2026-10-07).
-      Questions from Runtime implementers reconciling against this
-      document, each answered from the existing text and then stated: a
-      Runtime knows the <agent-id> of every Namespace it serves and
 
 
 
-Rapp & Adams              Expires 21 April 2027               [Page 142]
+
+
+
+
+
+
+
+
+
+
+
+
+
+Rapp & Adams              Expires 24 April 2027               [Page 142]
 
 Internet-Draft                    AMMP                      October 2026
 
 
+   *  *Clarifications from implementation* (proposed, 2026-10-07).
+      Questions from Runtime implementers reconciling against this
+      document, each answered from the existing text and then stated: a
+      Runtime knows the <agent-id> of every Namespace it serves and
       rejects a request from a Namespace it cannot name (Section 4.1);
       outbound/ext/<name>/'s id is a lowercase single path segment
       (Section 4.1); a Runtime may be built from several trusted
@@ -7986,11 +7990,25 @@ Internet-Draft                    AMMP                      October 2026
       Directory.  With them and the fleet roster's seven, version 3.1.0
       has 89 fixtures (34 valid, 55 invalid).
 
+      *Correction (draft-rapp-ammp-00).* The breakdown above does not
+      sum: 58 + 16 is 74, and 37 + 10 is 47.  The record does not
+      identify the seventeenth addition.  The totals from 89 onward are
+      the ones verified against the suite as it ships (Appendix J).
+
 L.4.  3.0.0 — direction-aware tolerance, and six closed safety holes
 
-   A *major document bump*; the wire major stays "2".  Section 13.1
+   A *major document bump*; the wire major stays "2".  Appendix L.2
    states why the two numbers diverge here, and why bumping the wire
    would have caused the exact harm this version exists to repair.
+
+
+
+
+
+Rapp & Adams              Expires 24 April 2027               [Page 143]
+
+Internet-Draft                    AMMP                      October 2026
+
 
    *  *Unknown-member tolerance, direction-aware.* The three Runtime-
       authored artifacts — deliver-notice, inbound-message, and result —
@@ -8002,13 +8020,6 @@ L.4.  3.0.0 — direction-aware tolerance, and six closed safety holes
       level.  Consequence: adding an optional member to a Runtime-
       authored artifact is now genuinely additive; adding any member to
       the submit-request is a major change.
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 143]
-
-Internet-Draft                    AMMP                      October 2026
-
 
    *  *...and for values.* The enum constraint was removed from
       message.sender_standing and message.provenance, the two explicitly
@@ -8047,30 +8058,31 @@ Internet-Draft                    AMMP                      October 2026
       concurrency assumption that every atomicity, commit-sentinel, and
       req_id rule already depended on.
 
+
+
+
+Rapp & Adams              Expires 24 April 2027               [Page 144]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    *  *message.from named untrusted.* The untrusted-content sentence now
       covers explicitly the member most likely to be rendered to a human
       or used for a trust judgement (Section 7.1).
 
    *  *Document authority.* The contract, its schemas, and its fixtures
-      are normative; this rendering is generated from them and is non-
-      authoritative where they disagree.  The conformance-class text was
-      moved into the contract itself so that the demotion deletes
-      nothing, and a stray claim of a second, message-specific Sidecar
-      directory was corrected to match the layout tree.
-
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 144]
-
-Internet-Draft                    AMMP                      October 2026
-
+      were made normative; the rendering then generated from them was
+      non-authoritative where they disagreed.  (This document is now the
+      prose of record.)  The conformance-class text was moved into the
+      contract itself so that the demotion deletes nothing, and a stray
+      claim of a second, message-specific Sidecar directory was
+      corrected to match the layout tree.
 
    *  *Corrections shipped with this version*, rather than a tidied
       history: (i) the write rule described in an earlier revision as
       "strengthened" had in fact been weakened — the exclusive-create
       requirement on the final component had been deleted rather than
-      supplemented (Section 13.1); (ii) the inbound drop rule described
+      supplemented (Appendix L.2); (ii) the inbound drop rule described
       as a pure closure over schema validation was refuted by this
       version's own content_ref-binding fixture, and is now stated as
       two independent checks (Section 7.1, Section 13.3); (iii) the
@@ -8096,6 +8108,20 @@ Internet-Draft                    AMMP                      October 2026
       on its own; and six fixtures pin the trailing-newline anchoring
       case.
 
+
+
+
+
+
+
+
+
+
+Rapp & Adams              Expires 24 April 2027               [Page 145]
+
+Internet-Draft                    AMMP                      October 2026
+
+
 L.5.  2.3.0 — inbound byte access in force
 
    A *minor bump*, prose only: no schema rule and no fixture changed,
@@ -8114,13 +8140,6 @@ L.5.  2.3.0 — inbound byte access in force
    as a deferred capability rather than as a policy decision whose wire
    shape major 2 already carried.  Nothing was tightened, and there is
    still no outbound content_ref.
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 145]
-
-Internet-Draft                    AMMP                      October 2026
-
 
 L.6.  2.2.0 — deletion rights, read-only inbound
 
@@ -8151,6 +8170,14 @@ L.7.  2.1.0 — the body spool, and three optional Result members
    every schema at that version was closed at every level — a Notice
    carrying the new provenance member failed schema validation as a
    *whole document* and was silently dropped: precisely the failure mode
+
+
+
+Rapp & Adams              Expires 24 April 2027               [Page 146]
+
+Internet-Draft                    AMMP                      October 2026
+
+
    cited as the reason attachments had required a major bump,
    reintroduced as a minor.  Version 3.0.0 repairs the versioning model
    rather than relabelling this history, which is why this entry still
@@ -8169,14 +8196,6 @@ L.8.  2.0.0 — attachments, and contract_version required
    the _whole document_, which inbound is silent total message loss.  A
    version signal, rather than an unknown-member rejection, is what
    makes that refusal legible.
-
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 146]
-
-Internet-Draft                    AMMP                      October 2026
-
 
 L.9.  Fixture identifier normalization
 
@@ -8210,23 +8229,4 @@ Authors' Addresses
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Rapp & Adams              Expires 21 April 2027               [Page 147]
+Rapp & Adams              Expires 24 April 2027               [Page 147]

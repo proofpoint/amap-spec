@@ -433,11 +433,11 @@ baseline = true
 text = "A Connector that presents a message body to its Agent MUST convey two things, whatever words it uses: quoted or forwarded material inside the body carries no authority of its own — a message's authority extends to what its author wrote, never to what they relayed — and that an attachment's disposition is the Runtime's assertion about handling and not a scanner verdict, so a Connector MUST NOT imply that bytes have been screened and MUST NOT contradict the per-attachment status the Runtime published."
 
 [[sentence]]
-id = "288d7cd5402e"
+id = "bc63caf35ff8"
 section = "sec-7-1"
-class = "unclassified"
-baseline = true
-text = "A Connector MUST also convey that an attachment's filename and media_type are sender-chosen display strings on the mail tree; on a tree whose sender the Runtime authenticated it SHOULD, and MUST where the attachment was relayed rather than authored by that sender."
+class = "operational"
+note = "Presentation obligations are Connector behaviour, invisible to a document validator. Check: feed a Connector a notice with sender-chosen filename/media_type and confirm its rendering marks them as display strings, and marks the sender unauthenticated on the mail tree. Reworded for draft-rapp-ammp-00 (the undecidable relayed-vs-authored MUST was dropped)."
+text = "A Connector MUST also convey that an attachment's filename and media_type are sender-chosen display strings on the mail tree; on a tree whose sender the Runtime authenticated it SHOULD."
 
 [[sentence]]
 id = "c6d41ce4d29d"
@@ -573,11 +573,12 @@ baseline = true
 text = "The file is OPTIONAL (): nothing in this protocol requires a Runtime to write it or a Connector to read it, and both sides MUST work correctly with it absent."
 
 [[sentence]]
-id = "2c75d57c2c2a"
+id = "60a192b79002"
 section = "sec-9-1"
-class = "unclassified"
-baseline = true
-text = "Required members, if the file is present, are agent_id, address, and provisioned_ts. label is OPTIONAL. contract_version is OPTIONAL here — the one artifact where it is — because the file is not a protocol artifact a consumer must parse to function; if present it is pinned to \"2\"."
+class = "fixture"
+fixtures = ["valid/identity-basic.json", "invalid/identity-extra-field.json", "invalid/identity-missing-address.json"]
+note = "Reworded for draft-rapp-ammp-00: contract_version is optional on the Peer Directory too, not only here."
+text = "Required members, if the file is present, are agent_id, address, and provisioned_ts. label is OPTIONAL. contract_version is OPTIONAL here, as it is on the Peer Directory (), because the file is not a protocol artifact a consumer must parse to function; if present it is pinned to \"2\"."
 
 [[sentence]]
 id = "30f9a4fbbb8b"
@@ -818,11 +819,11 @@ baseline = true
 text = "MUST demonstrate its producing side by confirming that its own emitted requests satisfy the same schema the suite's valid request-* fixtures satisfy, and MUST uphold the write-ordering, atomicity, and read-discipline obligations of , which the fixtures cannot check."
 
 [[sentence]]
-id = "27e61c8bbdc3"
+id = "1afbcbd0ec0d"
 section = "sec-roster"
 class = "operational"
 note = "Publishing is optional; whether and where a roster is written is runtime and deployment behaviour, not a document property."
-text = "A Runtime MAY publish a fleet roster: a single file, written once for the whole fleet, naming the instances the Runtime has admitted."
+text = "A Runtime MAY publish a fleet roster: a single file, written for the whole fleet rather than per instance, naming the instances the Runtime has admitted."
 
 [[sentence]]
 id = "bd1aa7a6ef01"
@@ -959,11 +960,11 @@ note = "Tree rules: how a consumer derives class and keys state, and how writers
 text = "Every Runtime-owned inbound-class tree is an origin class: a consumer MUST derive the class of a document from the tree it was read from, and MUST NOT derive it from any member of the document. notice_id uniqueness is per tree, and where a tree has more than one writer each MUST mint so that cross-writer collision is negligible — at least 128 bits of entropy under the identifier character set, or a writer-specific prefix — and a consumer keying state across trees MUST include the tree in that key. content_ref resolves only within the notices/ directory of the tree the enclosing document was read from."
 
 [[sentence]]
-id = "14d90d69dda6"
+id = "19764099b262"
 section = "sec-4-1"
 class = "operational"
 note = "Write authority per tree is structural; checked by the write probe of the peer-origin profile, not by a document."
-text = "Write authority per tree is distinct and MUST be structurally enforced; it MUST NOT depend on configuration the writer itself reads. inbound/ is the one tree this document defines; a profile MAY define others."
+text = "Write authority per tree is distinct and MUST be structurally enforced; it MUST NOT depend on configuration the writer itself reads. inbound/ is the one tree the core protocol defines; a profile, such as the peer-origin profile of , MAY define others."
 
 [[sentence]]
 id = "06df2092ab15"
@@ -1183,11 +1184,11 @@ note = "This sentence is the prescribed operational check itself (the write prob
 text = "The prescribed operational check is a write attempt against peer/ from inside the admitting component, which MUST fail."
 
 [[sentence]]
-id = "66dd691e9140"
+id = "09d986e4bb94"
 section = "sec-peer-origin"
 class = "informative"
 note = "A permission stating the direction of the partition; nothing to check."
-text = "The rule is one-directional: a component holding peer write authority MAY write inbound/, as demotion requires ()."
+text = "The rule is one-directional: a component holding peer write authority MAY write inbound/, as the delivery failure notice of requires."
 
 [[sentence]]
 id = "c484987449d9"
@@ -1967,11 +1968,11 @@ fixtures = ["valid/notice-provenance-unrecognized-value.json"]
 text = "A consumer MUST tolerate a value it does not recognize, treating it as opaque or as the member being absent, and MUST NOT reject, drop, or fail the artifact on that account; a Runtime MAY add a value to either vocabulary without a new wire major."
 
 [[sentence]]
-id = "2e810674910f"
+id = "715f9f1eca20"
 section = "sec-10-2"
 class = "fixture"
 fixtures = ["invalid/request-version-absent.json", "invalid/notice-version-1.json", "invalid/roster-version-1.json"]
-text = "contract_version is REQUIRED on the Submit Request, the Deliver Notice, the Result, the Peer Notice and the Fleet Roster."
+text = "contract_version is REQUIRED on the Submit Request, the Deliver Notice, the Inbound Message, the Result, the Peer Notice and the Fleet Roster."
 
 [[sentence]]
 id = "696dd4a58b5a"
@@ -2044,11 +2045,11 @@ fixtures = ["invalid/request-version-absent.json", "valid/request-minimal.json"]
 text = "contract_version (REQUIRED) is the wire major version, the string \"2\"."
 
 [[sentence]]
-id = "ce3827830659"
+id = "ab224ae729c5"
 section = "sec-5-1"
 class = "fixture"
-fixtures = ["valid/request-minimal.json", "invalid/request-subject-crlf.json"]
-text = "draft.subject and draft.body_text are REQUIRED and MAY be empty strings. body_text is plain text; this document defines no alternative body representation."
+fixtures = ["valid/request-minimal.json", "invalid/request-empty-to.json", "invalid/request-subject-crlf.json"]
+text = "draft.to is REQUIRED and carries at least one recipient; draft.cc is OPTIONAL and MAY be empty. draft.subject and draft.body_text are REQUIRED and MAY be empty strings. body_text is plain text; this document defines no alternative body representation."
 
 [[sentence]]
 id = "077fa6156ca8"
@@ -2070,3 +2071,10 @@ section = "sec-10-3"
 class = "fixture"
 fixtures = ["peer-signed/rfc8032-vectors.json", "peer-signed/cases/peer-task-minimal.json"]
 text = "if it verifies peer traffic from other hosts, MUST reach every step's expected outcome in the signed cases, and MUST pass the Ed25519 vectors through the implementation it ships ()."
+
+[[sentence]]
+id = "c29417a6220d"
+section = "sec-peer-control"
+class = "operational"
+note = "Whether a Runtime gives the issuing Agent a failure notice is runtime behaviour on the inbound tree. Check: issue a statement that the receiver refuses, confirm a deliver Notice from the Runtime's own address appears in the sender's inbound/ carrying only vocabulary values, and that the record reaches done only after it is durable. Stated as SHOULD for draft-rapp-ammp-00, matching the delivery failure notice rule it cites."
+text = "It SHOULD give the issuing Agent a failure notice authored by the Runtime in inbound/ (the delivery failure notice of ), with no text from the Control Notice except the vocabulary values."

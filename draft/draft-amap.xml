@@ -30,7 +30,7 @@
         <email>tadams@proofpoint.com</email>
       </address>
     </author>
-    <date year="2026" month="October" day="18"/>
+    <date year="2026" month="October" day="21"/>
     <abstract>
 
 <t>The Agent Mediated Messaging Protocol (AMMP) is a wire contract, carried over a
@@ -389,6 +389,13 @@ fetched on demand (<xref target="sec-7-3"/>).</t>
         </li>
 
         <li>
+          <t><strong>Lane</strong> — one class of traffic between an Agent and its
+Runtime, or between two Agents: the mail lane (<tt>inbound/</tt> and outbound
+mail) and, under the peer-origin profile, the peer lane (<tt>peer/</tt>). The
+Peer Directory states, per peer, which lanes are open.</t>
+        </li>
+
+        <li>
           <t><strong>Namespace</strong> — the per-Agent subtree <tt>&lt;volume-root&gt;/&lt;agent-id&gt;/</tt>, mounted
 into that Agent's sandbox. It is the unit of isolation and the sole
 authority for attributing an artifact to an Agent.</t>
@@ -495,7 +502,7 @@ No implementation may depend on that name or any other.</t>
           <tbody>
             <tr>
               <td align="left">
-                <strong>Runtime</strong> (container)</td>
+                <strong>Runtime</strong> (host-side)</td>
               <td align="left">trusted</td>
               <td align="left">messaging credentials, Agent identity, policy, the record of what was sent</td>
               <td align="left">the mail provider, the Volume</td>
@@ -616,8 +623,7 @@ is exactly the one that motivates the two coexisting: an MCP-style interface
 grants live capability across the boundary it spans, while AMMP's channel
 deliberately grants none — the Agent-side surface can be as rich as the
 harness likes, because what crosses the trust boundary underneath it is an
-inert file. The current stable MCP specification revision is 2025-11-25; the
-protocol originated at Anthropic.</t>
+inert file. MCP originated at Anthropic.</t>
         <t><strong>Agent2Agent (A2A)</strong> <xref target="A2A"/> is networked agent-to-agent RPC between
 mutually authenticated services, with agent cards, tasks, and HTTP/SSE/JSON-RPC
 transport. It presumes both endpoints are credentialed participants that can
@@ -626,8 +632,7 @@ untrusted agent that holds no credentials at all, with enforcement placed
 entirely on the trusted side of a local boundary. The two are orthogonal, and
 compose without friction — an agent that speaks A2A to its peers can use
 AMMP for its mail capability, and neither protocol needs to know about the
-other. A2A is at v1.0 (v1.0.1, May 2026); it originated at Google and has
-been hosted as a Linux Foundation project since June 2025.</t>
+other. A2A originated at Google and is hosted by the Linux Foundation.</t>
         <t><strong>The two protocols abbreviated "ACP" are not the same protocol</strong>, and the
 collision is worth disambiguating in a document a reviewer may arrive at
 with one of them in mind.</t>
@@ -644,9 +649,6 @@ editor and an agent — originated by Zed Industries. It is unrelated to the
 merged Agent Communication Protocol and unrelated to AMMP.</t>
           </li>
         </ul>
-        <t>The citation facts in this subsection were verified in July 2026. A reviewer
-preparing this document for publication at a later date is advised to
-re-verify them rather than relying on this text.</t>
       </section>
       <section anchor="sec-3-5">
         <name>Runtimes Built from Several Components (Informative)</name>
@@ -920,7 +922,8 @@ consumer keying state across trees MUST include the tree in that key.
 <tt>content_ref</tt> resolves only within the <tt>notices/</tt> directory of the tree the
 enclosing document was read from. Write authority per tree is distinct and
 MUST be structurally enforced; it MUST NOT depend on configuration the writer
-itself reads. <tt>inbound/</tt> is the one tree this document defines; a profile MAY
+itself reads. <tt>inbound/</tt> is the one tree the core protocol defines; a
+profile, such as the peer-origin profile of <xref target="sec-peer"/>, MAY
 define others.</t>
         <t><strong>Inbound is Runtime-owned, and read-only is a valid posture.</strong> The
 <tt>inbound/</tt> tree is Runtime-owned end to end. A Runtime MAY expose it to the
@@ -1140,7 +1143,9 @@ composed message itself; identity is Runtime-owned, and the Agent does
 <strong>not</strong> choose its sending identity.</t>
           </li>
           <li>
-            <t><strong><tt>draft.subject</tt></strong> and <strong><tt>draft.body_text</tt></strong> are REQUIRED and MAY be
+            <t><strong><tt>draft.to</tt></strong> is REQUIRED and carries at least one
+recipient; <strong><tt>draft.cc</tt></strong> is OPTIONAL and MAY be empty.
+<strong><tt>draft.subject</tt></strong> and <strong><tt>draft.body_text</tt></strong> are REQUIRED and MAY be
 empty strings. <tt>body_text</tt> is <strong>plain text</strong>; this document defines no
 alternative body representation.</t>
           </li>
@@ -1465,8 +1470,7 @@ about handling and not a scanner verdict, so a Connector MUST NOT imply that
 bytes have been screened and MUST NOT contradict the per-attachment status
 the Runtime published. A Connector MUST also convey that an attachment's
 <tt>filename</tt> and <tt>media_type</tt> are sender-chosen display strings on the mail
-tree; on a tree whose sender the Runtime authenticated it SHOULD, and MUST
-where the attachment was relayed rather than authored by that sender. On the mail
+tree; on a tree whose sender the Runtime authenticated it SHOULD. On the mail
 tree a Connector MUST additionally convey that the sender is not
 authenticated beyond whatever standing the Runtime has already summarized
 — carried in <tt>sender_standing</tt> and <tt>verdict</tt>, named here as the locus and
@@ -1714,9 +1718,9 @@ MUST work correctly with it absent.</t>
           <li>
             <t>Required members, if the file is present, are <tt>agent_id</tt>, <tt>address</tt>, and
 <tt>provisioned_ts</tt>. <tt>label</tt> is OPTIONAL. <tt>contract_version</tt> is OPTIONAL
-here — the one artifact where it is — because the file is not a protocol
-artifact a consumer must parse to function; if present it is pinned to
-<tt>"2"</tt>.</t>
+here, as it is on the Peer Directory (<xref target="sec-directory"/>), because
+the file is not a protocol artifact a consumer must parse to function; if
+present it is pinned to <tt>"2"</tt>.</t>
           </li>
           <li>
             <t>This artifact's envelope is <strong>closed</strong> (<tt>additionalProperties: false</tt>),
@@ -1834,8 +1838,8 @@ log the failure. The Agent's only signal remains <tt>written_at</tt> going stale
     </section>
     <section anchor="sec-roster">
       <name>The Fleet Roster</name>
-      <t>A Runtime MAY publish a fleet roster: a single file, written once for the
-whole fleet, naming the instances the Runtime has admitted. The Peer Directory
+      <t>A Runtime MAY publish a fleet roster: a single file, written for the
+whole fleet rather than per instance, naming the instances the Runtime has admitted. The Peer Directory
 (<xref target="sec-directory"/>) answers which peers an Agent may address; the
 roster answers only which instances exist. It is a separate artifact, and no
 obligation of <xref target="sec-directory"/> applies to it except where this
@@ -2040,8 +2044,8 @@ restriction MUST be structural, and MUST NOT be configuration that the
 component reads. The prescribed operational check is a write attempt against
 <tt>peer/</tt> from inside the admitting component, which MUST fail. The rule
 is one-directional: a component holding peer write authority MAY write
-<tt>inbound/</tt>, as demotion requires
-(<xref target="sec-peer-outcomes"/>).</t>
+<tt>inbound/</tt>, as the delivery failure notice of
+<xref target="sec-peer-corr"/> requires.</t>
         <t>A Runtime MUST NOT write a notice into <tt>peer/</tt> on the basis of
 any claim the message makes about itself. It MAY write there only when the
 message arrived through a path whose write authority is already restricted to
@@ -2122,8 +2126,8 @@ It has exactly one spelling inside every AMMP document:
 <tt>message.references[]</tt> on a Peer Notice, <tt>message_id</tt> on a
 peer-routed Result, and the reply key a sender submits all carry the bare id.
 When the id is carried in a mail header, it is encoded as
-<tt>&lt;id@domain&gt;</tt>, where <tt>domain</tt> is the sending Runtime's
-authority. The encoding is applied on the way into the header and removed on
+<tt>&lt;id@domain&gt;</tt>, where <tt>domain</tt> is the domain of the sender's
+address (<xref target="sec-peer-verify"/>). The encoding is applied on the way into the header and removed on
 the way out, and MUST NOT appear in an AMMP document.</t>
         <t>The reverse edge and every ledger depend on two properties of the id:
 that it is unguessable, and that it has one spelling end to end. Bare
@@ -2171,8 +2175,10 @@ one, and between hosts it is <xref target="RFC5322"/> threading.</t>
 (<xref target="sec-8"/>).</t>
         <t><strong>Reverse edges.</strong> The authorization graph is directed, yet a reply
 must be able to flow from B to A when only A to B is declared. A Runtime
-permits a reverse message when its reply key names a peer message that the
-Runtime itself issued or placed, within a configured window. This consults a
+permits a reverse message when its reply key names a peer message in the
+opposite direction that the Runtime itself issued or placed (at submission,
+one it placed for the submitting Agent; at reception, one it issued to the
+replying Agent), within a configured window. This consults a
 member, but checks it against state the Runtime minted, which is the posture
 <xref target="sec-8"/> takes for threading: correlation, not trust. Because ids
 are unguessable, the key is not a forgeable capability. Several replies to one
@@ -2564,8 +2570,13 @@ afterwards.</t>
               </tr>
               <tr>
                 <td align="left">mail, demoted</td>
-                <td align="left">A failure of check 1, 3, 4, 5, 6, 7, 8, 9, 10 or 11.</td>
+                <td align="left">A failure of check 1 (other than the both-fields drop below), 3, 4, 5, 6, 7, 8, 9, 10 or 11.</td>
                 <td align="left">SHOULD, for 5(b) and 6 to 11</td>
+              </tr>
+              <tr>
+                <td align="left">drop: both fields</td>
+                <td align="left">An <tt>AMAP-Peer-Statement</tt> and an <tt>AMAP-Peer-Control</tt> field in one message (<xref target="sec-peer-control"/>).</td>
+                <td align="left">none</td>
               </tr>
               <tr>
                 <td align="left">drop: duplicate</td>
@@ -2634,8 +2645,8 @@ and never an address taken from the message.</t>
           <t>A "dropped, duplicate" notice (check 12) tells the sender that a record
 with that <tt>id</tt> already exists. That record's disposition may have been
 placement or refusal: the notice proves a prior reservation, not that the task
-failed. Whether the sending Agent learns of an outcome is the sending Runtime's
-business (<xref target="sec-peer-control"/>).</t>
+failed. Whether and how the sending Agent learns of an outcome is governed by
+<xref target="sec-peer-control"/>.</t>
         </section>
         <section anchor="sec-peer-replay">
           <name>The Replay Store, Windows and Recovery</name>
@@ -2672,7 +2683,7 @@ bytes; the <tt>notice_id</tt> minted at reservation; a state, which is
 <em>disposition</em>: placement, or a refusal or drop with its cause (and
 <tt>policy_code</tt>), and whether a Control Notice is still pending.</t>
           <t><strong>Recording.</strong> The receiver records a candidate at check 12, after
-every binding check has passed. A candidate that fails a binding check records
+checks 1 to 11 have passed. A candidate that fails any of them records
 nothing, so a mangled copy cannot suppress the intact one that follows.
 Misrouted and refused candidates are recorded too, so that their replays are
 dropped quietly instead of being evaluated again each time. Control Notices
@@ -2919,12 +2930,12 @@ is its own Runtime address; <tt>ts</tt> is fresh
 (<xref target="sec-peer-replay"/>); the notice's pair (Runtime, <tt>id</tt>) is
 new; and <tt>about</tt> names a ledger record that this Runtime
 <tt>issued</tt> to an Agent in the signer's domains.</t>
-          <t><strong>What it does.</strong> It gives the issuing Agent a failure notice
-authored by the Runtime in <tt>inbound/</tt> (the delivery failure notice of
-<xref target="sec-peer-corr"/>), with no text from the Control Notice except the
-vocabulary values. The failure notice is owed from the moment the record is
-reserved, and the record is <tt>done</tt> only once the failure notice is
-durable; a crash in between is finished by recovery, once.</t>
+          <t><strong>What it does.</strong> It SHOULD give the issuing Agent a failure
+notice authored by the Runtime in <tt>inbound/</tt> (the delivery failure notice
+of <xref target="sec-peer-corr"/>), with no text from the Control Notice except
+the vocabulary values. Where it does, the failure notice is owed from the
+moment the record is reserved, and the record is <tt>done</tt> only once the
+failure notice is durable; a crash in between is finished by recovery, once.</t>
           <t><strong>One per message.</strong> An issued record receives at most one failure
 notice. A later Control Notice about the same <tt>about</tt>, under a different
 id, is dropped. A "dropped, duplicate" report means that a record for the
@@ -3007,8 +3018,8 @@ implementation choices; this section constrains only the properties above.</t>
         <name>Sender Exposure</name>
         <t>The split between Runtime assertions and sender claims
 (<xref target="sec-7-1"/>) applies: <tt>disposition</tt>, <tt>verdict</tt> and
-<tt>sender_standing</tt> are Runtime assertions, while <tt>from</tt>,
-<tt>subject</tt> and <tt>body_text</tt> are sender claims. An exposure record
+<tt>sender_standing</tt> are Runtime assertions, while <tt>subject</tt> and
+<tt>body_text</tt> (and, on the mail tree, <tt>from</tt>) are sender claims. An exposure record
 belongs on the assertion side. It records <em>delivery</em>, not
 <em>reading</em>: a Runtime can know that it delivered external mail to the
 sender's Namespace, but cannot know what the sender did with it.</t>
@@ -3110,8 +3121,8 @@ point at which to define a shape for them in this profile.</t>
           </li>
           <li>
             <t><strong>Retention.</strong> The record is the audit log, not the spool. The
-Runtime logs every Peer Notice it places (id, <tt>from</tt>, <tt>to</tt>, tree,
-exposure, signature verdict, demotion cause) to the per-Agent
+Runtime logs every candidate it disposes of (id, <tt>from</tt>, <tt>to</tt>, tree,
+exposure, signature verdict, and any demotion or refusal cause) to the per-Agent
 <tt>audit/log.jsonl</tt> it owns, and to its own store of record. Spool
 retention for <tt>peer/</tt> follows the mail row of the deletion table
 (<xref target="sec-4-2"/>) unchanged.</t>
@@ -3273,7 +3284,8 @@ requires a new wire major only under the rule above.</t>
       <section anchor="sec-10-2">
         <name>Required versus optional</name>
         <t><tt>contract_version</tt> is REQUIRED on the Submit Request, the Deliver
-Notice, the Result, the Peer Notice and the Fleet Roster. It is OPTIONAL on the
+Notice, the Inbound Message, the Result, the Peer Notice and the Fleet Roster.
+It is OPTIONAL on the
 Binding Record (<xref target="sec-9-1"/>) and the Peer Directory, and the signed
 Peer Statement and Control Notice carry their own version member, <tt>v</tt>,
 instead. The rest of this table reflects what
@@ -4014,7 +4026,7 @@ of <xref target="RFC3864"/>:</t>
             </tr>
           </tbody>
         </table>
-        <t>Change controller: to be confirmed with the stream in which this document is published.</t>
+        <t>Change controller: IETF.</t>
       </section>
       <section anchor="sec-iana-open">
         <name>Possible Future Registries</name>
@@ -5484,11 +5496,10 @@ NOTE: '\' line wrapping per RFC 8792
     <section anchor="app-g">
       <name>Golden Examples</name>
       <t><em>(Normative.)</em> The documents below are reproduced byte-verbatim from the
-conformance suite (<xref target="app-h"/>). They are a small selection covering each
-artifact type and three rejections; the suite itself is the authority. The
-selection is configured in <tt>draft/fixtures.toml</tt>, not hardcoded in this
-document's build tooling, and one further example — a Binding Record — is
-shown inline at <xref target="sec-9"/> instead of being repeated here.</t>
+conformance suite (<xref target="app-h"/>). They are a small selection covering
+the core artifact types and three rejections; the suite itself is the
+authority. One further example — a Binding Record — is shown inline at
+<xref target="sec-9"/> instead of being repeated here.</t>
       <section anchor="fx-request-attachments">
         <name>Valid Submit Request with attachments</name>
         <t>Sidecar blobs are named by array index (<tt>req-&lt;id&gt;.attachments/&lt;i&gt;</tt>); no content_ref may appear on a request and the schema rejects one (<xref target="sec-5-1"/>).</t>
@@ -6483,8 +6494,10 @@ constant-time, exists for the gate alone.</t>
       <t><strong>How a fixture is mapped to a schema.</strong> By filename prefix — <tt>request-</tt> to
 the submit-request schema, <tt>notice-</tt> to deliver-notice, <tt>result-</tt> to
 result, <tt>message-</tt> to inbound-message, <tt>identity-</tt> to binding-record, and
-<tt>peer-</tt> to peer-notice, <tt>statement-</tt> to peer-statement, and
-<tt>control-</tt> to peer-control (<xref target="app-f"/>).</t>
+<tt>peer-</tt> to peer-notice, <tt>statement-</tt> to peer-statement,
+<tt>control-</tt> to peer-control (<xref target="app-f"/>), <tt>directory-</tt> to
+peer-directory (<xref target="app-directory"/>) and <tt>roster-</tt> to roster
+(<xref target="app-roster"/>).</t>
       <t><strong>What the validator checks.</strong> Schema validation in the JSON Schema
 2020-12 dialect <xref target="JSON-SCHEMA-2020-12"/>, over the subset of keywords these
 schemas use (<tt>type</tt>, <tt>const</tt>, <tt>enum</tt>, <tt>minLength</tt>, <tt>pattern</tt>, <tt>minItems</tt>,
@@ -6520,8 +6533,9 @@ which embed <tt>\r\n</tt> and were already rejected even under a permissive
 engine.</t>
       <t>The cost is disclosed rather than discovered: <strong>lookahead-less engines
 cannot compile these patterns at all.</strong> RE2 (Go's <tt>regexp</tt>), Rust's
-<tt>regex</tt> crate, and POSIX ERE reject <tt>(?!</tt> outright, so the three schemas
-carrying the guard fail to load rather than validating loosely. Those
+<tt>regex</tt> crate, and POSIX ERE reject <tt>(?!</tt> outright, so the eight schemas
+carrying the guard (every schema except result and binding-record) fail to
+load rather than validating loosely. Those
 engines already treat <tt>$</tt> as strict end-of-string and never had the gap,
 so an implementer on one of them should strip the lookahead — not add a
 check outside the pattern, which would be both unnecessary and not what
@@ -6863,7 +6877,10 @@ what a presentation must and must not convey.</t>
       </section>
       <section anchor="sec-draft-the-protocol-is-amap-the-outbound-extension-space-the-peer-origin-profiles-schema">
         <name>3.1.0 — the protocol is AMAP; the outbound extension space; the peer-origin profile</name>
-        <t>An additive <strong>minor</strong> bump; the wire major stays <tt>"2"</tt>.</t>
+        <t>An additive <strong>minor</strong> bump; the wire major stays <tt>"2"</tt>.
+The entries below are as recorded at the time: the companion document they
+cite is now <xref target="sec-peer"/>, and the items marked proposed were
+adopted in draft-rapp-ammp-00 (<xref target="sec-hist-00"/>).</t>
         <ul spacing="normal">
           <li>
             <t><strong>The signed cross-host peer statement and control notice</strong>
@@ -6987,12 +7004,16 @@ same reason as before, and no schema changed.</t>
 <tt>directory-*</tt> fixtures (4 valid, 3 invalid) added with the Peer Directory.
 With them and the fleet roster's seven, version 3.1.0 has 89 fixtures (34
 valid, 55 invalid).</t>
+            <t><strong>Correction (draft-rapp-ammp-00).</strong> The breakdown above does
+not sum: 58 + 16 is 74, and 37 + 10 is 47. The record does not identify the
+seventeenth addition. The totals from 89 onward are the ones verified against
+the suite as it ships (<xref target="app-h"/>).</t>
           </li>
         </ul>
       </section>
       <section anchor="sec-direction-aware-tolerance-and-six-closed-safety-holes">
         <name>3.0.0 — direction-aware tolerance, and six closed safety holes</name>
-        <t>A <strong>major document bump</strong>; the wire major stays <tt>"2"</tt>. <xref target="sec-10-1"/> states
+        <t>A <strong>major document bump</strong>; the wire major stays <tt>"2"</tt>. <xref target="sec-hist-versioning"/> states
 why the two numbers diverge here, and why bumping the wire would have
 caused the exact harm this version exists to repair.</t>
         <ul spacing="normal">
@@ -7054,9 +7075,10 @@ covers explicitly the member most likely to be rendered to a human or
 used for a trust judgement (<xref target="sec-7-1"/>).</t>
           </li>
           <li>
-            <t><strong>Document authority.</strong> The contract, its schemas, and its fixtures are
-normative; this rendering is generated from them and is
-non-authoritative where they disagree. The conformance-class text was
+            <t><strong>Document authority.</strong> The contract, its schemas, and its fixtures were
+made normative; the rendering then generated from them was
+non-authoritative where they disagreed. (This document is now the prose of
+record.) The conformance-class text was
 moved into the contract itself so that the demotion deletes nothing, and
 a stray claim of a second, message-specific Sidecar directory was
 corrected to match the layout tree.</t>
@@ -7066,7 +7088,7 @@ corrected to match the layout tree.</t>
 (i) the write rule described in an earlier revision as "strengthened"
 had in fact been weakened — the exclusive-create requirement on the
 final component had been deleted rather than supplemented
-(<xref target="sec-10-1"/>); (ii) the inbound drop rule described as a pure closure
+(<xref target="sec-hist-versioning"/>); (ii) the inbound drop rule described as a pure closure
 over schema validation was refuted by this version's own
 <tt>content_ref</tt>-binding fixture, and is now stated as two independent
 checks (<xref target="sec-7-1"/>, <xref target="sec-10-3"/>); (iii) the claim that this version's
