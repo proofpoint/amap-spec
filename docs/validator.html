@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Validator · AMAP</title>
-<meta name="description" content="Check an AMAP document against the published schemas in your browser.">
+<title>Validator · AMMP</title>
+<meta name="description" content="Check an AMMP document against the published schemas in your browser.">
 <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/style.css">
 </head>
@@ -12,21 +12,21 @@
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-header">
   <div class="wrap header-row">
-    <a class="brand" href="index.html" aria-label="AMAP home">
+    <a class="brand" href="index.html" aria-label="AMMP home">
       <img src="assets/mark.svg" alt="" width="28" height="28">
-      <span class="brand-name">AMAP</span>
-      <span class="brand-sub">Agent Mailbox Access Protocol</span>
+      <span class="brand-name">AMMP</span>
+      <span class="brand-sub">Agent Mediated Messaging Protocol</span>
     </a>
     <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
     <nav id="site-nav" class="site-nav" aria-label="Main">
-      <ul><li><a href="index.html">Home</a></li><li><a href="ietf.html">At the IETF</a></li><li><a href="why.html">Why AMAP</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="identity.html">Identity</a></li><li><a href="implementers.html">Implementers</a></li><li><a href="validator.html" aria-current="page">Validator</a></li><li><a href="status.html">Status</a></li><li><a href="faq.html">FAQ</a></li><li><a href="get-involved.html">Get involved</a></li></ul>
+      <ul><li><a href="index.html">Home</a></li><li><a href="ietf.html">At the IETF</a></li><li><a href="why.html">Why AMMP</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="identity.html">Identity</a></li><li><a href="implementers.html">Implementers</a></li><li><a href="validator.html" aria-current="page">Validator</a></li><li><a href="status.html">Status</a></li><li><a href="faq.html">FAQ</a></li><li><a href="get-involved.html">Get involved</a></li></ul>
     </nav>
   </div>
 </header>
 <main id="main" class="wrap">
 <p class="eyebrow">Tool</p>
-<h1>Validate an AMAP document</h1>
-<p class="lede">Paste or load a JSON document and check it against the published AMAP schemas. Nothing you paste leaves your browser: the schemas are built into this page, and the check runs locally.</p>
+<h1>Validate an AMMP document</h1>
+<p class="lede">Paste or load a JSON document and check it against the published AMMP schemas. Nothing you paste leaves your browser: the schemas are built into this page, and the check runs locally.</p>
 
 <div class="callout">
   <p><strong>This validator gives the same verdict as the specification's own conformance gate,</strong> <code>fixtures/validate.py</code>. It checks the same schema rules and the same two extra checks that JSON Schema can't express: attachment indexes must match their position in the array, and every <code>content_ref</code> must point to its own notice. It reaches the same verdict, with the same error messages, on all 121 conformance fixtures.</p>
@@ -87,8 +87,8 @@
 </main>
 <footer class="site-footer">
   <div class="wrap footer-row">
-    <p>AMAP is an open specification, published under the Apache License 2.0. It was originated by Proofpoint and is open to every implementer.</p>
-    <ul class="footer-links"><li><a href="layers.html">MCP, A2A and AMAP</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="https://github.com/proofpoint/amap-spec">Specification on GitHub</a></li></ul>
+    <p>AMMP is an open specification, published under the Apache License 2.0. It was originated by Proofpoint and is open to every implementer.</p>
+    <ul class="footer-links"><li><a href="layers.html">MCP, A2A and AMMP</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="https://github.com/proofpoint/amap-spec">Specification on GitHub</a></li><li><a href="https://datatracker.ietf.org/doc/draft-rapp-ammp/">Internet-Draft on the IETF Datatracker</a></li></ul>
   </div>
 </footer>
 <script src="assets/site.js"></script>

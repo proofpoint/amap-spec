@@ -1,30 +1,31 @@
-<!-- title: Status | description: What exists today, what doesn't yet, and what's next for AMAP: draft-rapp-ammp-00, an Internet-Draft ready for IETF submission, four public repositories. -->
+<!-- title: Status | description: What exists today, what doesn't yet, and what's next for AMMP: draft-rapp-ammp-00, an individual Internet-Draft posted in October 2026, five public repositories. -->
 <p class="eyebrow">Status</p>
 <h1>What exists, and what does not yet</h1>
 <p class="lede">Enough to invite scrutiny, not enough to claim adoption.</p>
 
 <div class="grid four">
-  <div class="card trust"><h3>-00</h3><p>An early individual Internet-Draft, not yet submitted, with {{FIXTURES}} conformance fixtures and a validator that uses only the standard library. Its internal version (v3.1.0, wire <code>contract_version</code> "2") reflects iteration before it reached the IETF, not a settled design.</p></div>
+  <div class="card trust"><h3>-00</h3><p>An individual Internet-Draft, <a href="https://datatracker.ietf.org/doc/draft-rapp-ammp/">draft-rapp-ammp-00</a>, posted on 22 October 2026, with {{FIXTURES}} conformance fixtures and a validator that uses only the standard library. Its internal version (v3.1.0, wire <code>contract_version</code> "2") reflects iteration before it reached the IETF, not a settled design.</p></div>
   <div class="card trust"><h3>{{DOC_TYPES}}</h3><p>Document types, each with a published JSON Schema and fixtures that must pass and must fail.</p></div>
   <div class="card trust"><h3>0</h3><p>Third-party dependencies in the Claude Code connector that runs beside the agent: small enough to audit.</p></div>
-  <div class="card trust"><h3>10 agents · 1 week</h3><p>Claude agents working together through AMAP, and finding real defects in the specification.</p></div>
+  <div class="card trust"><h3>10 agents · 1 week</h3><p>Claude agents working together through AMMP, and finding real defects in the specification.</p></div>
 </div>
 
 <h2>Open, so it can be checked</h2>
-<p>All four repositories are public under the Apache License 2.0:</p>
+<p>All five repositories are public under the Apache License 2.0:</p>
 <ul>
   <li><a href="https://github.com/proofpoint/amap-spec">amap-spec</a>: the specification, JSON Schemas, conformance fixtures, and the Internet-Draft rendering</li>
   <li><a href="https://github.com/proofpoint/amap-router-local">amap-router-local</a>: the reference runtime</li>
   <li><a href="https://github.com/proofpoint/amap-connector-claude">amap-connector-claude</a>: the Claude Code connector</li>
+  <li><a href="https://github.com/proofpoint/amap-connector-codex">amap-connector-codex</a>: the Codex connector</li>
   <li><a href="https://github.com/proofpoint/amap-deploy-sandy">amap-deploy-sandy</a>: a working deployment of the two on one host, with <a href="https://proofpoint.github.io/amap-deploy-sandy/">a walkthrough</a> that gets two agents talking</li>
 </ul>
 <p>Anyone can test any vendor's runtime or connector against the public fixtures, plus the operational checks the specification requires. Passing the fixtures alone isn't conformance (§ Conformance). See <a href="implementers.html">For implementers</a>.</p>
 
 <h2>Built with itself</h2>
 <ol class="steps">
-  <li><strong>Early AMAP carried the work of building AMAP.</strong> Agents developing the specification and the reference implementations coordinated through early versions of the protocol.</li>
+  <li><strong>Early AMMP carried the work of building AMMP.</strong> Agents developing the specification and the reference implementations coordinated through early versions of the protocol.</li>
   <li><strong>The specification and its implementations matured together.</strong> The specification, the reference runtime and the Claude Code connector grew up side by side.</li>
-  <li><strong>Fleet week.</strong> Once the protocol and implementations could support it, ten sandboxed Claude agents, each owning a repository, worked together through AMAP for one week. They ran a conformance sweep, a security audit and a multi-repository release.</li>
+  <li><strong>Fleet week.</strong> Once the protocol and implementations could support it, ten sandboxed Claude agents, each owning a repository, worked together through AMMP for one week. They ran a conformance sweep, a security audit and a multi-repository release.</li>
 </ol>
 <p>The fleet found defects in the specification itself, not only in code:</p>
 <ul>
@@ -32,11 +33,12 @@
   <li>A validator ignored its arguments and reported green for the wrong reason.</li>
   <li>Mutation testing showed that only 44 of 301 schema constraints were pinned by any fixture.</li>
 </ul>
+<p>Since then a second connector, for Codex, has run in the same fleet with the reference runtime, delegating to Claude agents and answering them in both directions: several cooperating agents from more than one model vendor, each deployment still under a single operator.</p>
 <p class="small">This is evidence of agent-to-agent use under one operator. It is not yet evidence of adoption across organisations.</p>
 
 <h2>Next</h2>
 <div class="grid three">
-  <div class="card"><h3>The IETF</h3><p>We intend to submit the draft, ask for it to be considered at Dispatch, and, if there is interest, work toward a BoF. AMAP is not an IETF standard. See <a href="ietf.html">AMAP at the IETF</a>.</p></div>
+  <div class="card"><h3>The IETF</h3><p>The -00 is posted. Next is the dispatch process and, if there is interest, a BoF; the next meeting is IETF 127, 14–20 November 2026. AMMP is an individual draft, adopted by no working group, and not an IETF standard. See <a href="ietf.html">AMMP at the IETF</a>.</p></div>
   <div class="card"><h3>Partners</h3><p>We're looking for development and interop partners, starting with a first deployment across independent organisations. There isn't one yet.</p></div>
   <div class="card"><h3>Agent platforms</h3><p>We're seeking collaboration across agent platforms, as more connectors mean a stronger test of the specification.</p></div>
 </div>

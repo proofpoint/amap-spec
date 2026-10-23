@@ -1,22 +1,22 @@
-<!-- title: FAQ | description: Common questions about AMAP: what it is and isn't, what counterparties need, what it does and doesn't protect against. -->
+<!-- title: FAQ | description: Common questions about AMMP: what it is and isn't, what counterparties need, what it does and doesn't protect against. -->
 <p class="eyebrow">FAQ</p>
 <h1>Frequently asked questions</h1>
 
 <details open>
-  <summary>Is AMAP a new mail protocol?</summary>
-  <p>No. AMAP is not a mail transport, not agent-to-agent RPC, and not a policy language. It specifies the seam between an agent's connector and a trusted runtime that does the mailing. Between organisations there is only ordinary email, over standard protocols.</p>
+  <summary>Is AMMP a new mail protocol?</summary>
+  <p>No. AMMP is not a mail transport, not agent-to-agent RPC, and not a policy language. It specifies the seam between an agent's connector and a trusted runtime that does the mailing. Between organisations there is only ordinary email, over standard protocols.</p>
 </details>
 <details>
-  <summary>Does my counterparty need AMAP?</summary>
-  <p>No. AMAP adds nothing to the wire, so a counterparty needs nothing but an email address. It can be a person with an inbox, a person with an assistant, or its own agent, with AMAP or without. One side can start today, and the other side changes nothing.</p>
+  <summary>Does my counterparty need AMMP?</summary>
+  <p>No. AMMP adds nothing to the wire, so a counterparty needs nothing but an email address. It can be a person with an inbox, a person with an assistant, or its own agent, with AMMP or without. One side can start today, and the other side changes nothing.</p>
 </details>
 <details>
-  <summary>Does AMAP stop prompt injection or business email compromise?</summary>
-  <p>No, and it doesn't claim to. It assumes the agent will sometimes be fooled and limits what a fooled agent can do by email. A trusted runtime can hold a pretext back before the agent sees it. If one gets through, the agent can only ask to reply, and the runtime decides. AMAP governs the email channel only. The agent's other tools need their own safeguards.</p>
+  <summary>Does AMMP stop prompt injection or business email compromise?</summary>
+  <p>No, and it doesn't claim to. It assumes the agent will sometimes be fooled and limits what a fooled agent can do by email. A trusted runtime can hold a pretext back before the agent sees it. If one gets through, the agent can only ask to reply, and the runtime decides. AMMP governs the email channel only. The agent's other tools need their own safeguards.</p>
 </details>
 <details>
   <summary>Can't a bad actor sign messages too?</summary>
-  <p>Yes, just as with DKIM. A signature is a verifiable identifier to hang reputation on, not proof of legitimacy. Today AMAP's signed statements run only between configured peer runtimes. Extending verification to any recipient, and building reputation on it, is whitespace. See <a href="identity.html">Identity</a>.</p>
+  <p>Yes, just as with DKIM. A signature is a verifiable identifier to hang reputation on, not proof of legitimacy. Today AMMP's signed statements run only between configured peer runtimes. Extending verification to any recipient, and building reputation on it, is whitespace. See <a href="identity.html">Identity</a>.</p>
 </details>
 <details>
   <summary>What does the agent actually see?</summary>
@@ -32,37 +32,45 @@
 </details>
 <details>
   <summary>What if the runtime is compromised?</summary>
-  <p>Then the trust boundary has moved. The runtime is the one trusted party by design, so that's where hardening belongs, and it's a much smaller, more auditable target than a model. AMAP's invariant is that no security property depends on the agent or connector behaving.</p>
+  <p>Then the trust boundary has moved. The runtime is the one trusted party by design, so that's where hardening belongs, and it's a much smaller, more auditable target than a model. AMMP's invariant is that no security property depends on the agent or connector behaving.</p>
 </details>
 <details>
   <summary>Why a filesystem, not an API?</summary>
-  <p>Because a file drop carries no capability. The agent's only outbound act is to write an inert request into a runtime-owned namespace. There is nothing for it to call and no credential to misuse. The runtime reads the request, validates it, applies policy and writes exactly one result.</p>
+  <p>Because a file drop carries no capability. An API, an RPC endpoint or a queue is a live capability: invoking it is itself the grant, so its security rests on authenticating each call and on the client behaving. A file written into a directory has no callee, no session and no side effect until a separate, trusted process chooses to read it. The agent's only outbound act is to write an inert request into a runtime-owned namespace. The runtime reads the request, validates it, applies policy and writes exactly one result.</p>
 </details>
 <details>
-  <summary>How does AMAP relate to MCP and A2A?</summary>
-  <p>They sit at different layers. In the Claude Code connector, the agent sees ordinary MCP tools, and AMAP is the specification behind them. A2A connects agent services directly. See <a href="layers.html">MCP, A2A and AMAP</a>.</p>
+  <summary>Why not just put an SMTP or IMAP proxy in front of the agent?</summary>
+  <p>From the mail side, a proxy is what the runtime is: it holds the credentials, speaks the mail protocols and applies the policy. AMMP is the other side of that proxy, the contract between it and the agent it serves. A proxy on its own still has to decide what the agent sees, how the agent asks to send, and what it is told afterwards. AMMP specifies exactly that, so that a runtime and a connector built by different parties can agree on it and be tested without each other present.</p>
 </details>
 <details>
-  <summary>Can I use AMAP with my agent platform?</summary>
-  <p>Yes, if a connector exists for it or you write one. The Claude Code connector is public. A connector needs no credentials, and <a href="implementers.html">the fixtures</a> let you prove conformance without the other side present.</p>
+  <summary>How does AMMP relate to MCP and A2A?</summary>
+  <p>They sit at different layers. In the Claude Code and Codex connectors, the agent sees ordinary MCP tools, and AMMP is the specification behind them. A2A connects agent services directly. See <a href="layers.html">MCP, A2A and AMMP</a>.</p>
 </details>
 <details>
-  <summary>Is AMAP an IETF standard?</summary>
-  <p>No. It is an early individual Internet-Draft, and it has not yet been submitted. See <a href="ietf.html">AMAP at the IETF</a>.</p>
+  <summary>Can I use AMMP with my agent platform?</summary>
+  <p>Yes, if a connector exists for it or you write one. Two are public: <a href="https://github.com/proofpoint/amap-connector-claude">one for Claude Code</a> and <a href="https://github.com/proofpoint/amap-connector-codex">one for Codex</a>, and both have run in the same fleet against the reference runtime. A connector needs no credentials, and <a href="implementers.html">the fixtures</a> let you prove conformance without the other side present.</p>
+</details>
+<details>
+  <summary>Is AMMP an IETF standard?</summary>
+  <p>No. It is an individual Internet-Draft, <a href="https://datatracker.ietf.org/doc/draft-rapp-ammp/">draft-rapp-ammp-00</a>, posted on 22 October 2026. No working group has adopted it, and nothing in it is settled. See <a href="ietf.html">AMMP at the IETF</a>.</p>
 </details>
 <details>
   <summary>Why bring it to the IETF?</summary>
   <p>Because the problems it touches are interoperability problems. Agent platforms and mail infrastructure are built by different parties and need a common boundary, and mail from agents will need sender identity that recipients elsewhere can check. Neither works if one company decides it. We want review, collaborators, and an open process to own the result.</p>
 </details>
 <details>
-  <summary>AMAP is a local filesystem interface. Is that really Internet protocol work?</summary>
-  <p>It's a fair question, and we'd like the community's view. The boundary is where independently built components meet, its peer profile already carries signed statements between hosts, and agent sender identity in email is plainly IETF territory. It may turn out that the IETF piece is the cross-organisation identity, and the local boundary belongs in an applicability statement. See <a href="ietf.html">AMAP at the IETF</a>.</p>
+  <summary>AMMP is a local filesystem interface. Is that really Internet protocol work?</summary>
+  <p>It's a fair question, and we'd like the community's view. The boundary is where independently built components meet, its peer profile already carries signed statements between hosts, and agent sender identity in email is plainly IETF territory. It may turn out that the IETF piece is the cross-organisation identity, and the local boundary belongs in an applicability statement. See <a href="ietf.html">AMMP at the IETF</a>.</p>
 </details>
 <details>
   <summary>Isn't this already fully designed?</summary>
-  <p>No. The draft has been through several internal revisions, because its reference implementations were built alongside it, but it is one team's thinking. We expect review to change it: its terminology, its versioning, and possibly its scope.</p>
+  <p>No. The draft has been through several internal revisions, because its reference implementations were built alongside it, but it is one team's thinking. The open questions its authors already know about are listed in the draft and tracked as issues for -01 (<a href="https://github.com/proofpoint/amap-spec/issues?q=is%3Aissue+milestone%3Adraft-rapp-ammp-01">the milestone</a>). We expect review to change it: its terminology, its versioning, and possibly its scope.</p>
 </details>
 <details>
-  <summary>Who controls AMAP, and is it free to use?</summary>
-  <p>The AMAP specification, schemas, fixtures and reference implementations are published under the Apache License 2.0. Proofpoint originated AMAP, and it is open to every implementer. No one needs a particular vendor's runtime to conform or to interoperate. Today changes are made in the public repository; if the IETF takes up the work, a working group will hold change control. See <a href="get-involved.html">Get involved</a>.</p>
+  <summary>Why is it called AMMP when the repositories are called amap-something?</summary>
+  <p>Until October 2026 the protocol was AMAP, the Agent Mailbox Access Protocol. It was renamed the Agent Mediated Messaging Protocol before its first submission: "mailbox access" named only its first channel, and the contract mediates an agent's correspondence, mail and peer traffic alike. The acronym AMAP was also already taken by an expired 2003 draft. Nothing on the wire changed: no document carries the protocol's name, the repositories keep their <code>amap-</code> names, and the two header fields the peer-origin profile defines keep theirs.</p>
+</details>
+<details>
+  <summary>Who controls AMMP, and is it free to use?</summary>
+  <p>The AMMP specification, schemas, fixtures and reference implementations are published under the Apache License 2.0. Proofpoint originated AMMP, and it is open to every implementer. No one needs a particular vendor's runtime to conform or to interoperate. Today changes are made in the public repository; if the IETF takes up the work, a working group will hold change control. See <a href="get-involved.html">Get involved</a>.</p>
 </details>

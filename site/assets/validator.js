@@ -1,5 +1,5 @@
 /*
- * AMAP document validator: a line-for-line port of fixtures/validate.py
+ * AMMP document validator: a line-for-line port of fixtures/validate.py
  * from the amap-spec repository, for use in the browser (and in Node, for
  * the fixture test in tools/test_validator.mjs).
  *

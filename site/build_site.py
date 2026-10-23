@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Assemble the AMAP static site.
+"""Assemble the AMMP static site.
 
 Each page is a body fragment in src/<name>.html whose first line is a
 metadata comment:
@@ -30,6 +30,9 @@ import shutil
 import sys
 import tempfile
 
+# Finder droppings and the like: never copied, never compared
+IGNORE = shutil.ignore_patterns(".DS_Store")
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, "src")
 SPEC = os.path.abspath(os.path.join(HERE, ".."))  # the amap-spec checkout
@@ -47,7 +50,7 @@ def counts():
 NAV = [
     ("index.html", "Home"),
     ("ietf.html", "At the IETF"),
-    ("why.html", "Why AMAP"),
+    ("why.html", "Why AMMP"),
     ("how-it-works.html", "How it works"),
     ("identity.html", "Identity"),
     ("implementers.html", "Implementers"),
@@ -57,9 +60,10 @@ NAV = [
     ("get-involved.html", "Get involved"),
 ]
 FOOTER_LINKS = [
-    ("layers.html", "MCP, A2A and AMAP"),
+    ("layers.html", "MCP, A2A and AMMP"),
     ("glossary.html", "Glossary"),
     ("https://github.com/proofpoint/amap-spec", "Specification on GitHub"),
+    ("https://datatracker.ietf.org/doc/draft-rapp-ammp/", "Internet-Draft on the IETF Datatracker"),
 ]
 
 META = re.compile(r"^<!--\s*title:\s*(.*?)\s*\|\s*description:\s*(.*?)\s*-->")
@@ -78,10 +82,10 @@ PAGE = """<!doctype html>
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-header">
   <div class="wrap header-row">
-    <a class="brand" href="index.html" aria-label="AMAP home">
+    <a class="brand" href="index.html" aria-label="AMMP home">
       <img src="assets/mark.svg" alt="" width="28" height="28">
-      <span class="brand-name">AMAP</span>
-      <span class="brand-sub">Agent Mailbox Access Protocol</span>
+      <span class="brand-name">AMMP</span>
+      <span class="brand-sub">Agent Mediated Messaging Protocol</span>
     </a>
     <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
     <nav id="site-nav" class="site-nav" aria-label="Main">
@@ -94,7 +98,7 @@ PAGE = """<!doctype html>
 </main>
 <footer class="site-footer">
   <div class="wrap footer-row">
-    <p>AMAP is an open specification, published under the Apache License 2.0. It was originated by Proofpoint and is open to every implementer.</p>
+    <p>AMMP is an open specification, published under the Apache License 2.0. It was originated by Proofpoint and is open to every implementer.</p>
     <ul class="footer-links">{footer}</ul>
   </div>
 </footer>
@@ -153,9 +157,9 @@ def build(OUT):
     os.makedirs(OUT)
     # GitHub Pages: serve the files as they are, with no Jekyll processing
     open(os.path.join(OUT, ".nojekyll"), "w").close()
-    shutil.copytree(os.path.join(HERE, "assets"), os.path.join(OUT, "assets"))
+    shutil.copytree(os.path.join(HERE, "assets"), os.path.join(OUT, "assets"), ignore=IGNORE)
     # the validator loads the published schemas, copied verbatim from the spec
-    shutil.copytree(os.path.join(SPEC, "schemas"), os.path.join(OUT, "schemas"))
+    shutil.copytree(os.path.join(SPEC, "schemas"), os.path.join(OUT, "schemas"), ignore=IGNORE)
 
     pages = sorted(f for f in os.listdir(SRC) if f.endswith(".html"))
     problems = []
@@ -171,7 +175,7 @@ def build(OUT):
             raw = raw.replace(k, v)
         if "{{" in raw:
             problems.append(f"{name}: unfilled placeholder {re.search(r'{{[^}]*}}', raw).group(0)}")
-        full_title = "AMAP" if name == "index.html" else f"{title} · AMAP"
+        full_title = "AMMP" if name == "index.html" else f"{title} · AMMP"
         out = PAGE.format(title=html.escape(full_title), description=html.escape(desc),
                           nav=nav_html(name), footer=footer_html(),
                           body=svg_fallbacks(raw[m.end():].strip()))
@@ -195,7 +199,7 @@ def build(OUT):
 
 
 def same_tree(a, b):
-    cmp = filecmp.dircmp(a, b)
+    cmp = filecmp.dircmp(a, b, ignore=[".DS_Store"])
     if cmp.left_only or cmp.right_only or cmp.funny_files:
         return False
     _, mismatch, errors = filecmp.cmpfiles(a, b, cmp.common_files, shallow=False)
