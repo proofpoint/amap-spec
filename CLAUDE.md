@@ -38,18 +38,19 @@ language** — README's "What AMAP is not" says this normatively; keep it true.
 - **Approved to publish is not the same as submitted.** The counsel gates are
   CLEAR: `ipr="trust200902"` (settled 2026-09-21, the full BCP 78 grant),
   `submissionType="IETF"` and `category="std"` (the editor's values,
-  owner-confirmed 2026-10-21), and an email for each author. The draft is
-  **ready for submission**; the editor is submitting the -00 (`draft/README.md`,
-  "Counsel gates"). Any future change to those values, to the author list, or to a
+  owner-confirmed 2026-10-21), and an email for each author. The editor
+  **posted `draft-rapp-ammp-00` on 2026-10-22**: an active individual
+  Internet-Draft, no stream yet (`draft/README.md`, "Counsel gates"). Any future change to those values, to the author list, or to a
   BCP 79 disclosure is a rights statement, not an editorial choice: do not
   make one on your own initiative. The history is in `draft/README.md` under
   "Counsel gates". Note the draft ASSERTS it is submitted under BCP 78/79,
-  because a real `ipr` value generates that boilerplate. Nothing has been
-  submitted anywhere, and submitting is the owner's decision, not an editorial
-  one.
+  because a real `ipr` value generates that boilerplate; that became true when
+  the -00 was posted. Each later revision is submitted by the editor on the
+  owner's decision, never as an editorial step. It is an individual draft:
+  never call it adopted or an IETF standard.
 - Keep shipped text free of absolute host paths and personal identifiers.
 
-## Version state (as of the -00 handed to the editor for submission, 2026-10-21)
+## Version state (as of the -00, posted 2026-10-22)
 
 | | |
 |---|---|
