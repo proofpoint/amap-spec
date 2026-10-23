@@ -186,7 +186,7 @@
 </div>
 
 <h2>Reference implementations</h2>
-<div class="grid two">
+<div class="grid three">
   <div class="card">
     <h3><a href="https://github.com/proofpoint/amap-router-local">amap-router-local</a></h3>
     <p>The reference runtime, with its own test suite. On top of the seam it adds recipient policy, the two lanes, the reply ledger and delivery-status notices. Implementations in this family call a conforming runtime a <em>router</em>; the specification itself says "runtime" (§ Architecture).</p>
@@ -194,6 +194,10 @@
   <div class="card">
     <h3><a href="https://github.com/proofpoint/amap-connector-claude">amap-connector-claude</a></h3>
     <p>The Claude Code connector. It uses the Python standard library only, with zero third-party dependencies. It gives the agent ordinary MCP tools: a read-only inbox, and a submit tool that writes a gated request.</p>
+  </div>
+  <div class="card">
+    <h3><a href="https://github.com/proofpoint/amap-connector-codex">amap-connector-codex</a></h3>
+    <p>The Codex connector. A supervisor wakes one dedicated Codex app-server thread for each validated mail or peer notice; the agent reads through local MCP servers and writes inert requests into the runtime's drop box, and the runtime still decides and sends. Codex app-server is experimental, and the repository lists the builds it was reviewed against. Its CI runs the specification's fixtures.</p>
   </div>
 </div>
 

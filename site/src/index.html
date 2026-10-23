@@ -77,7 +77,7 @@
   </div>
   <div class="card">
     <h3>Agent-platform builders</h3>
-    <p>Give agents email through a connector with no send capability of its own, behind ordinary MCP tools. <a href="implementers.html">For implementers</a> · <a href="layers.html">MCP, A2A and AMMP</a></p>
+    <p>Give agents email through a connector with no send capability of its own, behind ordinary MCP tools. Two exist, for Claude Code and for Codex. <a href="implementers.html">For implementers</a> · <a href="layers.html">MCP, A2A and AMMP</a></p>
   </div>
   <div class="card">
     <h3>Runtime and mail-infrastructure implementers</h3>
@@ -89,7 +89,7 @@
 <ol class="steps">
   <li><strong>Understand the model.</strong> Read <a href="how-it-works.html">how it works</a>: three zones, a sandboxed agent, and a trusted runtime that decides.</li>
   <li><strong>Check documents against the specification.</strong> Try the <a href="validator.html">in-browser validator</a>, or run the conformance gate yourself with <code>python3 fixtures/validate.py</code> from the <a href="https://github.com/proofpoint/amap-spec">amap-spec</a> repository. It uses only the standard library, needs no network, and runs {{FIXTURES}} fixtures.</li>
-  <li><strong>Run the reference implementations.</strong> Start with the reference runtime, <a href="https://github.com/proofpoint/amap-router-local">amap-router-local</a>, and the Claude Code connector, <a href="https://github.com/proofpoint/amap-connector-claude">amap-connector-claude</a>.</li>
+  <li><strong>Run the reference implementations.</strong> Start with the reference runtime, <a href="https://github.com/proofpoint/amap-router-local">amap-router-local</a>, and a connector: <a href="https://github.com/proofpoint/amap-connector-claude">amap-connector-claude</a> for Claude Code, or <a href="https://github.com/proofpoint/amap-connector-codex">amap-connector-codex</a> for Codex.</li>
 </ol>
 
 <div class="callout">

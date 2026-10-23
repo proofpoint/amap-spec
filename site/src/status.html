@@ -1,4 +1,4 @@
-<!-- title: Status | description: What exists today, what doesn't yet, and what's next for AMMP: draft-rapp-ammp-00, an individual Internet-Draft posted in October 2026, four public repositories. -->
+<!-- title: Status | description: What exists today, what doesn't yet, and what's next for AMMP: draft-rapp-ammp-00, an individual Internet-Draft posted in October 2026, five public repositories. -->
 <p class="eyebrow">Status</p>
 <h1>What exists, and what does not yet</h1>
 <p class="lede">Enough to invite scrutiny, not enough to claim adoption.</p>
@@ -11,11 +11,12 @@
 </div>
 
 <h2>Open, so it can be checked</h2>
-<p>All four repositories are public under the Apache License 2.0:</p>
+<p>All five repositories are public under the Apache License 2.0:</p>
 <ul>
   <li><a href="https://github.com/proofpoint/amap-spec">amap-spec</a>: the specification, JSON Schemas, conformance fixtures, and the Internet-Draft rendering</li>
   <li><a href="https://github.com/proofpoint/amap-router-local">amap-router-local</a>: the reference runtime</li>
   <li><a href="https://github.com/proofpoint/amap-connector-claude">amap-connector-claude</a>: the Claude Code connector</li>
+  <li><a href="https://github.com/proofpoint/amap-connector-codex">amap-connector-codex</a>: the Codex connector</li>
   <li><a href="https://github.com/proofpoint/amap-deploy-sandy">amap-deploy-sandy</a>: a working deployment of the two on one host, with <a href="https://proofpoint.github.io/amap-deploy-sandy/">a walkthrough</a> that gets two agents talking</li>
 </ul>
 <p>Anyone can test any vendor's runtime or connector against the public fixtures, plus the operational checks the specification requires. Passing the fixtures alone isn't conformance (§ Conformance). See <a href="implementers.html">For implementers</a>.</p>
@@ -32,7 +33,7 @@
   <li>A validator ignored its arguments and reported green for the wrong reason.</li>
   <li>Mutation testing showed that only 44 of 301 schema constraints were pinned by any fixture.</li>
 </ul>
-<p>Since then the protocol has carried further deployments of several cooperating agents, from more than one model vendor, each under a single operator.</p>
+<p>Since then a second connector, for Codex, has run in the same fleet with the reference runtime, delegating to Claude agents and answering them in both directions: several cooperating agents from more than one model vendor, each deployment still under a single operator.</p>
 <p class="small">This is evidence of agent-to-agent use under one operator. It is not yet evidence of adoption across organisations.</p>
 
 <h2>Next</h2>
