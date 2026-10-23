@@ -1,13 +1,13 @@
-<!-- title: How it works | description: AMAP puts the authority where the agent can't reach it: a trusted runtime holds the credentials and decides, and the agent can only ask. -->
+<!-- title: How it works | description: AMMP puts the authority where the agent can't reach it: a trusted runtime holds the credentials and decides, and the agent can only ask. -->
 <p class="eyebrow">How it works</p>
-<h1>AMAP puts the authority where the agent can't reach it</h1>
-<p class="lede">AMAP, the Agent Mailbox Access Protocol, is an open specification: a wire contract between a trusted email runtime and a connector that sits beside an agent. The runtime holds the authority. The agent can only ask.</p>
+<h1>AMMP puts the authority where the agent can't reach it</h1>
+<p class="lede">AMMP, the Agent Mediated Messaging Protocol, is an open specification: a wire contract between a trusted email runtime and a connector that sits beside an agent. The runtime holds the authority. The agent can only ask.</p>
 
 <h2>Three zones</h2>
 <figure class="diagram">
 <svg viewBox="0 0 960 380" role="img" aria-labelledby="zones-t zones-d">
-  <title id="zones-t">The three zones of an AMAP deployment</title>
-  <desc id="zones-d">On the left, email sits outside the trust boundary. In the middle, the trusted runtime holds mail credentials, sending identity, recipient policy and the audit log, and sends policy misses to a person. On the right, the agent side: an agent sandbox containing the connector, which offers MCP tools, and the agent. The AMAP interface, with inbound, outbound and results lanes, straddles the boundary between the runtime and the agent side.</desc>
+  <title id="zones-t">The three zones of an AMMP deployment</title>
+  <desc id="zones-d">On the left, email sits outside the trust boundary. In the middle, the trusted runtime holds mail credentials, sending identity, recipient policy and the audit log, and sends policy misses to a person. On the right, the agent side: an agent sandbox containing the connector, which offers MCP tools, and the agent. The AMMP interface, with inbound, outbound and results lanes, straddles the boundary between the runtime and the agent side.</desc>
   <line x1="170" y1="40" x2="170" y2="360" class="s-ink" stroke-width="2" stroke-dasharray="7 6"/>
   <line x1="480" y1="40" x2="480" y2="105" class="s-ink" stroke-width="2" stroke-dasharray="7 6"/>
   <line x1="480" y1="310" x2="480" y2="360" class="s-ink" stroke-width="2" stroke-dasharray="7 6"/>
@@ -30,7 +30,7 @@
   <rect x="215" y="330" width="190" height="40" rx="8" class="d-human-bg s-human" stroke-width="1.5"/>
   <text x="310" y="355" text-anchor="middle" class="d-human" font-size="13" font-weight="700">policy miss → a person decides</text>
   <rect x="430" y="105" width="100" height="205" class="d-panel s-rule" stroke-width="1.5"/>
-  <text x="480" y="130" text-anchor="middle" class="d-ink" font-size="14" font-weight="700">AMAP</text>
+  <text x="480" y="130" text-anchor="middle" class="d-ink" font-size="14" font-weight="700">AMMP</text>
   <text x="480" y="147" text-anchor="middle" class="d-muted" font-size="11">interface</text>
   <rect x="440" y="165" width="80" height="30" rx="5" class="d-bg s-rule"/><text x="480" y="185" text-anchor="middle" class="d-ink" font-size="12" font-weight="700">inbound/</text>
   <rect x="440" y="210" width="80" height="30" rx="5" class="d-bg s-rule"/><text x="480" y="230" text-anchor="middle" class="d-ink" font-size="12" font-weight="700">outbound/</text>
@@ -56,9 +56,9 @@
 </figure>
 
 <div class="grid three">
-  <div class="card"><h3>Outside</h3><p>Email, over standard protocols. It sits outside the trust boundary. A production runtime would typically use IMAP and SMTP; the reference runtime is transport-free, the specification requires neither, and AMAP adds nothing to the wire between organisations.</p></div>
+  <div class="card"><h3>Outside</h3><p>Email, over standard protocols. It sits outside the trust boundary. A production runtime would typically use IMAP and SMTP; the reference runtime is transport-free, the specification requires neither, and AMMP adds nothing to the wire between organisations.</p></div>
   <div class="card trust"><h3>Trusted runtime</h3><p>It holds the mail credentials and the sending identity, screens what reaches the agent, evaluates recipient policy, writes a result for every request, and keeps an audit log the agent cannot write.</p></div>
-  <div class="card agent"><h3>Agent side</h3><p>The agent runs in a sandbox and reaches only its connector, which offers ordinary MCP tools. Its only outbound act is to drop an inert request. A file drop carries no capability.</p></div>
+  <div class="card agent"><h3>Agent side</h3><p>The agent and its connector run in a sandbox, and the runtime mounts only that agent's namespace into it. The connector offers ordinary MCP tools, and the agent's only outbound act is to drop an inert request. A file drop carries no capability. The specification presumes the sandbox and does not define it: every property it states holds only as well as the sandbox holds.</p></div>
 </div>
 
 <div class="callout">
@@ -66,8 +66,8 @@
 </div>
 
 <h2>The seam: a per-agent filesystem tree</h2>
-<p>The AMAP interface is a runtime-owned filesystem namespace for each agent. It straddles the boundary: the runtime writes into <code>inbound/</code> and <code>results/</code>, and the connector writes inert requests into <code>outbound/</code>. The runtime treats everything in the tree as untrusted input.</p>
-<p>Because the channel is a filesystem namespace rather than an API the agent could call, a request grants nothing on its own. The runtime decides whether anything is sent, to whom, and how. The connector offers the agent ordinary MCP tools, so AMAP sits <em>behind</em> MCP rather than competing with it.</p>
+<p>The AMMP interface is a runtime-owned filesystem namespace for each agent. It straddles the boundary: the runtime writes into <code>inbound/</code> and <code>results/</code>, and the connector writes inert requests into <code>outbound/</code>. The runtime treats everything in the tree as untrusted input.</p>
+<p>Because the channel is a filesystem namespace rather than an API the agent could call, a request grants nothing on its own. The runtime decides whether anything is sent, to whom, and how. The connector offers the agent ordinary MCP tools, so AMMP sits <em>behind</em> MCP rather than competing with it.</p>
 
 <h2>Walkthrough: the bank-detail pretext</h2>
 <ol class="steps">
@@ -81,10 +81,10 @@
 
 <h2>The honest edges</h2>
 <div class="grid two">
-  <div class="card"><h3>Where, not what</h3><p>AMAP fixes <em>where</em> the decision is made; the deployment decides <em>what</em> it is. A policy that trusts whoever started a thread could let a reply to a look-alike sender through, because a look-alike domain can pass authentication for itself.</p></div>
-  <div class="card"><h3>Email only</h3><p>AMAP governs the agent's email authority. If the agent also holds a tool that can update a vendor record, that tool needs its own isolation and safeguards.</p></div>
-  <div class="card"><h3>Not a cure for prompt injection</h3><p>AMAP doesn't make delivered content safe, and it doesn't stop an agent being fooled. It limits what a fooled agent can do by email.</p></div>
-  <div class="card"><h3>What AMAP is not</h3><p>It is not a mail transport, not agent-to-agent RPC, and not a policy language. It fixes the vocabulary of the seam, never the computation behind it.</p></div>
+  <div class="card"><h3>Where, not what</h3><p>AMMP fixes <em>where</em> the decision is made; the deployment decides <em>what</em> it is. A policy that trusts whoever started a thread could let a reply to a look-alike sender through, because a look-alike domain can pass authentication for itself.</p></div>
+  <div class="card"><h3>Email only</h3><p>AMMP governs the agent's email authority. If the agent also holds a tool that can update a vendor record, that tool needs its own isolation and safeguards.</p></div>
+  <div class="card"><h3>Not a cure for prompt injection</h3><p>AMMP doesn't make delivered content safe, and it doesn't stop an agent being fooled. It limits what a fooled agent can do by email.</p></div>
+  <div class="card"><h3>What AMMP is not</h3><p>It is not a mail transport, not agent-to-agent RPC, and not a policy language. It fixes the vocabulary of the seam, never the computation behind it.</p></div>
 </div>
 
 <h2>Also specified</h2>

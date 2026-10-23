@@ -1,4 +1,4 @@
-# The AMAP website
+# The AMMP website
 
 The source of the explainer site, published with GitHub Pages from `docs/`
 on `main`.
@@ -38,9 +38,15 @@ node site/tools/test_validator.mjs   # every fixture; must print AGREE
 
 ## Content rules
 
-- A neutral project voice. Proofpoint is credited as AMAP's originator, and
+- A neutral project voice. Proofpoint is credited as AMMP's originator, and
   nothing else: no product names, no commercial positioning.
-- "The AMAP specification", never a bare "contract".
+- The protocol is AMMP, the Agent Mediated Messaging Protocol (renamed from
+  AMAP on 2026-10-18). The repositories keep their `amap-` names and the
+  `AMAP-Peer-*` header fields keep theirs; never rename those in prose.
+- The draft is an individual Internet-Draft, posted 2026-10-22. Say "posted",
+  link the Datatracker, and never say adopted, in a working group, or an IETF
+  standard.
+- "The AMMP specification", never a bare "contract".
 - Hypotheses are labelled as hypotheses, and specified behaviour as
   specified.
 - Cite the specification by section **name** (for example "§ Inbound"),
