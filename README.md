@@ -17,7 +17,8 @@ people and versioned independently.
 **Current revision: `draft-rapp-ammp-00`**, which corresponds to contract
 3.1.0 (wire `contract_version` `"2"` - the contract's own SemVer and the wire
 major track different things as of 3.0.0; see the draft's Versioning and
-Conformance section). The draft has not been submitted.
+Conformance section). The -00 was posted on 2026-10-22 as an individual
+Internet-Draft: <https://datatracker.ietf.org/doc/draft-rapp-ammp/>.
 Conformance gate: **121 fixtures**, 0 unexpected, plus the signed peer cases in `fixtures/peer-signed/`.
 
 ## Motivation
