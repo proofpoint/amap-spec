@@ -131,6 +131,11 @@ no longer needed.
 router, and the Claude Code connector, plus taking AMAP to the IETF. Other
 Proofpoint products are explicitly out of scope and remain unpublished.
 
+**Posted, 2026-10-22: `draft-rapp-ammp-00` is an active individual
+Internet-Draft** (<https://datatracker.ietf.org/doc/draft-rapp-ammp/>), with
+no stream assigned yet. The paragraphs below are the history up to that
+point.
+
 **Status, 2026-09-24: the operator confirmed that counsel's gates are clear.**
 The front matter carries `ipr="trust200902"` and `submissionType="independent"`,
 and both authors' email addresses. The draft is ready for submission and **has
@@ -142,7 +147,7 @@ editor's review (2026-10-02) had set those two values (Intended status:
 Standards Track) in place of `independent` and `info`; the IETF stream is the
 one that leads to Dispatch, a BoF and a working group, which is the path the
 editor proposes. The owner confirmed both values on 2026-10-21, in session, and
-the editor is submitting the -00 on that basis. The IANA change controller in
+the editor submitted the -00 on that basis. The IANA change controller in
 the draft reads `IETF` accordingly. They remain rights statements: any later
 change is the owner's, not an editorial choice.
 
@@ -195,6 +200,7 @@ with our hand-written note of the same name, which had to be renamed to
 `note_About_This_Draft`. **The document now asserts it is an Internet-Draft
 submitted under BCP 78/79. Nothing has been submitted anywhere.** That gap
 closes when it is filed, and not before.
+**Update, 2026-10-22:** the gap is closed. The -00 was posted that day.
 
 ### The second author's email — settled
 
