@@ -1,14 +1,17 @@
-<!-- title: Glossary | description: The terms the AMAP specification uses, with where each is defined. -->
+<!-- title: Glossary | description: The terms the AMMP specification uses, with where each is defined. -->
 <p class="eyebrow">Reference</p>
 <h1>Glossary</h1>
-<p class="lede">The terms used across this site and the AMAP specification. A reference such as "§ Inbound" names a section of <a href="https://github.com/proofpoint/amap-spec/tree/main/dist">the AMAP Internet-Draft</a> (<code>draft-rapp-ammp-00</code>), including its optional peer-origin profile, "the profile" for short.</p>
+<p class="lede">The terms used across this site and the AMMP specification. A reference such as "§ Inbound" names a section of <a href="https://datatracker.ietf.org/doc/draft-rapp-ammp/">the AMMP Internet-Draft</a> (<code>draft-rapp-ammp-00</code>), including its optional peer-origin profile, "the profile" for short.</p>
 
 <dl class="glossary">
+  <dt id="amap">AMAP</dt>
+  <dd>The protocol's name until October 2026: the Agent Mailbox Access Protocol. It was renamed AMMP, the Agent Mediated Messaging Protocol, before its first submission, because "mailbox access" named only its first channel. Nothing on the wire changed. The repositories keep their <code>amap-</code> names, and the <code>AMAP-Peer-Statement</code> and <code>AMAP-Peer-Control</code> header fields keep theirs.</dd>
+
   <dt id="agent">Agent</dt>
   <dd>The AI agent on whose behalf mail is read and requested. <strong>Untrusted</strong>: it holds only what its connector surfaces, and reaches only the connector and its sandbox (§ Architecture).</dd>
 
   <dt id="attestation">Attestation</dt>
-  <dd>An optional member of a result: the identity stamp the runtime applied to the outbound message. Its <code>form</code> is <code>self-stamp</code> or <code>verifiable</code>. A connector surfaces it but never verifies it (§ Result). It stamps sender identity; it does not mark a message as written by an AI.</dd>
+  <dd>An optional member of a result: the identity stamp the runtime applied to the outbound message. Its <code>form</code> is <code>self-stamp</code> or <code>verifiable</code>. A connector surfaces it but never verifies it (§ Result). It stamps sender identity; it does not mark a message as written by an AI. Renaming it is <a href="https://github.com/proofpoint/amap-spec/issues/28">issue #28</a>.</dd>
 
   <dt id="audit-log">Audit log</dt>
   <dd><code>audit/log.jsonl</code>: an append-only, per-agent action log that only the runtime writes. The connector never writes it. The specification does not define its contents (§ Volume Layout).</dd>
@@ -84,6 +87,9 @@
   <dt id="runtime">Runtime</dt>
   <dd>The <strong>trusted</strong> party. It holds the mail credentials, each agent's identity and the policy, and it reaches the mail provider. All enforcement is on this side (§ Architecture). Implementations in this family call a runtime a <em>router</em>.</dd>
 
+  <dt id="sandbox">Sandbox</dt>
+  <dd>The isolation boundary within which an agent and its connector run. The runtime mounts the agent's namespace into it and nothing else of the volume; no credential, send path or other messaging capability exists inside. The specification presumes a sandbox and does not specify the mechanism: every property it states holds only as well as the sandbox holds (§ Architecture).</dd>
+
   <dt id="sender-exposure">sender_exposure</dt>
   <dd>On a peer notice, a runtime assertion of whether external mail was delivered to the sender over a window. Its absence means "not assessed", never "no exposure", and it must not drive routing (§ Sender Exposure).</dd>
 
@@ -100,7 +106,7 @@
   <dd>Refusing a document whose <code>contract_version</code> major is absent, lower or higher. It fails closed and is a distinct outcome: logged-only inbound, and a <code>rejected</code> result outbound (§ Versioning and Conformance).</dd>
 
   <dt id="wire-contract">Wire contract</dt>
-  <dd>What the AMAP specification defines: the exact documents, paths and obligations shared by a runtime and a connector. Neither side owns it, and each proves conformance against the fixtures rather than against the other.</dd>
+  <dd>What the AMMP specification defines: the exact documents, paths and obligations shared by a runtime and a connector. Neither side owns it, and each proves conformance against the fixtures rather than against the other.</dd>
 </dl>
 
-<p class="small">See also: <a href="implementers.html">For implementers</a> · <a href="layers.html">MCP, A2A and AMAP</a>.</p>
+<p class="small">See also: <a href="implementers.html">For implementers</a> · <a href="layers.html">MCP, A2A and AMMP</a>.</p>

@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>For implementers · AMAP</title>
-<meta name="description" content="The AMAP specification at the wire level: the per-agent namespace, the documents and their schemas, versioning, conformance, and the reference implementations.">
+<title>For implementers · AMMP</title>
+<meta name="description" content="The AMMP specification at the wire level: the per-agent namespace, the documents and their schemas, versioning, conformance, and the reference implementations.">
 <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/style.css">
 </head>
@@ -12,24 +12,24 @@
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-header">
   <div class="wrap header-row">
-    <a class="brand" href="index.html" aria-label="AMAP home">
+    <a class="brand" href="index.html" aria-label="AMMP home">
       <img src="assets/mark.svg" alt="" width="28" height="28">
-      <span class="brand-name">AMAP</span>
-      <span class="brand-sub">Agent Mailbox Access Protocol</span>
+      <span class="brand-name">AMMP</span>
+      <span class="brand-sub">Agent Mediated Messaging Protocol</span>
     </a>
     <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
     <nav id="site-nav" class="site-nav" aria-label="Main">
-      <ul><li><a href="index.html">Home</a></li><li><a href="ietf.html">At the IETF</a></li><li><a href="why.html">Why AMAP</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="identity.html">Identity</a></li><li><a href="implementers.html" aria-current="page">Implementers</a></li><li><a href="validator.html">Validator</a></li><li><a href="status.html">Status</a></li><li><a href="faq.html">FAQ</a></li><li><a href="get-involved.html">Get involved</a></li></ul>
+      <ul><li><a href="index.html">Home</a></li><li><a href="ietf.html">At the IETF</a></li><li><a href="why.html">Why AMMP</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="identity.html">Identity</a></li><li><a href="implementers.html" aria-current="page">Implementers</a></li><li><a href="validator.html">Validator</a></li><li><a href="status.html">Status</a></li><li><a href="faq.html">FAQ</a></li><li><a href="get-involved.html">Get involved</a></li></ul>
     </nav>
   </div>
 </header>
 <main id="main" class="wrap">
 <p class="eyebrow">For implementers</p>
-<h1>The AMAP specification, at the wire level</h1>
-<p class="lede">AMAP defines a wire contract between a trusted runtime, which holds the mail credentials and applies policy, and an agent-side connector, which holds nothing credentialed. The two sides share one thing: a per-agent filesystem namespace. This page summarises what each side must do. The authority is the specification itself.</p>
+<h1>The AMMP specification, at the wire level</h1>
+<p class="lede">AMMP defines a wire contract between a trusted runtime, which holds the mail credentials and applies policy, and an agent-side connector, which holds nothing credentialed. The two sides share one thing: a per-agent filesystem namespace. This page summarises what each side must do. The authority is the specification itself.</p>
 
 <div class="callout">
-  <p><strong>Source of truth.</strong> <a href="https://github.com/proofpoint/amap-spec/tree/main/dist">The AMAP Internet-Draft</a> (<code>draft-rapp-ammp-00</code>; its source is <a href="https://github.com/proofpoint/amap-spec/blob/main/draft/draft-amap.xml"><code>draft/draft-amap.xml</code></a>), the <a href="https://github.com/proofpoint/amap-spec/tree/main/schemas">schemas</a> and the <a href="https://github.com/proofpoint/amap-spec/tree/main/fixtures">fixtures</a> are the normative specification. The peer-origin profile is a section of the Internet-Draft, § The Peer-Origin Profile (Optional). Where this page and the specification disagree, the specification wins. A reference such as "§ Inbound" names a section of the Internet-Draft. The older <code>spec/contract.md</code> and <code>spec/peer-origin.md</code> are frozen history, not the specification.</p>
+  <p><strong>Source of truth.</strong> The AMMP Internet-Draft, <a href="https://datatracker.ietf.org/doc/draft-rapp-ammp/"><code>draft-rapp-ammp-00</code></a> on the IETF Datatracker (its rendering is in <a href="https://github.com/proofpoint/amap-spec/tree/main/dist">dist/</a> and its source is <a href="https://github.com/proofpoint/amap-spec/blob/main/draft/draft-amap.xml"><code>draft/draft-amap.xml</code></a>), the <a href="https://github.com/proofpoint/amap-spec/tree/main/schemas">schemas</a> and the <a href="https://github.com/proofpoint/amap-spec/tree/main/fixtures">fixtures</a> are the normative specification. The peer-origin profile is a section of the Internet-Draft, § The Peer-Origin Profile (Optional). Where this page and the specification disagree, the specification wins. A reference such as "§ Inbound" names a section of the Internet-Draft. The older <code>spec/contract.md</code> and <code>spec/peer-origin.md</code> are frozen history, not the specification.</p>
 </div>
 
 <h2>Three actors, one invariant</h2>
@@ -48,6 +48,7 @@
   </div>
 </div>
 <p>The load-bearing invariant (§ Architecture): <strong>no security property may depend on the agent or connector behaving.</strong> Enforcement is entirely runtime-side. A compromised agent or connector can at most write a well-formed request that the runtime then refuses. That is why the channel is a runtime-owned filesystem namespace rather than an API the agent could call: a file drop carries no capability.</p>
+<p>The premise is isolation. The agent and its connector run in a <strong>sandbox</strong>, and the runtime mounts only that agent's namespace into it: no credential, send path or other messaging capability exists inside. The specification presumes the sandbox and does not specify it, and every property it states holds only as well as the sandbox holds (§ Architecture).</p>
 
 <h2>The per-agent namespace</h2>
 <p>The runtime owns the tree and mounts each agent's namespace into that agent's sandbox (§ Volume Layout). A connector can reach only its own <code>&lt;agent-id&gt;/</code>. The runtime assigns that id, and attribution is the namespace a file arrived in, never an <code>agent_id</code> field inside it.</p>
@@ -210,7 +211,7 @@
 </div>
 
 <h2>Reference implementations</h2>
-<div class="grid two">
+<div class="grid three">
   <div class="card">
     <h3><a href="https://github.com/proofpoint/amap-router-local">amap-router-local</a></h3>
     <p>The reference runtime, with its own test suite. On top of the seam it adds recipient policy, the two lanes, the reply ledger and delivery-status notices. Implementations in this family call a conforming runtime a <em>router</em>; the specification itself says "runtime" (§ Architecture).</p>
@@ -218,6 +219,10 @@
   <div class="card">
     <h3><a href="https://github.com/proofpoint/amap-connector-claude">amap-connector-claude</a></h3>
     <p>The Claude Code connector. It uses the Python standard library only, with zero third-party dependencies. It gives the agent ordinary MCP tools: a read-only inbox, and a submit tool that writes a gated request.</p>
+  </div>
+  <div class="card">
+    <h3><a href="https://github.com/proofpoint/amap-connector-codex">amap-connector-codex</a></h3>
+    <p>The Codex connector. A supervisor wakes one dedicated Codex app-server thread for each validated mail or peer notice; the agent reads through local MCP servers and writes inert requests into the runtime's drop box, and the runtime still decides and sends. Codex app-server is experimental, and the repository lists the builds it was reviewed against. Its CI runs the specification's fixtures.</p>
   </div>
 </div>
 
@@ -232,12 +237,12 @@
 <p>Read <a href="https://github.com/proofpoint/amap-spec/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> and <a href="https://github.com/proofpoint/amap-spec/blob/main/WORKFLOWS.md">WORKFLOWS.md</a> before opening a pull request. Report security problems in the specification privately, as described in <a href="https://github.com/proofpoint/amap-spec/blob/main/SECURITY.md">SECURITY.md</a>.</p>
 
 <hr>
-<p class="small">See also: <a href="validator.html">validator</a> · <a href="layers.html">MCP, A2A and AMAP</a> · <a href="glossary.html">glossary</a>.</p>
+<p class="small">See also: <a href="validator.html">validator</a> · <a href="layers.html">MCP, A2A and AMMP</a> · <a href="glossary.html">glossary</a>.</p>
 </main>
 <footer class="site-footer">
   <div class="wrap footer-row">
-    <p>AMAP is an open specification, published under the Apache License 2.0. It was originated by Proofpoint and is open to every implementer.</p>
-    <ul class="footer-links"><li><a href="layers.html">MCP, A2A and AMAP</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="https://github.com/proofpoint/amap-spec">Specification on GitHub</a></li></ul>
+    <p>AMMP is an open specification, published under the Apache License 2.0. It was originated by Proofpoint and is open to every implementer.</p>
+    <ul class="footer-links"><li><a href="layers.html">MCP, A2A and AMMP</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="https://github.com/proofpoint/amap-spec">Specification on GitHub</a></li><li><a href="https://datatracker.ietf.org/doc/draft-rapp-ammp/">Internet-Draft on the IETF Datatracker</a></li></ul>
   </div>
 </footer>
 <script src="assets/site.js"></script>

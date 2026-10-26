@@ -1,12 +1,12 @@
-<!-- title: Identity and accountability | description: AMAP can verify the sender. The ecosystem must define the agent. What AMAP does today, where it could extend, and what it leaves to others. -->
+<!-- title: Identity and accountability | description: AMMP can verify the sender. The ecosystem must define the agent. What AMMP does today, where it could extend, and what it leaves to others. -->
 <p class="eyebrow">Identity and accountability</p>
-<h1>AMAP can verify the sender. The ecosystem must define the agent.</h1>
-<p class="lede">Agent identity and accountability have to come from outside AMAP, and AMAP has to fit whatever emerges. The specification carries identity but deliberately doesn't define it: its scope puts "how identity is minted, how senders are verified" out of scope. "The wire fixes the vocabulary; it never fixes the computation."</p>
+<h1>AMMP can verify the sender. The ecosystem must define the agent.</h1>
+<p class="lede">Agent identity and accountability have to come from outside AMMP, and AMMP has to fit whatever emerges. The specification carries identity but deliberately doesn't define it: its scope puts "how identity is minted, how senders are verified" out of scope. "The wire fixes the vocabulary; it never fixes the computation."</p>
 
 <p class="small">From left to right: verifying <em>which</em> agent sent a message → establishing <em>who</em> that agent is and what it may commit to.</p>
 <div class="grid three">
   <div class="card trust">
-    <h3>AMAP does today</h3>
+    <h3>AMMP does today</h3>
     <p><span class="tag spec">Specified</span></p>
     <ul>
       <li>The runtime owns each agent's sending identity, and the agent can't choose it (§ Architecture; § Submit Request).</li>
@@ -15,11 +15,12 @@
     </ul>
   </div>
   <div class="card">
-    <h3>AMAP's whitespace</h3>
+    <h3>AMMP's whitespace</h3>
     <p><span class="tag hyp">Could extend</span></p>
     <ul>
       <li>Sender verification any recipient can check without prior setup: "DKIM for agents".</li>
-      <li>What a <code>verifiable</code> attestation should prove to someone outside the fleet. Results already carry an attestation slot whose form can be <code>self-stamp</code> or <code>verifiable</code> (§ Result). The name collides with remote attestation in the IETF's RATS work (RFC 9334), and we expect to rename it.</li>
+      <li>What a <code>verifiable</code> attestation should prove to someone outside the fleet. Results already carry an attestation slot whose form can be <code>self-stamp</code> or <code>verifiable</code> (§ Result). The name collides with remote attestation in the IETF's RATS work (RFC 9334); renaming it is <a href="https://github.com/proofpoint/amap-spec/issues/28">issue #28</a>.</li>
+      <li>Whether identity between runtimes should come from an existing mechanism. A workload-identity system such as SPIFFE would replace the configured Ed25519 keys; a standard signed envelope such as JWS with EdDSA or COSE would replace the statement's own encoding (<a href="https://github.com/proofpoint/amap-spec/issues/27">issue #27</a>).</li>
       <li>Reputation models for agent senders, akin to those built on authentication signals such as DKIM.</li>
     </ul>
   </div>
@@ -37,7 +38,7 @@
 
 <h2>Why a signature still matters when bad actors can sign too</h2>
 <p><span class="tag hyp">Hypothesis</span> This is the argument DKIM has always faced. A signature doesn't prove a message is legitimate. What it provides is a verifiable identifier to hang reputation on, and once DKIM was enforced broadly, it became the handle that reputation systems are built on.</p>
-<p>The same could hold for agents. If legitimate agent senders adopt verifiable sender identity, bad actors either do the same, and so become identifiable and scorable, or stand out by not doing it. Either way, defenders get a stronger signal for telling good agent traffic from bad. Today's signing works only runtime-to-runtime, between configured peers. Extending it is whitespace, not something AMAP already does.</p>
+<p>The same could hold for agents. If legitimate agent senders adopt verifiable sender identity, bad actors either do the same, and so become identifiable and scorable, or stand out by not doing it. Either way, defenders get a stronger signal for telling good agent traffic from bad. Today's signing works only runtime-to-runtime, between configured peers. Extending it is whitespace, not something AMMP already does.</p>
 
 <h2>What authentication proves, and what it doesn't</h2>
 <div class="table-wrap">
@@ -45,7 +46,7 @@
   <thead><tr><th>Signal</th><th>Proves</th><th>Does not prove</th></tr></thead>
   <tbody>
     <tr><td>SPF, DKIM, DMARC</td><td>The sending <em>domain</em></td><td>Which agent sent it, or that it may commit anyone</td></tr>
-    <tr><td>AMAP signed peer statements</td><td>Which runtime vouched for which of its agents</td><td>That the agent is authorised to commit its organisation</td></tr>
+    <tr><td>AMMP signed peer statements</td><td>Which runtime vouched for which of its agents</td><td>That the agent is authorised to commit its organisation</td></tr>
     <tr><td>An agent identity layer <span class="tag open">open</span></td><td>Who the agent is, and on whose behalf it acts</td><td>Left to the ecosystem to define</td></tr>
   </tbody>
 </table>
@@ -57,8 +58,8 @@
 <p><span class="tag open">Open</span> If the record is to settle who answers for an agent's commitment, what must it contain, and must other organisations be able to trust it?</p>
 
 <h2>When must a person decide?</h2>
-<p>AMAP guarantees that a policy miss goes to a person. It doesn't say which actions should <em>always</em> need one. Should confirming a change to payment details, agreeing contract terms, or opening a new external data flow require a person whatever local policy says? Does the verification bar differ when the counterparty is a government body or a critical-infrastructure operator? These are policy questions as much as engineering ones.</p>
+<p>AMMP guarantees that a policy miss goes to a person. It doesn't say which actions should <em>always</em> need one. Should confirming a change to payment details, agreeing contract terms, or opening a new external data flow require a person whatever local policy says? Does the verification bar differ when the counterparty is a government body or a critical-infrastructure operator? These are policy questions as much as engineering ones.</p>
 
 <div class="callout">
-  <p><strong>Where should agent identity come from, and what should AMAP accept as proof of it?</strong> If you're working on agent identity, we'd like to hear from you. See <a href="get-involved.html">Get involved</a>.</p>
+  <p><strong>Where should agent identity come from, and what should AMMP accept as proof of it?</strong> If you're working on agent identity, we'd like to hear from you. See <a href="get-involved.html">Get involved</a>.</p>
 </div>
