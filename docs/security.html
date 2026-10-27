@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Security and disclosure · AMMP</title>
+<meta name="description" content="How to report a vulnerability in the AMMP specification or one of its implementations, and what counts as one.">
+<link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap header-row">
+    <a class="brand" href="index.html" aria-label="AMMP home">
+      <img src="assets/mark.svg" alt="" width="28" height="28">
+      <span class="brand-name">AMMP</span>
+      <span class="brand-sub">Agent Mediated Messaging Protocol</span>
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <nav id="site-nav" class="site-nav" aria-label="Main">
+      <ul><li><a href="index.html">Home</a></li><li><a href="ietf.html">At the IETF</a></li><li><a href="why.html">Why AMMP</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="identity.html">Identity</a></li><li><a href="implementers.html">Implementers</a></li><li><a href="validator.html">Validator</a></li><li><a href="status.html">Status</a></li><li><a href="faq.html">FAQ</a></li><li><a href="get-involved.html">Get involved</a></li></ul>
+    </nav>
+  </div>
+</header>
+<main id="main" class="wrap">
+<p class="eyebrow">Security</p>
+<h1>Security and disclosure</h1>
+<p class="lede">AMMP is a security boundary, so a flaw in it matters. Please report privately, never in a public issue.</p>
+
+<h2>Where to report</h2>
+<div class="grid three">
+  <div class="card trust"><h3><a href="https://github.com/proofpoint/amap-spec/blob/main/SECURITY.md">The specification</a></h3><p>Email <a href="mailto:resero-labs@proofpoint.com">resero-labs@proofpoint.com</a>. Say which draft revision and which wire version you were reading.</p></div>
+  <div class="card"><h3><a href="https://github.com/proofpoint/amap-router-local/blob/main/SECURITY.md">amap-router-local</a></h3><p>Email <a href="mailto:resero-labs@proofpoint.com">resero-labs@proofpoint.com</a>.</p></div>
+  <div class="card agent"><h3><a href="https://github.com/proofpoint/amap-connector-claude/blob/main/SECURITY.md">amap-connector-claude</a></h3><p>Email <a href="mailto:resero-labs@proofpoint.com">resero-labs@proofpoint.com</a>.</p></div>
+  <div class="card agent"><h3><a href="https://github.com/proofpoint/amap-connector-codex/blob/main/SECURITY.md">amap-connector-codex</a></h3><p>Use GitHub's <a href="https://github.com/proofpoint/amap-connector-codex/security/advisories/new">private vulnerability reporting</a> on the repository.</p></div>
+  <div class="card"><h3><a href="https://github.com/proofpoint/amap-deploy-sandy/blob/main/SECURITY.md">amap-deploy-sandy</a></h3><p>Email <a href="mailto:resero-labs@proofpoint.com">resero-labs@proofpoint.com</a>.</p></div>
+</div>
+<p>If you aren't sure which component is at fault, send it anyway. A misrouted report is much better than an unsent one, and a partial report is worth sending.</p>
+
+<h2>What counts as a vulnerability in the specification</h2>
+<ul>
+  <li><strong>A clause that can't be satisfied securely,</strong> or two clauses that force an implementer to choose between them.</li>
+  <li><strong>A schema that permits what the prose forbids.</strong> Implementations validate against the schema, so the disagreement is a defect even when the prose is right.</li>
+  <li><strong>An obligation with no conformance fixture.</strong> A field no fixture exercises is a field no implementer can prove they handle.</li>
+  <li><strong>An attack the trust model doesn't account for,</strong> especially anything that lets an agent influence a routing or identity decision that belongs to the runtime.</li>
+</ul>
+<p>A flaw in an implementation goes to that implementation's own repository, using the contacts above.</p>
+
+<h2>What happens next</h2>
+<p>You should get an acknowledgement that the report arrived. A defect in the specification is fixed in a later revision of the Internet-Draft, with fixtures in the same change, and recorded in the <a href="changelog.html">changelog</a>.</p>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-row">
+    <p>AMMP is an open specification, published under the Apache License 2.0. It was originated by Proofpoint and is open to every implementer.</p>
+    <ul class="footer-links"><li><a href="layers.html">MCP, A2A and AMMP</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="changelog.html">Changelog</a></li><li><a href="security.html">Security</a></li><li><a href="license.html">Licence</a></li><li><a href="https://github.com/proofpoint/amap-spec">Specification on GitHub</a></li><li><a href="https://datatracker.ietf.org/doc/draft-rapp-ammp/">Internet-Draft on the IETF Datatracker</a></li></ul>
+  </div>
+</footer>
+<script src="assets/site.js"></script>
+</body>
+</html>

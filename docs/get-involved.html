@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Get involved · AMMP</title>
-<meta name="description" content="Read, implement and contribute to AMMP: the three public repositories, how changes land, security reports, and partners wanted.">
+<meta name="description" content="Read, implement and contribute to AMMP: the public repositories, how changes land, security reports, and partners wanted.">
 <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/style.css">
 </head>
@@ -35,6 +35,7 @@
   <div class="card agent"><h3><a href="https://github.com/proofpoint/amap-connector-claude">amap-connector-claude</a></h3><p>The Claude Code connector, which uses only the standard library.</p></div>
   <div class="card agent"><h3><a href="https://github.com/proofpoint/amap-connector-codex">amap-connector-codex</a></h3><p>The Codex connector: a supervisor that wakes a Codex app-server thread per validated notice, with the same gated submit.</p></div>
   <div class="card"><h3><a href="https://github.com/proofpoint/amap-deploy-sandy">amap-deploy-sandy</a></h3><p>A working deployment of the reference runtime and connector on one host. Its <a href="https://proofpoint.github.io/amap-deploy-sandy/">walkthrough</a> gets two agents talking, then breaks each guarantee on purpose.</p></div>
+  <div class="card"><h3><a href="https://github.com/proofpoint/amap-release">amap-release</a></h3><p>Release manifests that pin the exact commits of the router, connectors and deployment that make up one release.</p></div>
 </div>
 
 <h2>How changes are made today</h2>
@@ -47,7 +48,7 @@
 <p>Read <a href="https://github.com/proofpoint/amap-spec/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> before opening a pull request.</p>
 
 <h2>Security reports</h2>
-<p>Don't open a public issue for a security problem. Follow <a href="https://github.com/proofpoint/amap-spec/blob/main/SECURITY.md">SECURITY.md</a> in the relevant repository. For the specification, the interesting reports are clauses that can't be satisfied securely, schemas that permit what the prose forbids, and attacks the trust model doesn't account for.</p>
+<p>Don't open a public issue for a security problem. See <a href="security.html">Security and disclosure</a> for where to report. For the specification, the interesting reports are clauses that can't be satisfied securely, schemas that permit what the prose forbids, and attacks the trust model doesn't account for.</p>
 
 <h2>Wanted</h2>
 <div class="grid three">
@@ -67,7 +68,7 @@
 <footer class="site-footer">
   <div class="wrap footer-row">
     <p>AMMP is an open specification, published under the Apache License 2.0. It was originated by Proofpoint and is open to every implementer.</p>
-    <ul class="footer-links"><li><a href="layers.html">MCP, A2A and AMMP</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="https://github.com/proofpoint/amap-spec">Specification on GitHub</a></li><li><a href="https://datatracker.ietf.org/doc/draft-rapp-ammp/">Internet-Draft on the IETF Datatracker</a></li></ul>
+    <ul class="footer-links"><li><a href="layers.html">MCP, A2A and AMMP</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="changelog.html">Changelog</a></li><li><a href="security.html">Security</a></li><li><a href="license.html">Licence</a></li><li><a href="https://github.com/proofpoint/amap-spec">Specification on GitHub</a></li><li><a href="https://datatracker.ietf.org/doc/draft-rapp-ammp/">Internet-Draft on the IETF Datatracker</a></li></ul>
   </div>
 </footer>
 <script src="assets/site.js"></script>

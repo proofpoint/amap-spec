@@ -62,6 +62,9 @@ NAV = [
 FOOTER_LINKS = [
     ("layers.html", "MCP, A2A and AMMP"),
     ("glossary.html", "Glossary"),
+    ("changelog.html", "Changelog"),
+    ("security.html", "Security"),
+    ("license.html", "Licence"),
     ("https://github.com/proofpoint/amap-spec", "Specification on GitHub"),
     ("https://datatracker.ietf.org/doc/draft-rapp-ammp/", "Internet-Draft on the IETF Datatracker"),
 ]
@@ -157,6 +160,11 @@ def build(OUT):
     os.makedirs(OUT)
     # GitHub Pages: serve the files as they are, with no Jekyll processing
     open(os.path.join(OUT, ".nojekyll"), "w").close()
+    # GitHub Pages: the custom domain. build() wipes OUT, so CNAME must be
+    # regenerated from site/CNAME on every build or the domain is dropped.
+    cname = os.path.join(HERE, "CNAME")
+    if os.path.exists(cname):
+        shutil.copyfile(cname, os.path.join(OUT, "CNAME"))
     shutil.copytree(os.path.join(HERE, "assets"), os.path.join(OUT, "assets"), ignore=IGNORE)
     # the validator loads the published schemas, copied verbatim from the spec
     shutil.copytree(os.path.join(SPEC, "schemas"), os.path.join(OUT, "schemas"), ignore=IGNORE)

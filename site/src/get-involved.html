@@ -1,4 +1,4 @@
-<!-- title: Get involved | description: Read, implement and contribute to AMMP: the three public repositories, how changes land, security reports, and partners wanted. -->
+<!-- title: Get involved | description: Read, implement and contribute to AMMP: the public repositories, how changes land, security reports, and partners wanted. -->
 <p class="eyebrow">Get involved</p>
 <h1>Read it, implement it, break it</h1>
 <p class="lede">AMMP is an open specification. The most valuable contribution is a clause you couldn't satisfy, or an attack the trust model doesn't account for.</p>
@@ -10,6 +10,7 @@
   <div class="card agent"><h3><a href="https://github.com/proofpoint/amap-connector-claude">amap-connector-claude</a></h3><p>The Claude Code connector, which uses only the standard library.</p></div>
   <div class="card agent"><h3><a href="https://github.com/proofpoint/amap-connector-codex">amap-connector-codex</a></h3><p>The Codex connector: a supervisor that wakes a Codex app-server thread per validated notice, with the same gated submit.</p></div>
   <div class="card"><h3><a href="https://github.com/proofpoint/amap-deploy-sandy">amap-deploy-sandy</a></h3><p>A working deployment of the reference runtime and connector on one host. Its <a href="https://proofpoint.github.io/amap-deploy-sandy/">walkthrough</a> gets two agents talking, then breaks each guarantee on purpose.</p></div>
+  <div class="card"><h3><a href="https://github.com/proofpoint/amap-release">amap-release</a></h3><p>Release manifests that pin the exact commits of the router, connectors and deployment that make up one release.</p></div>
 </div>
 
 <h2>How changes are made today</h2>
@@ -22,7 +23,7 @@
 <p>Read <a href="https://github.com/proofpoint/amap-spec/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> before opening a pull request.</p>
 
 <h2>Security reports</h2>
-<p>Don't open a public issue for a security problem. Follow <a href="https://github.com/proofpoint/amap-spec/blob/main/SECURITY.md">SECURITY.md</a> in the relevant repository. For the specification, the interesting reports are clauses that can't be satisfied securely, schemas that permit what the prose forbids, and attacks the trust model doesn't account for.</p>
+<p>Don't open a public issue for a security problem. See <a href="security.html">Security and disclosure</a> for where to report. For the specification, the interesting reports are clauses that can't be satisfied securely, schemas that permit what the prose forbids, and attacks the trust model doesn't account for.</p>
 
 <h2>Wanted</h2>
 <div class="grid three">
