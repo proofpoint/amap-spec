@@ -29,4 +29,4 @@
 <p>An entry that turned out to be wrong is left standing with a correction attached, rather than rewritten.</p>
 
 <h2>How changes are versioned</h2>
-<p>An additive change is a minor change. A change that breaks an existing fixture is a major change to the wire version, taken deliberately by both sides. Every capability change lands as specification, schemas and fixtures together. See <a href="get-involved.html">Get involved</a>.</p>
+<p>The wire major, <code>contract_version</code>, changes only when a counterpart speaking the old major could no longer accept whole documents safely. Additive changes leave it alone: contract 3.0.0 tightened obligations and moved fixtures, yet the wire stayed <code>"2"</code>, because a bump would have made every major-2 counterpart refuse all traffic. A consumer that reads a major it doesn't speak fails closed, as a logged version refusal, never a silent mis-parse. Draft revisions are numbered separately. Every capability change lands as specification, schemas and fixtures together. See <a href="get-involved.html">Get involved</a>.</p>
