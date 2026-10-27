@@ -32,7 +32,7 @@
 <div class="grid three">
   <div class="card trust"><h3>Internet-Draft</h3><p><a href="https://datatracker.ietf.org/doc/draft-rapp-ammp/">draft-rapp-ammp-00</a>, posted 22 October 2026. An individual Internet-Draft: no working group has adopted it.</p></div>
   <div class="card"><h3>Wire version</h3><p><code>contract_version</code> is <code>"2"</code>. A consumer compares majors and fails closed on a mismatch.</p></div>
-  <div class="card agent"><h3>Implementations</h3><p>Released together as pinned sets in <a href="https://github.com/proofpoint/amap-release">amap-release</a>. The latest is <code>amap-2026-10-10</code>.</p></div>
+  <div class="card agent"><h3>Implementations</h3><p>Released together as pinned sets in <a href="https://github.com/proofpoint/amap-release">amap-release</a>. As of 27 October 2026, the most recent is <code>amap-2026-10-10</code>; the <a href="https://github.com/proofpoint/amap-release#releases">releases list</a> is always current.</p></div>
 </div>
 
 <h2>Internet-Draft revisions</h2>
@@ -42,7 +42,7 @@
 <p>Open questions for -01 are tracked in the <a href="https://github.com/proofpoint/amap-spec/issues?q=is%3Aissue+milestone%3Adraft-rapp-ammp-01">draft-rapp-ammp-01 milestone</a>.</p>
 
 <h2>Before the IETF</h2>
-<p>The contract was versioned on its own scale, 1.0.0 to 3.1.0, while implementations were built against it. That history, newest first, is the "Historical Background" appendix of the draft. In short:</p>
+<p>The contract was versioned on its own scale, 1.0.0 to 3.1.0, while implementations were built against it. That scale numbered the document, not the wire: from 2.0.0 onward every document carries <code>contract_version: "2"</code>, and the draft keeps that value, so nothing on the wire was renumbered when the contract reached 3.x. That history, newest first, is the "Historical Background" appendix of the draft. In short:</p>
 <ul>
   <li><strong>3.1.0.</strong> The outbound extension space and the peer-origin profile.</li>
   <li><strong>3.0.0.</strong> Direction-aware tolerance: documents the runtime writes are open to new members, documents the agent writes are closed. Six safety holes closed.</li>

@@ -162,15 +162,19 @@ def build(OUT):
     open(os.path.join(OUT, ".nojekyll"), "w").close()
     # GitHub Pages: the custom domain. build() wipes OUT, so CNAME must be
     # regenerated from site/CNAME on every build or the domain is dropped.
+    # A missing site/CNAME is a build problem, not a silent drop of the domain.
     cname = os.path.join(HERE, "CNAME")
+    cname_problem = None
     if os.path.exists(cname):
         shutil.copyfile(cname, os.path.join(OUT, "CNAME"))
+    else:
+        cname_problem = "site/CNAME is missing: the custom domain would be dropped"
     shutil.copytree(os.path.join(HERE, "assets"), os.path.join(OUT, "assets"), ignore=IGNORE)
     # the validator loads the published schemas, copied verbatim from the spec
     shutil.copytree(os.path.join(SPEC, "schemas"), os.path.join(OUT, "schemas"), ignore=IGNORE)
 
     pages = sorted(f for f in os.listdir(SRC) if f.endswith(".html"))
-    problems = []
+    problems = [cname_problem] if cname_problem else []
     subs = counts()
     for name in pages:
         raw = open(os.path.join(SRC, name), encoding="utf-8").read()
