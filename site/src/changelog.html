@@ -1,0 +1,32 @@
+<!-- title: Changelog | description: What changed in AMMP: Internet-Draft revisions, the wire version, the contract's history before the IETF, and implementation releases. -->
+<p class="eyebrow">Changelog</p>
+<h1>Changelog</h1>
+<p class="lede">Two version numbers matter, and they move independently. Draft revisions (-00, -01, ...) version the document. <code>contract_version</code>, carried in AMMP's documents, versions the wire.</p>
+
+<h2>Where versions stand</h2>
+<div class="grid three">
+  <div class="card trust"><h3>Internet-Draft</h3><p><a href="https://datatracker.ietf.org/doc/draft-rapp-ammp/">draft-rapp-ammp-00</a>, posted 22 October 2026. An individual Internet-Draft: no working group has adopted it.</p></div>
+  <div class="card"><h3>Wire version</h3><p><code>contract_version</code> is <code>"2"</code>. A consumer accepts the wire version it supports and refuses any other value, failing closed.</p></div>
+  <div class="card agent"><h3>Implementations</h3><p>Released together as pinned sets in <a href="https://github.com/proofpoint/amap-release">amap-release</a>. As of 27 October 2026, the most recent is <code>amap-2026-10-10</code>; the <a href="https://github.com/proofpoint/amap-release#releases">releases list</a> is always current.</p></div>
+</div>
+
+<h2>Internet-Draft revisions</h2>
+<ul>
+  <li><strong>draft-rapp-ammp-00, 22 October 2026.</strong> The first submission. The contract's prose and the peer-origin profile became one document. The protocol was renamed from AMAP, the Agent Mailbox Access Protocol, to AMMP, the Agent Mediated Messaging Protocol, because it mediates all of an agent's correspondence, not only a mailbox, and because the acronym AMAP was already used by an expired 2003 draft. Nothing on the wire changed.</li>
+</ul>
+<p>Open questions for -01 are tracked in the <a href="https://github.com/proofpoint/amap-spec/issues?q=is%3Aissue+milestone%3Adraft-rapp-ammp-01">draft-rapp-ammp-01 milestone</a>.</p>
+
+<h2>Before the IETF</h2>
+<p>The contract was versioned on its own scale, 1.0.0 to 3.1.0, while implementations were built against it. That scale numbered the document, not the wire: the wire value has been <code>"2"</code> since contract 2.0.0, and the draft keeps it, so nothing on the wire was renumbered when the contract reached 3.x. That history, newest first, is the "Historical Background" appendix of the draft. In short:</p>
+<ul>
+  <li><strong>3.1.0.</strong> The outbound extension space and the peer-origin profile.</li>
+  <li><strong>3.0.0.</strong> Direction-aware tolerance: documents the runtime writes are open to new members, documents the agent writes are closed. Six safety holes closed.</li>
+  <li><strong>2.3.0.</strong> Inbound byte access in force.</li>
+  <li><strong>2.2.0.</strong> Deletion rights, and a read-only inbound tree as a valid posture.</li>
+  <li><strong>2.1.0.</strong> The body spool, and three optional Result members.</li>
+  <li><strong>2.0.0.</strong> Attachments, and <code>contract_version</code> required. The wire value moved from <code>"1"</code> to <code>"2"</code>.</li>
+</ul>
+<p>An entry that turned out to be wrong is left standing with a correction attached, rather than rewritten.</p>
+
+<h2>How changes are versioned</h2>
+<p>The wire major, <code>contract_version</code>, changes only when a counterpart speaking the old major could no longer accept whole documents safely. Changes short of that leave it alone. Contract 3.0.0 tightened obligations and moved fixtures, yet the wire stayed <code>"2"</code>, because a bump would have made every major-2 counterpart refuse all traffic. A consumer that reads a version it doesn't support fails closed, as a logged version refusal, never a silent mis-parse. Draft revisions are numbered separately. Every capability change lands as specification, schemas and fixtures together. See <a href="get-involved.html">Get involved</a>.</p>
