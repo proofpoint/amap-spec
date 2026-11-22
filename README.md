@@ -198,6 +198,30 @@ interoperability between separately developed runtimes and connectors.
 The version history is the draft's Historical Background appendix; the
 history before 2026-09-24 is in the frozen `spec/contract.md`, section 7.
 
+## Reference implementations
+
+Three implementations of AMMP (the Agent Mediated Messaging Protocol, which
+this repository specifies) are published as separate repositories: one
+runtime and two connectors. All three keep the protocol's earlier `amap`
+prefix in their names.
+
+- [**amap-router-local**](https://github.com/proofpoint/amap-router-local) -
+  the runtime side. A trusted runtime that moves messages between agent
+  namespaces on one machine, with no mail provider, credentials or network
+  egress, so the obligations this contract places on a runtime can be read
+  and run without a mail stack around them.
+- [**amap-connector-claude**](https://github.com/proofpoint/amap-connector-claude) -
+  the connector side, for Claude Code. It gives the agent read access to its
+  spooled messages and a gated submit for outbound requests, and holds no
+  mail credentials: a host-side relay applies policy and does any sending.
+- [**amap-connector-codex**](https://github.com/proofpoint/amap-connector-codex) -
+  the connector side, for Codex. A supervisor wakes a Codex app-server thread
+  for each validated notice, with the same read-only access and gated submit;
+  the runtime remains responsible for policy and sending.
+
+None of them is part of the contract. Conformance is proved against the fixtures
+here, not against these implementations.
+
 ## Contributing
 
 A capability change lands as `schemas/` + `fixtures/` + the draft's prose in one change,
